@@ -5,6 +5,11 @@ bootstrap command language that is intentionally hosted by `/bin/sh` at first.
 
 No implementation code is committed yet.
 
+## Docs
+
+- [Language](docs/language.md) describes the current `dud-sh` source profile
+  and parser model.
+
 ## Layout
 
 ```text
