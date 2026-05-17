@@ -7,6 +7,23 @@ that explain why a future policy or implementation change might exist.
 Files here are advisory unless a decision is promoted into a reviewed policy
 surface such as `AGENTS.md`, a README, or a durable project doc.
 
+## Editor Icon
+
+Material Icon Theme gives `.agents` and `agents` folders its robot folder icon
+by default. This directory is named `for-agents` for clarity, so editors need a
+local folder association to give it the same treatment:
+
+```json
+{
+  "material-icon-theme.folders.associations": {
+    "for-agents": "robot"
+  }
+}
+```
+
+Keep that setting in local VS Code workspace or user settings. This repository
+ignores `.vscode/` so editor preferences do not become project policy.
+
 ## Layout
 
 ```text
@@ -16,4 +33,4 @@ pr-8-cleanup-helper-followup.md
 research/        research prompts, reports, and source-backed investigations
 ```
 
-Use `docs/for-agents/AGENTS.md` for local editing rules.
+Use `for-agents/AGENTS.md` for local editing rules.
