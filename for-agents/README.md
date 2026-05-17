@@ -14,8 +14,6 @@ durable project doc.
 ## Layout
 
 ```text
-dud-sh-root-move-plan.md
-                    planned move of current dud-sh work to the repo root
 github-workflow.md  binding branch, PR, and cleanup workflow for agents
 pr-8-cleanup-helper-followup.md
                     follow-up notes from the closed cleanup-helper PR
