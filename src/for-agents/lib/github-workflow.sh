@@ -1,12 +1,12 @@
 # shellcheck shell=sh
 
-# @./src/for-agents/docs/sh.md#safety-pattern
+# @./docs/sh.md#safety-pattern
 die() {
   echo "cleanup-merged-pr: $*" >&2
   exit 1
 }
 
-# @./src/for-agents/docs/sh.md#safety-pattern
+# @./docs/sh.md#safety-pattern
 run() {
   echo "+ $*"
   "$@"
@@ -48,7 +48,7 @@ load_merged_pr() {
     --template '{{.state}} {{.baseRefName}} {{.headRefName}} {{.headRefOid}}') ||
     die "failed to read PR #$pr_number"
 
-  # @./src/for-agents/docs/sh.md#field-parsing
+  # @./docs/sh.md#field-parsing
   # Intentionally split fixed gh template fields into positional parameters.
   # shellcheck disable=SC2086
   set -- $pr_info
@@ -104,7 +104,7 @@ delete_remote_pr_branch_if_present() {
     die "failed to check remote branch $head_branch"
 
   if [ -n "$remote_ref" ]; then
-    # @./src/for-agents/docs/sh.md#field-parsing
+    # @./docs/sh.md#field-parsing
     # Intentionally split ls-remote output into object id and ref name.
     # shellcheck disable=SC2086
     set -- $remote_ref

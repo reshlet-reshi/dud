@@ -56,7 +56,7 @@ When a script relies on a repo convention documented here, use a repo-local
 reference comment:
 
 ```sh
-# @./src/for-agents/docs/sh.md#sourcing
+# @./docs/sh.md#sourcing
 ```
 
 ## Safety Pattern
