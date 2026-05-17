@@ -1,8 +1,8 @@
 # dud
 
-`dud` is a bootstrap toolchain project. The first subproject is `dud-sh`,
+`dud` is a bootstrap toolchain project. The current stage-0 work is `dud-sh`,
 a deliberately tiny `/bin/sh`-compatible command language for early bootstrap
-work.
+work. That current work lives at the repository root for now.
 
 Current slogan:
 
@@ -14,6 +14,11 @@ Later dsh runs the same files itself.
 The first milestone is the path from hosted `dud-sh`-compatible scripts to
 `patch-elf`, then `patch-elf-modular`, and later a native `dud-sh` kernel path.
 No implementation code is committed yet.
+
+## Docs
+
+- [Language](language.md) describes the current `dud-sh` source profile and
+  parser model.
 
 ## Bootstrap Path
 
@@ -35,11 +40,18 @@ belong to later work.
 
 ## Layout
 
+Directories listed here may be absent until real tracked content exists. Do not
+preserve empty planned directories with `.gitkeep` placeholders.
+
 ```text
 .bin/              intended future generated native artifact directory
 .tmp/              intended future scratch and test temporary directory
+bin/               future entry scripts, no extension
 docs/              intended future top-level project docs directory
-src/dud-sh/        first bootstrap subproject
+lib/std/i386/      future i386 byte fragments and docs-backed helpers
+lib/std/elf32/     future ELF32 byte fragments and docs-backed helpers
+lib/std/patch-elf/ future patch-elf-specific fragments
+src/               intended future multi-project or source tree
+test/              future fixtures and support data for test.py
+test.py            future canonical test runner, added when tests begin
 ```
-
-See `src/dud-sh/README.md` for the current subproject scaffold.
