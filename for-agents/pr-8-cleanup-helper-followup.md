@@ -11,6 +11,8 @@ Rejected branch: `codex-cleanup-merged-pr-helper`
 PR 8 attempted to add the first host-side agent helper:
 `src/for-agents/bin/cleanup-merged-pr`.
 
+That path was part of the rejected proposal, not accepted placement policy.
+
 The helper was meant to automate the safe post-merge cleanup workflow after the
 owner accepted a PR:
 
@@ -43,7 +45,7 @@ shape first. The closing comment said to restart by:
   marker like `TODO` or `BUG`.
 - Define where `SEE` paths are resolved from, and how docs can be referenced
   with short paths while staying unambiguous.
-- Define stricter placement rules for `src/for-agents`, including what counts
-  as host-side agent tooling, where executable helpers live, where shared
-  libraries live, and where helper documentation lives.
-- Revisit `cleanup-merged-pr` only after those policy pieces are accepted.
+- Treat top-level `for-agents/` as docs-only. Do not put executable helpers,
+  shell libraries, tests, generated artifacts, runtime/bootstrap source, or
+  local tool-specific configuration there.
+- Decide helper-tool placement separately before revisiting `cleanup-merged-pr`.

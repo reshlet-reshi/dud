@@ -4,13 +4,29 @@ These rules apply under `for-agents/`.
 
 ## Purpose
 
-This tree holds agent-facing context: prompts, handoffs, research reports,
-decision notes, and other material that helps agents understand the project.
-It is not automatically binding project policy.
+This tree holds agent-facing documentation and context: prompts, handoffs,
+research reports, workflow docs, decision notes, follow-up notes, and other
+material that helps agents understand the project. It is not a runtime,
+bootstrap, generated-output, local-tool-configuration, or helper-tooling tree.
+
+Most files here are advisory context. A file under `for-agents/` is binding
+only when it says it is binding and is referenced from a reviewed policy
+surface such as root `AGENTS.md`, a nearer subtree `AGENTS.md`, a README, or a
+durable project doc.
 
 Project policy becomes binding only when promoted into reviewed files such as
 root `AGENTS.md`, a nearer subtree `AGENTS.md`, READMEs, or durable project
 docs.
+
+## Placement Rules
+
+- Keep prompts, handoffs, research reports, workflow docs, decision notes, and
+  follow-up notes under `for-agents/`.
+- Do not put executable helper scripts, shell libraries, runtime/bootstrap
+  source, tests, generated artifacts, or local tool-specific configuration
+  guidance under `for-agents/`.
+- Future agent helper tooling needs its own reviewed placement decision before
+  adding files.
 
 ## Editing Rules
 
