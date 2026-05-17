@@ -14,7 +14,9 @@ durable project doc.
 ## Layout
 
 ```text
-github-workflow.md  binding branch, PR, and cleanup workflow for agents
+github-workflow.md  binding temporary working-branch workflow for agents
+github-pr-workflow-archived.md
+                    archived immediate commit-and-PR workflow
 pr-8-cleanup-helper-followup.md
                     follow-up notes from the closed cleanup-helper PR
 research/        source-backed investigations and seed artifacts

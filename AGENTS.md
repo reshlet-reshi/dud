@@ -14,9 +14,10 @@ native `patch-elf`, then to `patch-elf-modular`, then toward a native
 - Inspect the current branch and `git status` before editing.
 - If on `main`, create or ask for an agent branch before changing files.
 - Read this file and any nearer `AGENTS.md` before editing under a subtree.
-- Keep changes small and coherent. Prefer one reviewed PR per step.
-- Follow `for-agents/github-workflow.md` for GitHub branch, PR, and
-  post-merge cleanup work.
+- Keep local changes understandable. While the temporary working-branch mode is
+  active, larger local edits and checkpoint commits are allowed.
+- Follow `for-agents/github-workflow.md` for the active GitHub branch, local
+  commit, later PR extraction, and post-merge cleanup workflow.
 - Do not silently change public API/ABI, emitted ABI, language semantics,
   conformance expectations, dependencies, or legal files.
 

@@ -32,8 +32,8 @@ docs.
 
 - Preserve historical agent artifacts unless the task explicitly asks to revise
   them.
-- Prefer adding a follow-up note or new research directory over rewriting an
-  old prompt/report.
+- Prefer adding a follow-up note or clearly named new artifact over rewriting
+  an old prompt/report.
 - Do not include secrets, private tokens, credentials, or local machine details
   that are not needed for future agents.
 - Keep links relative when pointing inside the repo.
@@ -58,8 +58,8 @@ accepted it.
 ## Promotion Rule
 
 Research and handoffs may guide changes, but do not implement broad policy
-from them silently. Promote decisions in small PRs that update the actual
-policy surface.
+from them silently. Promote decisions by updating the actual policy surface
+through the active workflow in `github-workflow.md`.
 
 When promoting a decision, cite the source artifact and keep the promoted text
 shorter and more operational than the research that motivated it.
