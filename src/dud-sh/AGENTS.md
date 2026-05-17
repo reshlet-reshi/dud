@@ -5,7 +5,7 @@ These rules apply under `src/dud-sh/`.
 ## Source Profile
 
 Shared bootstrap files must follow the current `dud-sh` source profile in
-`docs/language.md`. That file is the durable reference for the language model,
+`language.md`. That file is the durable reference for the language model,
 allowed forms, token and comment rules, command dispatch, and reserved future
 features.
 
