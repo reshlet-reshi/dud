@@ -1,6 +1,6 @@
 # AGENTS.md
 
-These rules apply under `docs/for-agents/research/`.
+These rules apply under `for-agents/research/`.
 
 ## Purpose
 
