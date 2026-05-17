@@ -41,6 +41,10 @@ docs.
 - If a note records a decision, link to the PR or file where that decision was
   promoted into binding policy.
 
+The rule against secrets, private tokens, credentials, and unnecessary local
+machine details intentionally duplicates ambient safety practice. Keep it here
+because this subtree is meant to preserve context for future agents.
+
 ## Status Labels
 
 Use plain text status near the top of new agent-facing notes when useful:
@@ -58,8 +62,9 @@ accepted it.
 ## Promotion Rule
 
 Research and handoffs may guide changes, but do not implement broad policy
-from them silently. Promote decisions by updating the actual policy surface
-through the active workflow in `github-workflow.md`.
+from them silently. Promote decisions by updating the actual policy surface,
+such as root `AGENTS.md`, a nearer subtree `AGENTS.md`, a README, or a durable
+project doc.
 
 When promoting a decision, cite the source artifact and keep the promoted text
 shorter and more operational than the research that motivated it.

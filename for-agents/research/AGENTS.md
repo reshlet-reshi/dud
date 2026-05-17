@@ -37,6 +37,11 @@ seed chain.
   choice.
 - Do not copy substantial third-party text or generated code into reports.
 
+The citation, primary-source, source-disagreement, and no-substantial-copying
+rules intentionally overlap ambient research, source-use, and copyright
+practice. Keep them here because this subtree exists to preserve evidence for
+future decisions.
+
 ## Follow-Up Rules
 
 Treat existing artifacts as historical. If an artifact needs a material update,
