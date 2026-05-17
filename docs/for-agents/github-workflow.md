@@ -35,6 +35,18 @@ post-merge cleanup in this repository.
 
 Do not clean up a branch until the PR is safely merged.
 
+Prefer the helper:
+
+```sh
+src/for-agents/bin/cleanup-merged-pr PR_NUMBER
+```
+
+The helper verifies the PR is merged, updates local `main`, removes the local
+branch, checks whether the remote branch still exists, and deletes the remote
+branch only if it still matches the merged PR head.
+
+Manual fallback:
+
 1. Verify the PR state is `MERGED`, for example with `gh pr view`.
 2. Switch to `main`.
 3. Fast-forward local `main` with `git pull --ff-only`.
