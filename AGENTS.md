@@ -1,85 +1,70 @@
 # AGENTS.md
 
-This repository is `dud`. The current work is `dud-sh`; `dsh` is only an
-internal shorthand unless the owner decides otherwise.
+This repository is `dud`.
 
-## Current Milestone
+## Ambient Policy Duplicates
 
-Build the path from `/bin/sh`-hosted `dud-sh`-compatible files to the first
-native `patch-elf`, then to `patch-elf-modular`, then toward a native
-`dud-sh` kernel. Do not let later `dud-asm` or `dud-cc` ideas drive stage 0.
+Some rules below intentionally duplicate ambient session, tool, and sandbox
+policy so this repository has a durable local reminder of them. These local
+duplicates are not an attempt to disable, replace, or hide ambient policy.
+
+Known duplicated ambient rules in this file include: work with user changes
+instead of reverting them; avoid destructive git commands unless requested;
+prefer `rg`; use `apply_patch` for manual edits; keep edits scoped and follow
+existing patterns; default to ASCII; respect writable-root and sandbox limits;
+treat shell network access as restricted; request escalation with a brief
+justification when sandboxing or GUI use requires it; and keep persistent
+approval rules narrowly scoped.
 
 ## Workflow
 
-- Inspect the current branch and `git status` before editing.
-- If on `main`, create or ask for an agent branch before changing files.
+- Inspect the current branch and `git status` before editing repository files.
+- If on `main`, create or ask for an agent branch before changing repository
+  files.
 - Read this file and any nearer `AGENTS.md` before editing under a subtree.
-- Keep local changes understandable. While the temporary working-branch mode is
-  active, larger local edits and checkpoint commits are allowed.
-- Follow `for-agents/github-workflow.md` for the active GitHub branch, local
-  commit, later PR extraction, and post-merge cleanup workflow.
-- Do not silently change public API/ABI, emitted ABI, language semantics,
-  conformance expectations, dependencies, or legal files.
+- Keep local changes understandable. While workbench mode is active, larger
+  local edits and checkpoint commits are allowed.
+- Avoid touching GitHub while in workbench mode. Do not push, pull, fetch,
+  open or update PRs/issues, request reviewers, or use `gh` or the GitHub
+  connector unless the owner explicitly asks.
 
-## Source Profile
+## Workspace And Editing Constraints
 
-Shared bootstrap files must follow the current `dud-sh` source profile in
-`language.md`. That file is the durable reference for the language model,
-allowed forms, token and comment rules, command dispatch, and reserved future
-features.
+- Filesystem writes are allowed in the workspace and writable roots, including
+  `/tmp`, subject to the active sandbox.
+- Do not revert user changes unless explicitly requested.
+- Do not use destructive commands such as `git reset --hard` or
+  `git checkout --` unless clearly requested.
+- Prefer `rg` or `rg --files` for searching.
+- Use `apply_patch` for manual file edits.
+- Keep edits scoped and follow existing project patterns.
+- Use ASCII by default when editing or creating files unless there is a clear
+  reason otherwise.
 
-Do not broaden the language, introduce reserved/future forms, or change command
-semantics without explicit owner approval and matching policy/doc updates.
+## Human-Facing Generated Documents
 
-Shared byte-emitting source uses POSIX-portable octal escapes. Comments and
-docs may show hex for readability.
+- When generating HTML or other prose documents for the owner to read, prefer
+  screen-reader and reader-mode friendly structure.
+- Use semantic article-style markup and real paragraphs for prose summaries.
+  Avoid layouts that are mostly cards, headings, or list-only sections when
+  the document is meant to be read continuously.
+- For generated side-by-side or otherwise visual diffs, include a first-class
+  linear reader view in ordinary visible prose or semantic blocks.
+- Do not rely on a browser-specific reading-mode fallback attribute. Make the
+  reader-friendly version normal document content that reading mode can
+  extract.
+- Redundant visual-only diff views may be marked `aria-hidden="true"` only
+  when an equivalent reader-friendly version is present and the hidden region
+  contains no focusable or interactive controls.
+- Label additions, removals, and context in text. Do not rely on color alone
+  to convey diff meaning.
 
-## File Placement
+## Tool And Approval Policy
 
-- Entry scripts live in `bin/` with no extension.
-- Shared dot-sourced files use `.dsh` and live under `lib/`.
-- Host-only shell adapters use `.sh` and must be clearly separate from shared
-  bootstrap source.
-- Generated native artifacts go to repository root `.bin/`.
-- Scratch and test temporaries go to repository root `.tmp/`.
-- Planned directories are documented, not preserved with `.gitkeep`. Create
-  directories when adding real tracked files; tools and tests must create
-  output/scratch directories before writing.
-
-## Fragment Discipline
-
-Open fragments may be dot-sourced and may emit bytes, but must not emit
-relative jumps whose offsets depend on surrounding layout. Sealed gadgets emit
-all bytes inline, do not dot-source other files, and may contain documented
-internal relative jumps.
-
-Marker byte encodings are provisional until implementation and tests exist.
-Ask before freezing emitted ABI.
-
-## Tests
-
-When `dud-sh` tests begin, create `test.py` as the canonical stdlib-only Python
-test runner. It should compare bytes directly with Python file reads and avoid
-depending on `cmp`, `od`, `xxd`, `hexdump`, `sed`, `awk`, or `grep`.
-
-Exact stderr text is not a conformance oracle. Exact accepted syntax, byte
-output, generated file bytes, exit status where specified, and whitespace or
-comment behavior are conformance concerns.
-
-## Validation And Reporting
-
-Run the smallest relevant check before committing. If no check exists yet,
-say that clearly. After edits, report changed files, why they changed, tests
-run or skipped, relevant output, and open risks.
-
-## Provenance
-
-Browse or re-check primary sources before touching instruction encodings,
-syscall numbers, ELF headers, POSIX portability, licenses, or bootstrap
-history. Prefer official specs, POSIX/Open Group docs, vendor manuals, Linux
-man pages, kernel headers, and well-maintained project docs. Do not copy
-substantial third-party or generated code verbatim.
-
-## License
-
-The repository uses 0BSD unless the owner overrides it later.
+- Network access is restricted in the shell environment.
+- If an important command fails because of sandboxing or likely network
+  restriction, request escalation and retry with justification.
+- Opening GUI apps, including Chrome, requires explicit escalation.
+- Escalation requests must briefly explain the action and may include a
+  narrowly scoped reusable prefix rule when appropriate.
+- Do not request overly broad persistent approval rules.

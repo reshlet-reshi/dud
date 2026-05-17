@@ -3,7 +3,8 @@
 Status: archived
 
 This file records the previous immediate commit-and-PR workflow. It is not
-binding. The current binding workflow lives in `github-workflow.md`.
+binding. The current binding GitHub policy lives in root `AGENTS.md`: avoid
+touching GitHub while in workbench mode unless the owner explicitly asks.
 
 ## Historical Content
 

@@ -1,10 +1,18 @@
-# GitHub Workflow
+# Archived GitHub Workflow
 
-Status: temporary working-branch mode
+Status: archived
 
-This is the binding workflow for Codex-authored work while this temporary mode
-is active. The previous immediate commit-and-PR workflow is archived in
-`github-pr-workflow-archived.md` and is not binding.
+This file records the former temporary working-branch workflow for
+Codex-authored GitHub work. It is historical context only and is not binding.
+
+The current binding GitHub policy lives in root `AGENTS.md`: avoid touching
+GitHub while in workbench mode unless the owner explicitly asks. The previous
+immediate commit-and-PR workflow is archived in
+`github-pr-workflow-archived.md`.
+
+## Historical Content
+
+This was the temporary working-branch workflow while it was binding.
 
 ## Current Mode
 
