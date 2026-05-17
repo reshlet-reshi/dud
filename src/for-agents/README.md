@@ -4,8 +4,8 @@ This directory contains host-side helper tools for agents working on `dud`.
 These files are not `dud-sh` bootstrap/runtime source.
 
 Executable helpers live in `src/for-agents/bin/` and have no filename
-extension. They may use ordinary host tools such as `git`, `gh`, and POSIX
-`sh`.
+extension. Shared helper libraries live in `src/for-agents/lib/`. These files
+may use ordinary host tools such as `git`, `gh`, and POSIX `sh`.
 
 ## Tools
 
