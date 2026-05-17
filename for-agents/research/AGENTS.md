@@ -4,21 +4,21 @@ These rules apply under `for-agents/research/`.
 
 ## Purpose
 
-Research directories hold source-backed investigations for later project
-decisions. They are evidence and reasoning, not binding policy by themselves.
+Research files hold source-backed investigations for later project decisions.
+They are evidence and reasoning, not binding policy by themselves.
 
-## Directory Shape
+## File Shape
 
-Create one directory per research pass:
+Create one prompt/report pair per research pass directly under
+`for-agents/research/`:
 
 ```text
-research-N/
-  research-prompt-N.md
-  short-topic-report-inline-citations.md
+research-prompt-N.md
+short-topic-report-inline-citations.md
 ```
 
-Use the next integer after the largest existing `research-N` directory. Keep
-the prompt/handoff and final report together.
+Use the next integer after the largest existing `research-prompt-N.md` file.
+Keep the prompt/handoff and final report together as sibling files.
 
 ## Report Rules
 

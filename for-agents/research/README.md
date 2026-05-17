@@ -9,16 +9,16 @@ repeating context-gathering work.
 Research is advisory. A recommendation becomes project policy only after it is
 promoted into a reviewed policy or project documentation file.
 
-## Naming
+## Layout
 
-Use numbered directories:
+Keep each research pass as a flat prompt/report pair:
 
 ```text
-research-0/
-research-1/
-research-2/
+research-prompt-0.md
+dud-agents-research-report-inline-citations.md
 ```
 
-Inside each directory, keep the prompt or handoff next to the final report.
-Prefer report filenames that describe the topic and citation style, for
-example `dud-agents-research-report-inline-citations.md`.
+Use the next integer after the largest existing `research-prompt-N.md` file.
+Keep the prompt or handoff next to the final report. Prefer report filenames
+that describe the topic and citation style, for example
+`dud-agents-research-report-inline-citations.md`.
