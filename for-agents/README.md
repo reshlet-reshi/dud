@@ -16,4 +16,4 @@ pr-8-cleanup-helper-followup.md
 research/        research prompts, reports, and source-backed investigations
 ```
 
-Use `docs/for-agents/AGENTS.md` for local editing rules.
+Use `for-agents/AGENTS.md` for local editing rules.
