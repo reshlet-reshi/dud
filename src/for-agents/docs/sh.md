@@ -56,8 +56,12 @@ When a script relies on a repo convention documented here, use a repo-local
 reference comment:
 
 ```sh
-# @./docs/sh.md#sourcing
+# SEE src/for-agents/docs/sh.md#sourcing
 ```
+
+`SEE` is a magic comment marker, like `TODO` or `BUG`. The path after `SEE` is
+relative to the repository root, so do not prefix it with `./` or make it
+relative to the source file.
 
 ## Safety Pattern
 
