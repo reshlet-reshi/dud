@@ -1,24 +1,27 @@
 # Research
 
-This directory stores agent research passes for `dud`.
+This directory stores source-backed agent investigation artifacts for `dud`.
+The current files are the two-stage seed used to draft the initial
+`AGENTS.md` policy.
 
-Research files are meant to preserve the question asked, the source basis, the
+These files are meant to preserve the question asked, the source basis, the
 recommendation, and unresolved tradeoffs. They help future agents avoid
 repeating context-gathering work.
 
-Research is advisory. A recommendation becomes project policy only after it is
-promoted into a reviewed policy or project documentation file.
+Research and seed artifacts are advisory. A recommendation becomes project
+policy only after it is promoted into a reviewed policy or project
+documentation file.
 
-## Layout
-
-Keep each research pass as a flat prompt/report pair:
+## Current Files
 
 ```text
-research-prompt-0.md
-dud-agents-research-report-inline-citations.md
+AGENTS-seed-0.md  initial handoff/prompt
+AGENTS-seed-1.md  source-backed report
 ```
 
-Use the next integer after the largest existing `research-prompt-N.md` file.
-Keep the prompt or handoff next to the final report. Prefer report filenames
-that describe the topic and citation style, for example
-`dud-agents-research-report-inline-citations.md`.
+## Naming
+
+There is no standing research naming convention yet. Name future files for
+their actual role and topic, and only abstract a convention after an actual
+repeated pattern exists. The `AGENTS-seed-*.md` names describe the historical
+AGENTS seed chain; they are not a general template for future research files.

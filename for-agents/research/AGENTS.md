@@ -4,26 +4,31 @@ These rules apply under `for-agents/research/`.
 
 ## Purpose
 
-Research files hold source-backed investigations for later project decisions.
-They are evidence and reasoning, not binding policy by themselves.
+Files here preserve source-backed investigations and seed artifacts for later
+project decisions. They are evidence and reasoning, not binding policy by
+themselves.
 
-## File Shape
+## Naming
 
-Create one prompt/report pair per research pass directly under
-`for-agents/research/`:
+There is no standing research naming convention yet. Name future files for
+their actual role and topic. Do not create a numbered convention until there is
+an actual repeated pattern to abstract.
+
+The current `AGENTS-seed-*.md` names describe the historical two-stage seed
+that produced the initial `AGENTS.md` policy:
 
 ```text
-research-prompt-N.md
-short-topic-report-inline-citations.md
+AGENTS-seed-0.md  initial handoff/prompt
+AGENTS-seed-1.md  source-backed report
 ```
 
-Use the next integer after the largest existing `research-prompt-N.md` file.
-Keep the prompt/handoff and final report together as sibling files.
+Do not extend this sequence unless adding another artifact to that same AGENTS
+seed chain.
 
-## Report Rules
+## Artifact Rules
 
-- Start reports with enough context for a future agent to understand the
-  question without reading the whole chat.
+- Start source-backed artifacts with enough context for a future agent to
+  understand the question without reading the whole chat.
 - Separate assumptions, recommendations, open questions, and sources.
 - Use ordinary inline Markdown links for citations.
 - Prefer primary sources for standards, licenses, executable formats,
@@ -34,10 +39,10 @@ Keep the prompt/handoff and final report together as sibling files.
 
 ## Follow-Up Rules
 
-Treat existing research as historical. If a report needs a material update,
-prefer a new research pass or an addendum file that links to the original.
+Treat existing artifacts as historical. If an artifact needs a material update,
+prefer a clearly named addendum or new artifact that links to the original.
 Small typo, link, or formatting repairs are fine when they do not alter the
 recorded conclusion.
 
-When research is accepted, promote only the operational decision into the
-appropriate policy/doc file and link back to the research source.
+When an artifact is accepted, promote only the operational decision into the
+appropriate policy/doc file and link back to the source artifact.
