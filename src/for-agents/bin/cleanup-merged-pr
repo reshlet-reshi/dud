@@ -2,9 +2,11 @@
 
 set -eu
 
+# @./src/for-agents/docs/sh.md#entry-points-and-libraries
 script_dir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 helpers_dir=$(dirname -- "$script_dir")/lib
 
+# @./src/for-agents/docs/sh.md#safety-pattern
 if [ "$#" -ne 1 ]; then
   echo "usage: $0 PR_NUMBER" >&2
   exit 2
@@ -19,6 +21,7 @@ case "$pr_number" in
     ;;
 esac
 
+# @./src/for-agents/docs/sh.md#sourcing
 # shellcheck source=src/for-agents/lib/github-workflow.sh
 . "$helpers_dir/github-workflow.sh"
 

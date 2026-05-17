@@ -13,6 +13,11 @@ may use ordinary host tools such as `git`, `gh`, and POSIX `sh`.
   updates local `main`, removes the matching local branch, and removes the
   remote branch only if it still exists after merge.
 
+## Docs
+
+- `docs/sh.md` documents host-side POSIX `sh` conventions and source comment
+  references for agent helper scripts.
+
 ## TODO
 
 - Vendor a `shellcheck` binary, or pin a repo-local ShellCheck path, for
