@@ -17,7 +17,7 @@ durable project doc.
 github-workflow.md  binding branch, PR, and cleanup workflow for agents
 pr-8-cleanup-helper-followup.md
                     follow-up notes from the closed cleanup-helper PR
-research/        research prompts, reports, and source-backed investigations
+research/        source-backed investigations and seed artifacts
 ```
 
 Use `for-agents/AGENTS.md` for local editing rules.
