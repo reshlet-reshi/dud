@@ -4,38 +4,16 @@ These rules apply under `src/dud-sh/`.
 
 ## Source Profile
 
-Shared bootstrap files must stay in the tiny `dud-sh` subset that `/bin/sh`
-can host today and a future native `dud-sh` can interpret later.
+Shared bootstrap files must follow the current `dud-sh` source profile in
+`docs/language.md`. That file is the durable reference for the language model,
+allowed forms, token and comment rules, command dispatch, and reserved future
+features.
 
-Allowed current forms:
+Do not broaden the language, introduce reserved/future forms, or change command
+semantics without explicit owner approval and matching policy/doc updates.
 
-- `set -e`
-- `set -- ARG...`
-- `:`
-- `. PATH-WITH-SLASH`
-- `printf FORMAT`
-- `chmod +x PATH`
-- explicit-path project commands containing `/`
-- trailing `>` and `>>` command-local redirection
-- `$1` through `$9` and `"$1"` through `"$9"` in constrained forms
-- whole-line comments only
-
-Reserved/future, not current: `exec`, FD redirection, `$0`, `$#`, `shift`,
-pipelines, functions, variables, command substitution, loops, `if`, `case`,
-`test`, `exit`, and `return`.
-
-## Token And Byte Rules
-
-- Use whole-line comments only. Inline comments are invalid for shared source.
-- Use single quotes only around literal `printf` format tokens.
-- Use double quotes only when the whole token is a positional parameter, such
-  as `"$1"`.
-- Do not use mixed quoted/unquoted token concatenation.
-- Dot-sourced paths and project commands must contain `/`; do not rely on
-  ambient `PATH` lookup.
-- Shared byte-emitting source uses POSIX-portable octal escapes. Comments and
-  docs may show hex for readability.
-- Backslash byte interpretation belongs to `printf`, not the file tokenizer.
+Shared byte-emitting source uses POSIX-portable octal escapes. Comments and
+docs may show hex for readability.
 
 ## File Placement
 
