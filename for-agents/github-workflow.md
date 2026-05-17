@@ -1,39 +1,66 @@
 # GitHub Workflow
 
-This is the binding workflow for Codex-authored branches, pull requests, and
-post-merge cleanup in this repository.
+Status: temporary working-branch mode
+
+This is the binding workflow for Codex-authored work while this temporary mode
+is active. The previous immediate commit-and-PR workflow is archived in
+`github-pr-workflow-archived.md` and is not binding.
+
+## Current Mode
+
+- Do not open pull requests by default.
+- Do not turn each small local step into its own commit-and-PR cycle.
+- Work on a non-`main` working branch where larger local edits and checkpoint
+  commits are allowed.
+- Later, when the owner asks, clean the working branch into a stream of small
+  reviewed PRs, preferably one intentional commit per PR.
 
 ## Identity
 
 - Use the `reshi-codex` GitHub account for commits, pushes, and pull requests.
-- Create pull requests with `gh`, not the GitHub connector, so GitHub records
-  the PR author as `reshi-codex`.
+- Create future pull requests with `gh`, not the GitHub connector, so GitHub
+  records the PR author as `reshi-codex`.
 - If `gh auth status` does not show `reshi-codex` as the active account, stop
   before pushing or opening a PR.
 
 ## Starting Work
 
-- Begin from a clean `main` that is up to date with `origin/main`.
-- Create a branch named `codex-<short-description>`.
-- Keep each PR small and coherent.
-- Before staging, inspect `git status --short --branch` and the diff.
-- Stage only files that belong to the current PR.
+- Inspect the current branch and `git status --short --branch` before editing.
+- Never make ordinary working edits directly on `main`.
+- If on `main`, create or switch to a working branch before editing.
+- If already on a working branch, keep using it unless the owner asks for a
+  different branch.
+- Work with existing local changes. Do not reset, discard, or overwrite user
+  changes unless the owner explicitly asks.
 
-## Commit And PR
+## Local Work And Commits
 
-- Use one intentional commit unless checkpointing is explicitly requested.
-- Commit as `reshi-codex`.
-- Run the smallest relevant validation before committing.
-- Open a draft PR with `gh pr create`.
-- Include a concise PR body with:
-  - summary
-  - what changed
-  - validation
-  - notes or risks
+- Larger local edits are allowed while this mode is active.
+- Checkpoint commits are allowed when they preserve useful state, even if they
+  are not final PR-shaped commits.
+- Commit messages may be practical and local, but should still describe the
+  checkpoint honestly.
+- Stage only files that belong to the current checkpoint.
+- Run the smallest relevant validation at useful boundaries. If no check exists
+  or a check is intentionally skipped, say so.
+- Do not push, open a PR, or request reviewers unless the owner explicitly asks.
+
+## Later PR Extraction
+
+When the owner asks to turn local work into PRs:
+
+1. Start from an up-to-date `main`.
+2. Create a fresh PR branch for one coherent slice of the working branch.
+3. Bring over only that slice.
+4. Squash or amend it to one intentional commit unless the owner asks for a
+   different shape.
+5. Run the smallest relevant validation for that slice.
+6. Open a draft PR with `gh pr create`.
+7. Repeat for the next coherent slice.
 
 ## After Owner Acceptance
 
-Do not clean up a branch until the PR is safely merged.
+Do not clean up a PR branch until the PR is safely merged.
 
 1. Verify the PR state is `MERGED`, for example with `gh pr view`.
 2. Switch to `main`.
@@ -49,8 +76,9 @@ Do not clean up a branch until the PR is safely merged.
 
 ## Important Boundaries
 
-- Never delete a branch unless the corresponding PR is verified merged.
-- Never use a force push for the normal PR flow.
 - Never merge directly to `main`.
-- Do not use the GitHub connector to create PRs while it is authenticated as
-  the owner account.
+- Never delete a branch unless the corresponding PR is verified merged or the
+  owner explicitly asks for that branch deletion.
+- Never use a force push unless the owner explicitly asks for that exact branch.
+- Do not silently change public API/ABI, emitted ABI, language semantics,
+  conformance expectations, dependencies, or legal files.
