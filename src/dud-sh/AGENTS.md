@@ -23,6 +23,9 @@ docs may show hex for readability.
   bootstrap source.
 - Generated native artifacts go to repository root `.bin/`.
 - Scratch and test temporaries go to repository root `.tmp/`.
+- Planned directories are documented, not preserved with `.gitkeep`. Create
+  directories when adding real tracked files; tools and tests must create
+  output/scratch directories before writing.
 
 ## Fragment Discipline
 
