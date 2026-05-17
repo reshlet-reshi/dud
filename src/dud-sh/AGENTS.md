@@ -39,9 +39,10 @@ Ask before freezing emitted ABI.
 
 ## Tests
 
-`src/dud-sh/test.py` is reserved for the canonical stdlib-only Python test
-runner. It should compare bytes directly with Python file reads and avoid
-depending on `cmp`, `od`, `xxd`, `hexdump`, `sed`, `awk`, or `grep`.
+When `dud-sh` tests begin, create `src/dud-sh/test.py` as the canonical
+stdlib-only Python test runner. It should compare bytes directly with Python
+file reads and avoid depending on `cmp`, `od`, `xxd`, `hexdump`, `sed`, `awk`,
+or `grep`.
 
 Exact stderr text is not a conformance oracle. Exact accepted syntax, byte
 output, generated file bytes, exit status where specified, and whitespace or

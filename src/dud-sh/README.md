@@ -22,7 +22,7 @@ bin/                 entry scripts, no extension
 lib/std/i386/        future i386 byte fragments and docs-backed helpers
 lib/std/elf32/       future ELF32 byte fragments and docs-backed helpers
 lib/std/patch-elf/   future patch-elf-specific fragments
-test/                fixtures and support data for test.py
+test/                future fixtures and support data for test.py
 docs/                intended future per-project concept documentation
-test.py              reserved canonical test runner path
+test.py              future canonical test runner, added when tests begin
 ```
