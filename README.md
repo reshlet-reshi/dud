@@ -18,8 +18,8 @@ No implementation code is committed yet.
 ## Layout
 
 ```text
-.bin/              generated native artifacts, untracked except .gitkeep
-.tmp/              scratch and test temporaries, untracked except .gitkeep
+.bin/              intended future generated native artifact directory
+.tmp/              intended future scratch and test temporary directory
 docs/              project-level bootstrap and design notes
 src/dud-sh/        first bootstrap subproject
 ```
