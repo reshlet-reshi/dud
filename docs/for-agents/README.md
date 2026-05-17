@@ -10,6 +10,7 @@ surface such as `AGENTS.md`, a README, or a durable project doc.
 ## Layout
 
 ```text
+github-workflow.md  binding branch, PR, and cleanup workflow for agents
 research/        research prompts, reports, and source-backed investigations
 ```
 
