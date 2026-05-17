@@ -10,7 +10,10 @@ No implementation code is committed yet.
 - [Language](docs/language.md) describes the current `dud-sh` source profile
   and parser model.
 
-## Layout
+## Planned Layout
+
+Directories listed here may be absent until real tracked content exists. Do not
+preserve empty planned directories with `.gitkeep` placeholders.
 
 ```text
 AGENTS.md

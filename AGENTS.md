@@ -21,6 +21,9 @@ native `patch-elf`, then to `patch-elf-modular`, then toward a native
   conformance expectations, dependencies, or legal files.
 - Keep generated native outputs in `.bin/` and scratch/test temporaries in
   `.tmp/`.
+- Do not add `.gitkeep` placeholders. Planned directories belong in docs until
+  they contain real tracked content; tools and tests must create `.bin/` and
+  `.tmp/` before writing there.
 
 ## Validation And Reporting
 
