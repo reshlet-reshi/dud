@@ -2,3 +2,4 @@
 !.bin/.gitkeep
 .tmp/*
 !.tmp/.gitkeep
+.vscode/
