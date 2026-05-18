@@ -9,3 +9,6 @@ drafts, experiments, and the source-backed meta-policy report.
 
 Live root docs are intentionally small while the policy report is being
 hand-edited into a more actionable shape.
+
+Emerging tracked policy runbooks live under [`policy/`](policy/), starting
+with the experimental punctuation policy migration.
