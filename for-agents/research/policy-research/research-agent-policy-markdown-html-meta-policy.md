@@ -1,5 +1,6 @@
 # Research Agent Policy, Markdown, HTML, and Meta-Policy
 
+
 ## Executive summary
 
 The strongest recommendation is **a small root `AGENTS.md`, plus a separate meta-policy `policy.md`, plus short topic policies such as `markdown.md` and `html.md`**. That structure fits the repo owner’s stated taste for small, direct, readable documents, while also matching how current agent ecosystems actually layer instructions. Official docs from OpenAI Codex, GitHub Copilot, and Claude Code all support repository-local instruction files, path-sensitive scoping, and layered precedence, but they do **not** use identical resolution semantics. The safe cross-tool choice is therefore: keep the root instructions short, keep topic doctrine out of the root unless it applies nearly everywhere, and push narrow rules downward into topic or subtree documents. ([OpenAI Codex: Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md), [GitHub Copilot: repository custom instructions](https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions), [Claude Code: memory](https://docs.anthropic.com/en/docs/claude-code/memory), [GitHub Copilot: customizing responses](https://docs.github.com/en/copilot/customizing-copilot/about-customizing-github-copilot-chat-responses))
@@ -10,6 +11,7 @@ On the local artifacts, the repo’s current instincts are often good, but the e
 
 My recommendation is therefore **Scheme B** in the decision matrix below: keep `AGENTS.md` as the binding operational entrypoint for agents, introduce `policy.md` as the short document that explains how policy works in this repo, and keep topic policies narrow and testable. Do **not** turn everything into one giant manifesto. Do **not** let experiments quietly become binding by vibe. Do **not** let HTML taste masquerade as HTML policy. ([OpenAI Codex: Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md), [GitHub Copilot: customizing responses](https://docs.github.com/en/copilot/customizing-copilot/about-customizing-github-copilot-chat-responses), [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119), [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174), [OpenAI: working with evals](https://platform.openai.com/docs/guides/evals))
 
+
 ## Sources and method
 
 I unpacked the supplied archive, used `MANIFEST.md` as the canonical file map, and inspected the local artifacts the prompt named as decisive for this research pass. The local materials reviewed included the root `current/AGENTS.md`; `current/html.md`; `snapshots/html-v1-committed.md`; `experiments/bd/bd-policy.md`; `experiments/bd/bd-design.md`; `experiments/bd/bd-code.md`; `experiments/bd/BeautifulDocument.html`; and the `current/for-agents/` and `current/for-agents/research/` subtree precedent, including `AGENTS-seed-0.md` and `AGENTS-seed-1.md`. These local artifacts are treated here as repo evidence, not as binding truth by themselves.
@@ -18,7 +20,9 @@ External research prioritized primary and official sources: OpenAI Codex documen
 
 One limitation matters. I inspected `BeautifulDocument.html` from source and against standards guidance, but I did **not** have a local `lynx` or `tidy` toolchain available in the environment for a live text-browser or validator pass. Where this affects the report, I say so explicitly rather than pretending to have run checks I did not run. That limitation does not materially change the policy conclusions, because the strongest findings here come from the document structure itself and from external standards, but it does mean the critique of rendered behavior is source-based rather than screenshot-based. ([W3C Validator help](https://validator.w3.org/docs/help.html), [W3C WAI: page structure](https://www.w3.org/WAI/tutorials/page-structure/), [WCAG: Info and Relationships](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships))
 
+
 ## Best practices found
+
 
 ### Agent policy / AGENTS.md
 
@@ -30,11 +34,13 @@ Official guidance also points the same way on content quality. GitHub says custo
 
 The research literature makes the caution sharper. One 2026 study found `AGENTS.md` associated with lower median runtime and lower token use without evident loss of task completion behavior, while another found that context files can reduce success rates and raise costs when they add unnecessary requirements. A large survey also found that context files dominate configuration practice and that `AGENTS.md` is emerging as an interoperable standard, but that more advanced mechanisms are still shallowly adopted. The practical conclusion is not “more policy is better”; it is **“better-targeted policy is better”**. ([Lulla et al., *On the Impact of AGENTS.md Files on the Efficiency of AI Coding Agents*](https://arxiv.org/abs/2601.20404), [Gloaguen et al., *Evaluating AGENTS.md*](https://arxiv.org/abs/2602.11988), [Galster et al., *Configuring Agentic AI Coding Tools*](https://arxiv.org/abs/2602.14690), [Treude, Baltes, and Cheong, *Operationalizing Ethics for AI Agents*](https://arxiv.org/abs/2605.05584))
 
+
 ### Markdown policy documents
 
 Markdown is attractive because it stays readable as plain text, but that same informality is why specification discipline matters. CommonMark exists because early Markdown descriptions were ambiguous and implementations diverged in important ways; CommonMark explicitly frames its examples as conformance tests. GitHub Flavored Markdown is a strict superset of CommonMark and adds its own post-processing and sanitization. For durable repo policy, that means a policy should target a clearly named Markdown dialect, avoid edge-case syntax that renders differently across engines, and prefer structures that are obvious in source and predictable in HTML. ([CommonMark 0.31.2](https://spec.commonmark.org/0.31.2/), [GitHub Flavored Markdown Spec](https://github.github.com/gfm/))
 
 GitHub’s own documentation also supports a few durable authoring choices: use relative links for files in the repo because they are more robust for people who clone the repository; use alt text on images; use fenced code blocks with blank lines around them to improve raw readability; and rely on heading-generated anchors for section links instead of ad hoc anchor tricks where possible. Those are small practices, but they matter a lot in policy documents, where broken navigation and ambiguous examples create drift fast. ([GitHub: basic writing and formatting syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax), [GitHub: creating and highlighting code blocks](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks))
+
 
 ### Plain HTML documents
 
@@ -44,31 +50,38 @@ Accessibility guidance also clarifies several specific policy questions that app
 
 Validation belongs in the workflow, but it is not enough by itself. W3C describes validation as a kind of syntax-oriented quality control, “sort of like lint,” and explicitly warns that valid markup is not the same thing as a good page or full conformance. That maps well to repo policy: validating generated HTML is useful; it is not a substitute for checking whether the document remains legible, semantic, navigable, and faithful to its source. ([W3C Validator help](https://validator.w3.org/docs/help.html))
 
+
 ### Policy about policy
 
 Software policy benefits from explicit force language, but the stronger lesson from standards writing is restraint. RFC 2119 and RFC 8174 define the meanings of `MUST`, `SHOULD`, and `MAY`, while also warning that such imperatives should be used sparingly and only when they are actually required. GitHub’s guidance on custom instructions goes in the same direction from a different angle: prefer short, self-contained statements and avoid conflicting instructions where possible. In practice, that means a repo meta-policy should define document classes, force levels, and amendment flow once, so that topic docs can stay concrete instead of re-litigating authority in every file. ([RFC 2119](https://www.rfc-editor.org/rfc/rfc2119), [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174), [GitHub Copilot: customizing responses](https://docs.github.com/en/copilot/customizing-copilot/about-customizing-github-copilot-chat-responses))
 
 Policy also needs a promotion and testing story. Anthropic distinguishes persistent repeated facts from situation-specific skills; OpenAI’s evals documentation says evaluations are an essential component of building reliable applications and frames them around explicit data plus explicit testing criteria. The direct repo analogue is: do not promote a policy rule unless you can name **how it will be checked**, even if the check is only a human review question or a smoke test rather than full automation. ([Claude Code: memory](https://docs.anthropic.com/en/docs/claude-code/memory), [OpenAI: working with evals](https://platform.openai.com/docs/guides/evals))
 
+
 ## Artifact critique
+
 
 ### `experiments/bd/bd-policy.md`
 
 This file has the right intuition and the wrong genre. Its strong line is the core value claim that HTML exists to carry meaning and should remain useful, legible, accessible, small where possible, and readable without decoration. That is a good policy *thesis*. But it is still mostly thesis. It does not define scope, authority, audience, exception handling, or testable checks, and it does not say whether it applies to hand-authored docs, generated previews, committed artifacts, temporary reports, or app-like HTML. A tired agent could quote it; a tired agent could not reliably comply with it. Local artifact: `experiments/bd/bd-policy.md`.
 
+
 ### `experiments/bd/bd-design.md`
 
 This is the most self-aware of the trio about the difference between principles and surface decoration. It correctly separates durable design values from incidental styling choices and is especially good wherever it says some visual choices are “worth keeping” while others are not law. That is exactly the kind of distinction policy needs. But the file is still not policy: it has no verbs of action, no scoping language, no examples of compliant versus non-compliant output, no amendment path, and no checks. It teaches taste; it does not govern behavior. Local artifact: `experiments/bd/bd-design.md`.
 
+
 ### `experiments/bd/bd-code.md`
 
 This one gets nearest to operational doctrine because it notices a real and important property: source should stay close enough to output that humans can predict the render. That is a useful generator-policy principle. But it still stops short of being a governing document. It does not define the allowed abstraction budget, when comments are required, what escaping failures matter most, or how to review a generated document for source/output drift. It is a strong rationale note and a weak executable policy. Local artifact: `experiments/bd/bd-code.md`.
+
 
 ### `experiments/bd/BeautifulDocument.html`
 
 As plain HTML, this is a decent specimen. It has a DOCTYPE, a language declaration, a title, a viewport tag, one obvious `article`, real headings, paragraphs, a list, and ordinary link markup. The source is short, hand-readable, and roughly WYSIWYG from raw file to rendered page. That is real evidence in its favor. Those choices align with standard guidance about semantic structure, headings, language metadata, and independent article-like content. ([MDN: article element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article), [MDN: lang global attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/lang), [W3C WAI: headings](https://www.w3.org/WAI/tutorials/page-structure/headings/), [W3C Validator help](https://validator.w3.org/docs/help.html))
 
 But as a **seed for policy**, it is over-trusted. It demonstrates one small successful page, not a general HTML contract. It does not show images, tables, code blocks, inline semantics, duplicate visual views, `aria-hidden` usage, committed-versus-generated workflow, or Markdown-to-HTML conversion edge cases. It also quietly bakes in aesthetic choices that later documents should not mistake for law: card framing, shadow, radius, muted page background, a specific typographic mix, and a colored link style. Those may be fine in the specimen. They are not evidence that they belong in policy. Because the file is a successful example, it is tempting to reverse-engineer a constitution from it. That temptation should be resisted. A specimen is not a standard. Local artifact: `experiments/bd/BeautifulDocument.html`. ([WCAG: Info and Relationships](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [WCAG: Use of Color](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html), [MDN: aria-hidden](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-hidden))
+
 
 ### `snapshots/html-v1-committed.md` versus `current/html.md`
 
@@ -85,11 +98,13 @@ The short version is: **v2 is stricter, but not consistently clearer; it is more
 
 The single biggest substantive error in v2 is that it tries to solve governance gaps by adding content bans and tiny allowlists. That creates brittle rules that future maintainers will either ignore or keep amending around. The single biggest strength in v2 is that it notices an important scoping question: generated display HTML is not the same thing as an HTML application. That distinction belongs in the future system, but it belongs in a cleaner form. V1 is the better conceptual baseline; v2 contains a few operational clarifications worth salvaging; neither is ready to be the durable policy as written. ([W3C Validator help](https://validator.w3.org/docs/help.html), [WCAG: Info and Relationships](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships), [WCAG: Use of Color](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html))
 
+
 ### Current `AGENTS.md` and `for-agents/research/` precedent
 
 This is the healthiest part of the repo’s policy thinking. The root `current/AGENTS.md` is recognizably a binding operational document: it states that it applies to the entire repository, tells the agent to read nearer `AGENTS.md` files, and distinguishes binding local policy from historical archives. The subtree docs under `current/for-agents/` and `current/for-agents/research/` do something even more important: they make a clean distinction between **advisory evidence** and **binding policy**, and they already encode a promotion idea — research artifacts preserve question, source basis, and recommendation, but become policy only when promoted into reviewed policy or project docs. That is exactly the right direction. Local artifacts: `current/AGENTS.md`, `current/for-agents/README.md`, `current/for-agents/research/AGENTS.md`, `current/for-agents/research/README.md`.
 
 The weakness is structural, not philosophical. The root `AGENTS.md` is doing too many jobs at once: workflow rules, ambient-policy duplication, generated document guidance, and links into subtree conventions. That is manageable today because the repo is still small. It will become a catch-all if topic doctrine keeps accreting there. The research precedent also needs one more piece of formalism: a standard status/provenance block on each artifact, so future promotions can point back to a stable research record without forcing readers to reverse-engineer whether something is historical, draft, accepted, or superseded. The seeds already demonstrate the shape of good preservation: question, assumptions, coherent option sets, decision matrix, ballot, and sources. The system now needs a proper policy ladder above that evidence layer. ([OpenAI Codex: Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md), [Claude Code: memory](https://docs.anthropic.com/en/docs/claude-code/memory))
+
 
 ## Proposed policy-management scheme
 
@@ -113,6 +128,7 @@ That taxonomy is already implicit in `for-agents/research/`; it should become ex
 For multi-tool compatibility, the repo should choose **one canonical shared policy surface** and make other tool-specific files thin adapters. If `AGENTS.md` is canonical, then Claude should import or symlink it from `CLAUDE.md` when needed, exactly as Anthropic documents; Copilot-specific `.github/copilot-instructions.md` should be used only for Copilot-specific supplements or scoped hints, not as a second full constitution. The goal is one truth, many adapters — not one repo, three contradictory instruction systems. ([Claude Code: memory](https://docs.anthropic.com/en/docs/claude-code/memory), [GitHub Copilot: repository custom instructions](https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions), [OpenAI Codex: Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md))
 
 Finally, promotion should be explicit. A local experiment does **not** become policy because it is pretty, persuasive, or was once useful in a prompt. Promotion should require a named decision, a cited research basis, and at least one concrete check. The repo already has the beginnings of this in `for-agents/research/`; `policy.md` should finish the job.
+
 
 ## Proposed shape for `policy.md`
 
@@ -220,7 +236,9 @@ Every candidate binding rule should ship with at least one named check. For `htm
 **How research artifacts should be cited when policy is promoted.**
 Do not dump a bibliography into the middle of every binding policy. Instead, require a short provenance note in the policy header or amendment section, such as “Promoted from `for-agents/research/<artifact>.md` after review on YYYY-MM-DD.” If a specific rule came from a specific finding, that can be named in an amendment note or decision log. This preserves traceability without making the live policy unreadable.
 
+
 ## Decision matrix, recommended next steps, and owner decision ballot
+
 
 ### Decision matrix
 
@@ -231,6 +249,7 @@ Do not dump a bibliography into the middle of every binding policy. Instead, req
 | **Policy bundle with explicit status labels and promotion flow** | A more formal family of policy docs, possibly in a dedicated policy directory, with explicit statuses, index, amendment log, and decision records. | Strongest long-term governance; best for multi-subtree or multi-team repos; easiest to audit. | More ceremony and navigation overhead; may feel heavy for a small repo with strong owner taste for directness. | Good if the repo grows or more policies accumulate. |
 
 The recommendation is **Scheme B**. It captures what is already working in the repo — local layering, preserved research, reviewed promotion — while solving the current weak point, which is the absence of a coherent meta-policy. It is also the conservative choice given the research disagreement on context-file bloat: it avoids turning the root instructions into a giant policy warehouse. ([OpenAI Codex: Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md), [Claude Code: memory](https://docs.anthropic.com/en/docs/claude-code/memory), [GitHub Copilot: customizing responses](https://docs.github.com/en/copilot/customizing-copilot/about-customizing-github-copilot-chat-responses), [Gloaguen et al., *Evaluating AGENTS.md*](https://arxiv.org/abs/2602.11988), [Lulla et al., *On the Impact of AGENTS.md Files on the Efficiency of AI Coding Agents*](https://arxiv.org/abs/2601.20404))
+
 
 ### Recommended next steps
 
@@ -243,6 +262,7 @@ Third, treat `snapshots/html-v1-committed.md` as the better conceptual base for 
 Fourth, keep `experiments/bd/*` explicitly experimental. They are good seeds and examples. They are not binding policy candidates without a promotion pass.
 
 Fifth, once `policy.md` exists, pilot the promotion flow on **one** topic only, preferably `html.md`. That will force the repo to prove whether the meta-policy is usable before more policy mass accumulates.
+
 
 ### Owner decision ballot
 
@@ -263,7 +283,9 @@ The smallest set of high-impact choices is:
 - **Should policy promotion require a named research artifact or decision note plus at least one concrete check?**
   My recommendation: yes.
 
+
 ## Sources
+
 
 ### Official agent-policy sources
 
@@ -273,12 +295,14 @@ The smallest set of high-impact choices is:
 - [Anthropic Claude Code Docs, *How Claude remembers your project*](https://docs.anthropic.com/en/docs/claude-code/memory). When to add `CLAUDE.md`, what belongs there, scope levels, imports from `AGENTS.md`, and load order.
 - [AGENTS.md project site](https://agents.md/) and [AGENTS.md repository](https://github.com/openai/agents.md). Open format overview and examples.
 
+
 ### Markdown sources
 
 - [*CommonMark Spec* version 0.31.2](https://spec.commonmark.org/0.31.2/). Why a spec is needed; conformance-test framing; Markdown as readable plain text.
 - [*GitHub Flavored Markdown Spec*](https://github.github.com/gfm/). GFM as a strict superset of CommonMark; post-processing and sanitization.
 - [GitHub Docs, *Basic writing and formatting syntax*](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax). Relative links, section links, image syntax and alt text.
 - [GitHub Docs, *Creating and highlighting code blocks*](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks). Fenced code blocks, blank-line readability, syntax highlighting.
+
 
 ### HTML and accessibility sources
 
@@ -291,10 +315,12 @@ The smallest set of high-impact choices is:
 - [MDN, *`<meta>`*](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta) and [*Viewport meta tag*](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta/name/viewport). Character encoding and viewport behavior.
 - [W3C Validator help](https://validator.w3.org/docs/help.html) and [Nu Html Checker](https://validator.w3.org/nu/). Validation as syntax checking, not full quality approval.
 
+
 ### Policy-writing and testing sources
 
 - [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174). Requirement levels, sparing use, and uppercase clarification.
 - [OpenAI API docs, *Working with evals*](https://platform.openai.com/docs/guides/evals). Explicit criteria and testing as essential to reliable applications.
+
 
 ### Empirical research
 
