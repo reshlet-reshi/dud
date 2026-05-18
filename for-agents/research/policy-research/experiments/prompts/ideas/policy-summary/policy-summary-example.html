@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Current Binding Policy Summary</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17202a;
+      --muted: #52616f;
+      --line: #d9dee4;
+      --bg: #f6f8fa;
+      --paper: #ffffff;
+      --accent: #1b6f72;
+      --archive: #7a5a13;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font: 18px/1.68 Georgia, "Times New Roman", serif;
+    }
+
+    article {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 42px 24px 72px;
+      background: var(--paper);
+      min-height: 100vh;
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 28px;
+      padding-bottom: 22px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+      line-height: 1.2;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 5vw, 3.1rem);
+    }
+
+    h2 {
+      border-top: 1px solid var(--line);
+      margin: 32px 0 12px;
+      padding-top: 22px;
+      font-size: 1.45rem;
+    }
+
+    h3 {
+      margin: 22px 0 8px;
+      color: var(--accent);
+      font-size: 1.05rem;
+    }
+
+    p {
+      margin: 0 0 16px;
+    }
+
+    strong {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-weight: 700;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9em;
+      background: #eef1f4;
+      border-radius: 4px;
+      padding: 0.1rem 0.28rem;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    .archive-heading {
+      color: var(--archive);
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Current Binding Policy Summary</h1>
+    </header>
+
+    <p>
+      This document includes both project-specific rules and local reminders
+      that intentionally duplicate ambient session, tool, and sandbox policy.
+      The duplication is deliberate. It is meant to make the repository policy
+      easier to read later, not to disable or replace the active session rules.
+    </p>
+
+    <h2>Instruction Priority</h2>
+
+    <p>
+      Higher-priority platform and developer instructions bind my behavior
+      throughout the session. User instructions bind the current task unless
+      they conflict with higher-priority rules.
+    </p>
+
+    <p>
+      The root <code>AGENTS.md</code> file binds work in
+      <code>/home/reshi/Desktop/dud</code>. Nearer nested
+      <code>AGENTS.md</code> files add binding rules inside their subtrees.
+      Archived files are historical context only and are not binding.
+    </p>
+
+    <h2>Ambient Policy Duplicates</h2>
+
+    <p>
+      I can summarize ambient policy at an operational level, but I should not
+      reveal hidden system or developer instructions verbatim. In that allowed
+      summary form, the root policy intentionally duplicates several ambient
+      rules.
+    </p>
+
+    <p>
+      The duplicated root rules include working with user changes instead of
+      reverting them, avoiding destructive git commands unless requested,
+      preferring <code>rg</code> for search, using <code>apply_patch</code> for
+      manual edits, keeping edits scoped, following existing project patterns,
+      defaulting to ASCII, respecting writable-root and sandbox limits, treating
+      shell network access as restricted, requesting escalation when sandboxing
+      or GUI use requires it, and keeping persistent approval rules narrowly
+      scoped.
+    </p>
+
+    <p>
+      Nested policy also has intentional overlap with ambient practice. The
+      <code>for-agents/</code> policy repeats the safety rule to avoid secrets,
+      private tokens, credentials, and unnecessary local machine details in
+      preserved notes. The <code>for-agents/research/</code> policy repeats
+      source-use habits around citations, primary sources, recording source
+      disagreements, and avoiding substantial copied third-party or generated
+      material.
+    </p>
+
+    <h2>Local Policy Scan</h2>
+
+    <p>
+      I found no direct conflict between binding local policy and the ambient
+      policy I am allowed to summarize. The local GitHub rule is stricter than
+      the available GitHub tooling: in workbench mode, do not touch GitHub
+      unless the owner explicitly asks. That is a compatible local constraint,
+      not a conflict.
+    </p>
+
+    <p>
+      I also scanned project docs such as <code>README.md</code>,
+      <code>language.md</code>, the nested <code>AGENTS.md</code> files, and
+      the archived workflow files. The <code>language.md</code> rules about
+      explicit paths, avoiding ambient <code>PATH</code> lookup, and keeping
+      <code>dud-sh</code> deliberately small overlap with general engineering
+      caution about hidden dependencies, but they are project-specific language
+      rules rather than redundant ambient policy.
+    </p>
+
+    <h2>Root Repository Policy</h2>
+
+    <h3>Identity</h3>
+    <p>
+      The repository is <code>dud</code>.
+    </p>
+
+    <h3>Workflow</h3>
+    <p>
+      Before editing repository files, inspect the current branch and
+      <code>git status</code>. If the branch is <code>main</code>, create or
+      ask for an agent branch before changing repository files.
+    </p>
+
+    <p>
+      Before editing under a subtree, read root <code>AGENTS.md</code> and any
+      nearer <code>AGENTS.md</code>. Keep local changes understandable. While
+      workbench mode is active, larger local edits and checkpoint commits are
+      allowed.
+    </p>
+
+    <p>
+      Avoid touching GitHub while in workbench mode unless the owner explicitly
+      asks. This means do not push, pull, fetch, open or update pull requests
+      or issues, request reviewers, or use <code>gh</code> or the GitHub
+      connector unless the owner asks for that GitHub action.
+    </p>
+
+    <h3>Workspace And Editing</h3>
+    <p>
+      Filesystem writes are allowed in the workspace and writable roots,
+      including <code>/tmp</code>, subject to the active sandbox. Do not revert
+      user changes unless explicitly requested.
+    </p>
+
+    <p>
+      Do not use destructive commands such as <code>git reset --hard</code> or
+      <code>git checkout --</code> unless clearly requested. Prefer
+      <code>rg</code> or <code>rg --files</code> for searching, and use
+      <code>apply_patch</code> for manual file edits.
+    </p>
+
+    <p>
+      Keep edits scoped and follow existing project patterns. Use ASCII by
+      default when editing or creating files unless there is a clear reason
+      otherwise.
+    </p>
+
+    <h3>Human-Facing Generated Documents</h3>
+    <p>
+      When generating HTML or other prose documents for the owner to read,
+      prefer screen-reader and reader-mode friendly structure. Use semantic
+      article-style markup and real paragraphs for prose summaries.
+    </p>
+
+    <p>
+      Avoid layouts that are mostly cards, headings, or list-only sections
+      when the document is meant to be read continuously.
+    </p>
+
+    <p>
+      For generated side-by-side or otherwise visual diffs, include a
+      first-class linear reader view in ordinary visible prose or semantic
+      blocks. Do not rely on a browser-specific reading-mode fallback
+      attribute. Make the reader-friendly version normal document content that
+      reading mode can extract.
+    </p>
+
+    <p>
+      Redundant visual-only diff views may be marked
+      <code>aria-hidden="true"</code> only when an equivalent reader-friendly
+      version is present and the hidden region contains no focusable or
+      interactive controls. Label additions, removals, and context in text, and
+      do not rely on color alone to convey diff meaning.
+    </p>
+
+    <h3>Tools And Approval</h3>
+    <p>
+      Network access is restricted in the shell environment. If an important
+      command fails because of sandboxing or likely network restriction,
+      request escalation and retry with justification.
+    </p>
+
+    <p>
+      Opening GUI apps, including Chrome, requires explicit escalation.
+      Escalation requests must briefly explain the action and may include a
+      narrowly scoped reusable prefix rule when appropriate. Do not request
+      overly broad persistent approval rules.
+    </p>
+
+    <h2>Nested Policy</h2>
+
+    <h3>for-agents/</h3>
+
+    <p>
+      The <code>for-agents/</code> subtree holds agent-facing documentation and
+      context. It is for prompts, handoffs, research reports, workflow docs,
+      decision notes, follow-up notes, and similar material that helps agents
+      understand the project.
+    </p>
+
+    <p>
+      The subtree is not for runtime source, bootstrap source, generated
+      output, tests, local tool configuration, executable helper scripts, shell
+      libraries, or helper tooling. Future agent helper tooling needs its own
+      reviewed placement decision before files are added.
+    </p>
+
+    <p>
+      Most files under <code>for-agents/</code> are advisory. A file there is
+      binding only when it says it is binding and is referenced from a reviewed
+      policy surface such as root <code>AGENTS.md</code>, a nearer subtree
+      <code>AGENTS.md</code>, a README, or a durable project doc.
+    </p>
+
+    <p>
+      Preserve historical agent artifacts unless the task explicitly asks to
+      revise them. Prefer adding a follow-up note or clearly named new artifact
+      over rewriting an old prompt or report.
+    </p>
+
+    <p>
+      Do not include secrets, private tokens, credentials, or unnecessary local
+      machine details. Keep repo-internal links relative, and keep external
+      citations in ordinary Markdown links.
+    </p>
+
+    <p>
+      New agent-facing notes may use plain text status labels when useful,
+      including <code>Status: draft</code>, <code>Status: accepted</code>,
+      <code>Status: superseded by PATH</code>, and
+      <code>Status: archived</code>. Research should not be marked accepted
+      unless the owner or a merged pull request has clearly accepted it.
+    </p>
+
+    <p>
+      Research and handoffs may guide changes, but broad policy should not be
+      implemented silently from them. Promote decisions by updating the actual
+      policy surface, such as root <code>AGENTS.md</code>, a nearer subtree
+      <code>AGENTS.md</code>, a README, or a durable project doc. When
+      promoting a decision, cite the source artifact and keep promoted text
+      shorter and more operational than the research that motivated it.
+    </p>
+
+    <h3>for-agents/research/</h3>
+
+    <p>
+      The <code>for-agents/research/</code> subtree preserves source-backed
+      investigations and seed artifacts for later project decisions. These
+      files are evidence and reasoning, not binding policy by themselves.
+    </p>
+
+    <p>
+      There is no standing research naming convention yet. Future files should
+      be named for their actual role and topic. Do not create a numbered
+      convention until there is an actual repeated pattern to abstract.
+    </p>
+
+    <p>
+      The current <code>AGENTS-seed-*.md</code> names describe the historical
+      two-stage seed that produced the initial root policy. Do not extend that
+      sequence unless adding another artifact to that same AGENTS seed chain.
+    </p>
+
+    <p>
+      Source-backed artifacts should start with enough context for a future
+      agent to understand the question without reading the whole chat. They
+      should separate assumptions, recommendations, open questions, and
+      sources.
+    </p>
+
+    <p>
+      Use ordinary inline Markdown links for citations. Prefer primary sources
+      for standards, licenses, executable formats, instruction encodings,
+      syscall numbers, and tool behavior. If sources disagree, record the
+      disagreement and recommend the conservative choice.
+    </p>
+
+    <p>
+      Do not copy substantial third-party text or generated code into reports.
+      Treat existing artifacts as historical. If an artifact needs a material
+      update, prefer a clearly named addendum or new artifact that links to the
+      original. Small typo, link, or formatting repairs are fine when they do
+      not alter the recorded conclusion.
+    </p>
+
+    <p>
+      When an artifact is accepted, promote only the operational decision into
+      the appropriate policy or documentation file and link back to the source
+      artifact.
+    </p>
+
+    <h2 class="archive-heading">Archived, Not Binding</h2>
+
+    <p>
+      <code>for-agents/root-policy-archive-2026-05-17.md</code> preserves
+      removed root policy text as history. It is not binding.
+    </p>
+
+    <p>
+      <code>for-agents/github-workflow.md</code> now records the former
+      temporary working-branch GitHub workflow as history. It is not binding.
+    </p>
+
+    <p>
+      <code>for-agents/github-pr-workflow-archived.md</code> remains the
+      archived immediate commit-and-pull-request workflow. It is not binding.
+    </p>
+
+    <p class="meta">
+      Generated in <code>/tmp/current-binding-policy.html</code> on
+      2026-05-17.
+    </p>
+  </article>
+</body>
+</html>

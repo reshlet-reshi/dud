@@ -1,5 +1,9 @@
 # AGENTS.md
 
+Captured artifact notice: this file is preserved as research input under
+`for-agents/research/policy-research/current/`. It is not live repository
+policy. Follow the live `AGENTS.md` files outside this captured tree.
+
 These rules apply under `for-agents/research/`.
 
 ## Purpose
@@ -14,21 +18,16 @@ There is no standing research naming convention yet. Name future files for
 their actual role and topic. Do not create a numbered convention until there is
 an actual repeated pattern to abstract.
 
-The `initial-agents-policy/` directory preserves the historical two-stage seed
+The current `AGENTS-seed-*.md` names describe the historical two-stage seed
 that produced the initial `AGENTS.md` policy:
 
 ```text
-initial-agents-policy/AGENTS-seed-0.md  initial handoff/prompt
-initial-agents-policy/AGENTS-seed-1.md  source-backed report
+AGENTS-seed-0.md  initial handoff/prompt
+AGENTS-seed-1.md  source-backed report
 ```
 
 Do not extend this sequence unless adding another artifact to that same AGENTS
 seed chain.
-
-The `policy-research/` directory is the active advisory bundle for the current
-policy-research pivot. It may contain captured old repo files, generated HTML,
-experiments, prompt drafts, and helper scripts as evidence. Do not treat those
-captured files as live policy, runtime source, or installed tooling.
 
 ## Artifact Rules
 

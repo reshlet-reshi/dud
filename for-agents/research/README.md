@@ -1,8 +1,8 @@
 # Research
 
 This directory stores source-backed agent investigation artifacts for `dud`.
-The current files are the two-stage seed used to draft the initial
-`AGENTS.md` policy.
+The current directories preserve the initial `AGENTS.md` seed chain and the
+active policy-research pivot bundle.
 
 These files are meant to preserve the question asked, the source basis, the
 recommendation, and unresolved tradeoffs. They help future agents avoid
@@ -15,13 +15,16 @@ documentation file.
 ## Current Files
 
 ```text
-AGENTS-seed-0.md  initial handoff/prompt
-AGENTS-seed-1.md  source-backed report
+initial-agents-policy/
+                  historical two-stage seed for the initial AGENTS policy
+policy-research/  advisory bundle for the policy, Markdown, HTML, and
+                  meta-policy pivot
 ```
 
 ## Naming
 
-There is no standing research naming convention yet. Name future files for
-their actual role and topic, and only abstract a convention after an actual
-repeated pattern exists. The `AGENTS-seed-*.md` names describe the historical
-AGENTS seed chain; they are not a general template for future research files.
+There is no standing research naming convention yet. Name future files or
+directories for their actual role and topic, and only abstract a convention
+after an actual repeated pattern exists. The `initial-agents-policy/` directory
+preserves the historical AGENTS seed chain; it is not a general template for
+future research files.
