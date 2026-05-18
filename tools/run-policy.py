@@ -9,7 +9,6 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-
 DOC_PROFILE_RE = re.compile(
     r"^<!-- doc-profile: TYPE=policy-runbook, VER=v\d+\.(?:\d+|x) -->$"
 )
