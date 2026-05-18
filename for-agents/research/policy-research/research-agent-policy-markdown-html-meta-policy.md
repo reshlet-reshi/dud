@@ -189,19 +189,19 @@ How changes are announced and linked
 
 A few content choices inside that shape matter more than the headings.
 
-**What belongs in root `AGENTS.md` versus `policy.md` versus topic policies.**  
+**What belongs in root `AGENTS.md` versus `policy.md` versus topic policies.**
 Root `AGENTS.md` should contain only high-frequency operational rules and routing instructions: instruction precedence, required pre-edit checks, where nested policies live, branch/workflow rules, and a short status legend. `policy.md` should define the governance model. Topic policies should hold substantive doctrine for one subject area. If a rule is about “how policy works,” it belongs in `policy.md`. If it is about “how to write HTML documents,” it belongs in `html.md`. If it is about “what this agent must always do before editing anything,” it belongs in root `AGENTS.md`.
 
-**How binding and advisory documents should be labeled.**  
+**How binding and advisory documents should be labeled.**
 Every policy-adjacent document should declare status near the top. That is better than relying on directory name alone. Example labels should be plain-English and visible to both humans and agents: `Status: Binding`, `Status: Advisory`, `Status: Experimental`, `Status: Historical`.
 
-**How a policy should state scope, intent, principles, rules, checks, exceptions, and amendment flow.**  
+**How a policy should state scope, intent, principles, rules, checks, exceptions, and amendment flow.**
 This is the single biggest local gap. A binding policy should never force the reader to infer whether a sentence is law, explanation, or taste. The future standard should require explicit section labels or prefixes. For small readable docs, I recommend using visible labels such as **Rule**, **Preference**, **Rationale**, **Example**, **Check**, and **Exception**, rather than turning the prose into a forest of capitalized RFC verbs. If you do want RFC-style force language, define it once in `policy.md` using BCP 14 and use it sparingly. ([RFC 2119](https://www.rfc-editor.org/rfc/rfc2119), [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174))
 
-**How much duplication with ambient or tool policy is useful.**  
+**How much duplication with ambient or tool policy is useful.**
 Some duplication is useful when it removes ambiguity during actual repo work. The current root `AGENTS.md` is right to duplicate a few session-adjacent constraints when they are operationally important for this repo. But duplication should be deliberate and justified. A good rule for `policy.md` would be: duplicate ambient/tool constraints only when the duplicate changes agent behavior in this repo or reduces a likely local failure mode. Otherwise, point rather than repeat.
 
-**How to distinguish rules, preferences, examples, and rationale.**  
+**How to distinguish rules, preferences, examples, and rationale.**
 Never leave this to tone. A future reader should be able to skim the doc and extract only the binding parts. The simplest format is a short section structure plus prefixed lines where needed:
 
 - `Rule:` direct imperative
@@ -211,13 +211,13 @@ Never leave this to tone. A future reader should be able to skim the doc and ext
 - `Check:` how to review or test
 - `Exception:` allowed carve-out and conditions
 
-**How policy should stay readable by humans and useful to agents.**  
+**How policy should stay readable by humans and useful to agents.**
 The empirical and official guidance agree on the broad direction: keep statements short, self-contained, and scoped to the place they matter. Put a policy near the artifacts it governs when locality helps. Do not write one mega-file that tries to preload a whole worldview into every session. Use root docs as indexes and routers; use topic docs as doctrine; use research docs as evidence. ([GitHub Copilot: customizing responses](https://docs.github.com/en/copilot/customizing-copilot/about-customizing-github-copilot-chat-responses), [Claude Code: memory](https://docs.anthropic.com/en/docs/claude-code/memory), [OpenAI Codex: Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md), [Gloaguen et al., *Evaluating AGENTS.md*](https://arxiv.org/abs/2602.11988))
 
-**How policy should be tested or reviewed before promotion.**  
+**How policy should be tested or reviewed before promotion.**
 Every candidate binding rule should ship with at least one named check. For `html.md`, checks may include validation, heading/order inspection, keyboard/focus inspection where relevant, text-browser or text-extraction review, narrow-width review, and link checking. For `markdown.md`, checks may include render parity under the target engine, correct relative links, working intra-doc anchors, and source readability. For agent docs, checks may include a dry-run such as asking the tool to list active instruction sources or summarize loaded instructions. Where deeper reliability matters, use small eval-style test sets and explicit criteria, because reliable systems need explicit tests, not just plausible prose. ([W3C Validator help](https://validator.w3.org/docs/help.html), [OpenAI: working with evals](https://platform.openai.com/docs/guides/evals), [OpenAI Codex: Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md), [Claude Code: memory](https://docs.anthropic.com/en/docs/claude-code/memory))
 
-**How research artifacts should be cited when policy is promoted.**  
+**How research artifacts should be cited when policy is promoted.**
 Do not dump a bibliography into the middle of every binding policy. Instead, require a short provenance note in the policy header or amendment section, such as “Promoted from `for-agents/research/<artifact>.md` after review on YYYY-MM-DD.” If a specific rule came from a specific finding, that can be named in an amendment note or decision log. This preserves traceability without making the live policy unreadable.
 
 ## Decision matrix, recommended next steps, and owner decision ballot
@@ -248,19 +248,19 @@ Fifth, once `policy.md` exists, pilot the promotion flow on **one** topic only, 
 
 The smallest set of high-impact choices is:
 
-- **Should root `AGENTS.md` remain a terse operational router, or should it continue to contain topic doctrine?**  
+- **Should root `AGENTS.md` remain a terse operational router, or should it continue to contain topic doctrine?**
   My recommendation: router only, with short always-on rules.
 
-- **Do you want a separate `policy.md` that defines how policy works in the repo?**  
+- **Do you want a separate `policy.md` that defines how policy works in the repo?**
   My recommendation: yes.
 
-- **Should committed HTML be allowed as a durable artifact when it has a clear purpose, or should HTML be transient by default with explicit carve-outs?**  
+- **Should committed HTML be allowed as a durable artifact when it has a clear purpose, or should HTML be transient by default with explicit carve-outs?**
   My recommendation: transient by default, committed by explicit purpose and scope.
 
-- **Do you want binding policies to use visible labels such as Rule / Preference / Rationale / Check / Exception, rather than relying on tone?**  
+- **Do you want binding policies to use visible labels such as Rule / Preference / Rationale / Check / Exception, rather than relying on tone?**
   My recommendation: yes.
 
-- **Should policy promotion require a named research artifact or decision note plus at least one concrete check?**  
+- **Should policy promotion require a named research artifact or decision note plus at least one concrete check?**
   My recommendation: yes.
 
 ## Sources
