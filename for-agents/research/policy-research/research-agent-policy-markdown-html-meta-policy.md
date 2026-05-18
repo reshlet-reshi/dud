@@ -12,7 +12,7 @@ The most important research disagreement is not whether local agent policy exist
 
 ### Local Artifact Assessment
 
-On the local artifacts, the repo’s current instincts are often good, but the execution is uneven. The `bd-*.md` files are useful design notes and value statements, but they are not yet policy because they rarely say **who must do what, where, when, under what exception, and how compliance is checked**. `experiments/bd/BeautifulDocument.html` is a decent specimen page, but it is being asked to carry more policy authority than a single pleasant example can support. `snapshots/html-v1-committed.md` is the better policy seed because it states principles, rules, checks, and exceptions with less dogma. `current/html.md` improves a few operational points, especially around generated/transient HTML, but it also becomes more brittle, more aesthetic in disguise, and less honest about exceptions. The current `AGENTS.md` and `for-agents/research/` layout is the most mature part of the set: it is much closer to a workable policy system, though it still needs a cleaner taxonomy for binding versus advisory documents and a better promotion flow. Local artifacts per `MANIFEST.md`: `current/AGENTS.md`, `current/html.md`, `snapshots/html-v1-committed.md`, `experiments/bd/*`, `current/for-agents/*`, and `current/for-agents/research/*`.
+On the local artifacts, the repo’s current instincts are often good, but the execution is uneven. The `bd-*.md` files are useful design notes and value statements, but they are not yet policy because they rarely say **who must do what, where, when, under what exception, and how compliance is checked**. `experiments/bd/BeautifulDocument.html` is a decent specimen page, but it is being asked to carry more policy authority than a single pleasant example can support. `snapshots/html-v1-committed.md` is the better policy seed because it states principles, rules, checks, and exceptions with less dogma. `current/html.md` improves a few operational points, especially around generated or transient HTML, but it also becomes more brittle, more aesthetic in disguise, and less honest about exceptions. The current `AGENTS.md` and `for-agents/research/` layout is the most mature part of the set: it is much closer to a workable policy system, though it still needs a cleaner taxonomy for binding versus advisory documents and a better promotion flow. Local artifacts per `MANIFEST.md`: `current/AGENTS.md`, `current/html.md`, `snapshots/html-v1-committed.md`, `experiments/bd/*`, `current/for-agents/*`, and `current/for-agents/research/*`.
 
 ### Scheme B Recommendation
 
@@ -26,7 +26,7 @@ I unpacked the supplied archive, used `MANIFEST.md` as the canonical file map, a
 
 ### External Source Basis
 
-External research prioritized primary and official sources: OpenAI Codex documentation on `AGENTS.md`; GitHub Copilot documentation on repository instructions, precedence, and path-scoped rules; Anthropic Claude Code documentation on `CLAUDE.md`, scope, and imports; CommonMark and GitHub Flavored Markdown specifications; MDN, WHATWG, and W3C/WAI accessibility guidance for HTML semantics; RFC 2119 and RFC 8174 for normative force language; and the W3C validator documentation. I also used recent empirical papers where they materially informed the tradeoff analysis, especially around the benefits and risks of repository-level context files for coding agents. See: [OpenAI Codex: Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md), [GitHub Copilot: repository custom instructions](https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions), [Claude Code: memory](https://docs.anthropic.com/en/docs/claude-code/memory), [CommonMark 0.31.2](https://spec.commonmark.org/0.31.2/), [GitHub Flavored Markdown Spec](https://github.github.com/gfm/), [MDN: article element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article), [W3C WAI: page structure](https://www.w3.org/WAI/tutorials/page-structure/), [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119), [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174), [W3C Validator help](https://validator.w3.org/docs/help.html), [Lulla et al.](https://arxiv.org/abs/2601.20404), [Gloaguen et al.](https://arxiv.org/abs/2602.11988), [Galster et al.](https://arxiv.org/abs/2602.14690).
+External research prioritized primary and official sources: OpenAI Codex documentation on `AGENTS.md`; GitHub Copilot documentation on repository instructions, precedence, and path-scoped rules; Anthropic Claude Code documentation on `CLAUDE.md`, scope, and imports; CommonMark and GitHub Flavored Markdown specifications; MDN, WHATWG, and W3C WAI accessibility guidance for HTML semantics; RFC 2119 and RFC 8174 for normative force language; and the W3C validator documentation. I also used recent empirical papers where they materially informed the tradeoff analysis, especially around the benefits and risks of repository-level context files for coding agents. See: [OpenAI Codex: Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md), [GitHub Copilot: repository custom instructions](https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions), [Claude Code: memory](https://docs.anthropic.com/en/docs/claude-code/memory), [CommonMark 0.31.2](https://spec.commonmark.org/0.31.2/), [GitHub Flavored Markdown Spec](https://github.github.com/gfm/), [MDN: article element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article), [W3C WAI: page structure](https://www.w3.org/WAI/tutorials/page-structure/), [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119), [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174), [W3C Validator help](https://validator.w3.org/docs/help.html), [Lulla et al.](https://arxiv.org/abs/2601.20404), [Gloaguen et al.](https://arxiv.org/abs/2602.11988), [Galster et al.](https://arxiv.org/abs/2602.14690).
 
 ### Validation Limitation
 
@@ -34,11 +34,11 @@ One limitation matters. I inspected `BeautifulDocument.html` from source and aga
 
 ## Best practices found
 
-### Agent policy / AGENTS.md
+### Agent policy and AGENTS.md
 
 #### Local Instruction Layering
 
-Current agent tooling converges on the idea that repository policy should be layered, local, and close to the work. Codex builds an instruction chain from broader to narrower scope, supports overrides and fallback filenames, and explicitly advises placing overrides as close as possible to specialized work. GitHub Copilot supports repository-wide instructions, path-specific instructions, and agent instructions such as `AGENTS.md`, with relevant instructions layered together and higher-precedence scopes taking priority. Claude Code likewise supports global, user, project, and local instructions, and it says project files should contain build/test commands, standards, architecture, naming conventions, and common workflows. See: [OpenAI Codex: Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md), [GitHub Copilot: repository custom instructions](https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions), [Claude Code: memory](https://docs.anthropic.com/en/docs/claude-code/memory).
+Current agent tooling converges on the idea that repository policy should be layered, local, and close to the work. Codex builds an instruction chain from broader to narrower scope, supports overrides and fallback filenames, and explicitly advises placing overrides as close as possible to specialized work. GitHub Copilot supports repository-wide instructions, path-specific instructions, and agent instructions such as `AGENTS.md`, with relevant instructions layered together and higher-precedence scopes taking priority. Claude Code likewise supports global, user, project, and local instructions, and it says project files should contain build and test commands, standards, architecture, naming conventions, and common workflows. See: [OpenAI Codex: Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md), [GitHub Copilot: repository custom instructions](https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions), [Claude Code: memory](https://docs.anthropic.com/en/docs/claude-code/memory).
 
 #### Cross-Tool Resolution
 
@@ -46,7 +46,7 @@ The tools differ in important ways, which means a repo should not assume one uni
 
 #### Instruction Quality
 
-Official guidance also points the same way on content quality. GitHub says custom instructions are most effective when they are **short, self-contained natural-language statements**, and Anthropic says `CLAUDE.md` should hold the things you would otherwise re-explain every session, while multi-step procedures or one-area-only guidance should move to a skill or path-scoped rule. The emerging open `AGENTS.md` convention similarly frames the file as “a README for agents” and recommends covering project overview, build/test commands, code style, testing, and security considerations, with nested files for subprojects when needed. See: [GitHub Copilot: customizing responses](https://docs.github.com/en/copilot/customizing-copilot/about-customizing-github-copilot-chat-responses), [Claude Code: memory](https://docs.anthropic.com/en/docs/claude-code/memory), [AGENTS.md project site](https://agents.md/), [AGENTS.md GitHub repository](https://github.com/openai/agents.md).
+Official guidance also points the same way on content quality. GitHub says custom instructions are most effective when they are **short, self-contained natural-language statements**, and Anthropic says `CLAUDE.md` should hold the things you would otherwise re-explain every session, while multi-step procedures or one-area-only guidance should move to a skill or path-scoped rule. The emerging open `AGENTS.md` convention similarly frames the file as “a README for agents” and recommends covering project overview, build and test commands, code style, testing, and security considerations, with nested files for subprojects when needed. See: [GitHub Copilot: customizing responses](https://docs.github.com/en/copilot/customizing-copilot/about-customizing-github-copilot-chat-responses), [Claude Code: memory](https://docs.anthropic.com/en/docs/claude-code/memory), [AGENTS.md project site](https://agents.md/), [AGENTS.md GitHub repository](https://github.com/openai/agents.md).
 
 #### Context File Tradeoffs
 
@@ -104,7 +104,7 @@ This is the most self-aware of the trio about the difference between principles 
 
 #### Source-Output Predictability
 
-This one gets nearest to operational doctrine because it notices a real and important property: source should stay close enough to output that humans can predict the render. That is a useful generator-policy principle. But it still stops short of being a governing document. It does not define the allowed abstraction budget, when comments are required, what escaping failures matter most, or how to review a generated document for source/output drift. It is a strong rationale note and a weak executable policy. Local artifact: `experiments/bd/bd-code.md`.
+This one gets nearest to operational doctrine because it notices a real and important property: source should stay close enough to output that humans can predict the render. That is a useful generator-policy principle. But it still stops short of being a governing document. It does not define the allowed abstraction budget, when comments are required, what escaping failures matter most, or how to review a generated document for source-to-output drift. It is a strong rationale note and a weak executable policy. Local artifact: `experiments/bd/bd-code.md`.
 
 ### `experiments/bd/BeautifulDocument.html`
 
@@ -124,7 +124,7 @@ The short version is: **v2 is stricter, but not consistently clearer; it is more
 
 #### Comparison Matrix
 
-See [HTML v1/v2 comparison matrix](research-agent-policy-markdown-html-meta-policy.assets/html-v1-v2-comparison-matrix.md).
+See [HTML v1 versus v2 comparison matrix](research-agent-policy-markdown-html-meta-policy.assets/html-v1-v2-comparison-matrix.md).
 
 #### V2 Governance Risk
 
@@ -138,7 +138,7 @@ This is the healthiest part of the repo’s policy thinking. The root `current/A
 
 #### Root Document Drift
 
-The weakness is structural, not philosophical. The root `AGENTS.md` is doing too many jobs at once: workflow rules, ambient-policy duplication, generated document guidance, and links into subtree conventions. That is manageable today because the repo is still small. It will become a catch-all if topic doctrine keeps accreting there. The research precedent also needs one more piece of formalism: a standard status/provenance block on each artifact, so future promotions can point back to a stable research record without forcing readers to reverse-engineer whether something is historical, draft, accepted, or superseded. The seeds already demonstrate the shape of good preservation: question, assumptions, coherent option sets, decision matrix, ballot, and sources. The system now needs a proper policy ladder above that evidence layer. See: [OpenAI Codex: Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md), [Claude Code: memory](https://docs.anthropic.com/en/docs/claude-code/memory).
+The weakness is structural, not philosophical. The root `AGENTS.md` is doing too many jobs at once: workflow rules, ambient-policy duplication, generated document guidance, and links into subtree conventions. That is manageable today because the repo is still small. It will become a catch-all if topic doctrine keeps accreting there. The research precedent also needs one more piece of formalism: a standard status and provenance block on each artifact, so future promotions can point back to a stable research record without forcing readers to reverse-engineer whether something is historical, draft, accepted, or superseded. The seeds already demonstrate the shape of good preservation: question, assumptions, coherent option sets, decision matrix, ballot, and sources. The system now needs a proper policy ladder above that evidence layer. See: [OpenAI Codex: Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md), [Claude Code: memory](https://docs.anthropic.com/en/docs/claude-code/memory).
 
 ## Proposed policy-management scheme
 
@@ -152,7 +152,7 @@ First, keep **root `AGENTS.md`** as the binding operational entrypoint for codin
 
 ### Meta-Policy Layer
 
-Second, add **root `policy.md`** as the short meta-policy. This file should not contain HTML doctrine or Markdown specifics. Its job is to define the repo’s policy system itself: document classes, force vocabulary, required anatomy of a policy file, duplication rules, promotion flow, review/testing expectations, and citation/provenance requirements when research is promoted. In other words, `policy.md` should answer “how policy works here,” so that `html.md`, `markdown.md`, and future topic files can just govern their topic. This is the missing piece in the current repo. It turns “policy vibes” into a reusable grammar.
+Second, add **root `policy.md`** as the short meta-policy. This file should not contain HTML doctrine or Markdown specifics. Its job is to define the repo’s policy system itself: document classes, force vocabulary, required anatomy of a policy file, duplication rules, promotion flow, review and testing expectations, and citation and provenance requirements when research is promoted. In other words, `policy.md` should answer “how policy works here,” so that `html.md`, `markdown.md`, and future topic files can just govern their topic. This is the missing piece in the current repo. It turns “policy vibes” into a reusable grammar.
 
 ### Topic Policy Layer
 
@@ -189,7 +189,7 @@ A few content choices inside that shape matter more than the headings.
 
 ### Policy Placement
 
-Root `AGENTS.md` should contain only high-frequency operational rules and routing instructions: instruction precedence, required pre-edit checks, where nested policies live, branch/workflow rules, and a short status legend. `policy.md` should define the governance model. Topic policies should hold substantive doctrine for one subject area. If a rule is about “how policy works,” it belongs in `policy.md`. If it is about “how to write HTML documents,” it belongs in `html.md`. If it is about “what this agent must always do before editing anything,” it belongs in root `AGENTS.md`.
+Root `AGENTS.md` should contain only high-frequency operational rules and routing instructions: instruction precedence, required pre-edit checks, where nested policies live, branch and workflow rules, and a short status legend. `policy.md` should define the governance model. Topic policies should hold substantive doctrine for one subject area. If a rule is about “how policy works,” it belongs in `policy.md`. If it is about “how to write HTML documents,” it belongs in `html.md`. If it is about “what this agent must always do before editing anything,” it belongs in root `AGENTS.md`.
 
 ### Status Labeling
 
@@ -201,7 +201,7 @@ This is the single biggest local gap. A binding policy should never force the re
 
 ### Ambient Duplication
 
-Some duplication is useful when it removes ambiguity during actual repo work. The current root `AGENTS.md` is right to duplicate a few session-adjacent constraints when they are operationally important for this repo. But duplication should be deliberate and justified. A good rule for `policy.md` would be: duplicate ambient/tool constraints only when the duplicate changes agent behavior in this repo or reduces a likely local failure mode. Otherwise, point rather than repeat.
+Some duplication is useful when it removes ambiguity during actual repo work. The current root `AGENTS.md` is right to duplicate a few session-adjacent constraints when they are operationally important for this repo. But duplication should be deliberate and justified. A good rule for `policy.md` would be: duplicate ambient and tool constraints only when the duplicate changes agent behavior in this repo or reduces a likely local failure mode. Otherwise, point rather than repeat.
 
 ### Rule Categories
 
@@ -220,7 +220,7 @@ The empirical and official guidance agree on the broad direction: keep statement
 
 ### Review Checks
 
-Every candidate binding rule should ship with at least one named check. For `html.md`, checks may include validation, heading/order inspection, keyboard/focus inspection where relevant, text-browser or text-extraction review, narrow-width review, and link checking. For `markdown.md`, checks may include render parity under the target engine, correct relative links, working intra-doc anchors, and source readability. For agent docs, checks may include a dry-run such as asking the tool to list active instruction sources or summarize loaded instructions. Where deeper reliability matters, use small eval-style test sets and explicit criteria, because reliable systems need explicit tests, not just plausible prose. See: [W3C Validator help](https://validator.w3.org/docs/help.html), [OpenAI: working with evals](https://platform.openai.com/docs/guides/evals), [OpenAI Codex: Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md), [Claude Code: memory](https://docs.anthropic.com/en/docs/claude-code/memory).
+Every candidate binding rule should ship with at least one named check. For `html.md`, checks may include validation, heading-order inspection, keyboard and focus inspection where relevant, text-browser or text-extraction review, narrow-width review, and link checking. For `markdown.md`, checks may include render parity under the target engine, correct relative links, working intra-doc anchors, and source readability. For agent docs, checks may include a dry-run such as asking the tool to list active instruction sources or summarize loaded instructions. Where deeper reliability matters, use small eval-style test sets and explicit criteria, because reliable systems need explicit tests, not just plausible prose. See: [W3C Validator help](https://validator.w3.org/docs/help.html), [OpenAI: working with evals](https://platform.openai.com/docs/guides/evals), [OpenAI Codex: Custom instructions with AGENTS.md](https://developers.openai.com/codex/guides/agents-md), [Claude Code: memory](https://docs.anthropic.com/en/docs/claude-code/memory).
 
 ### Research Provenance
 
@@ -275,7 +275,7 @@ The smallest set of high-impact choices is:
 - **Should committed HTML be allowed as a durable artifact when it has a clear purpose, or should HTML be transient by default with explicit carve-outs?**
   My recommendation: transient by default, committed by explicit purpose and scope.
 
-- **Do you want binding policies to use visible labels such as Rule / Preference / Rationale / Check / Exception, rather than relying on tone?**
+- **Do you want binding policies to use visible labels such as Rule, Preference, Rationale, Check, and Exception, rather than relying on tone?**
   My recommendation: yes.
 
 - **Should policy promotion require a named research artifact or decision note plus at least one concrete check?**
