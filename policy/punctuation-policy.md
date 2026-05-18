@@ -1,12 +1,30 @@
-# Temporary Punctuation Policy
+<!-- doc-profile: TYPE=policy-runbook, VER=v0.x -->
 
-Status: Experimental scratch
+# Punctuation Policy Runbook
 
-This policy is a local editing aid for the meta-policy research report.
+Status: Experimental
 
-It is not binding project policy.
+This policy is a tracked runbook draft for the meta-policy research report.
+
+It is not binding project policy yet.
 
 It defines punctuation roles for deterministic cleanup reports.
+
+## Document Profile
+
+The first source line is the document profile marker.
+
+The marker identifies this file as a policy runbook.
+
+`TYPE=policy-runbook` means tooling should treat this file as a runbook.
+
+`VER` is a machine-friendly profile version token.
+
+The `VER` value must match `v<major>.<minor>` or `v<major>.x`.
+
+Examples include `v0.1` and `v0.x`.
+
+The marker tells tooling which runbook profile applies.
 
 ## Scope
 
@@ -130,17 +148,33 @@ Not-prose material means fenced code blocks, Markdown tables, and raw HTML.
 
 Every not-prose section needs a marker comment immediately before its heading.
 
-The marker format is `<!-- not-prose: TYPE=code, WHY=example-token -->`.
+The marker includes a `TYPE` value.
+
+The marker may include a `WHY` value.
 
 The not-prose section heading must be one level below its parent heading.
 
-Allowed `TYPE` values are `code`, `table`, and `html`.
+Allowed `TYPE` values are `code-example`, `code-runme`, `table`, and `html`.
+
+`code-example` is illustrative code that explains policy intent.
+
+`code-runme` is executable code that a generic runner may execute.
+
+`table` is Markdown table material.
+
+`html` is raw HTML material.
 
 The `WHY` value is an arbitrary but machine-friendly reason token.
 
 The `WHY` token may contain only ASCII letters, digits, underscores, and hyphens.
 
 The policy validates the shape of `WHY`, not its vocabulary.
+
+`WHY` is required for `code-example`, `table`, and `html`.
+
+`WHY` is optional for `code-runme`.
+
+`code-runme` sections are identified by heading and later rule bindings.
 
 Use a prose-only summary near a not-prose section when readers need context.
 
