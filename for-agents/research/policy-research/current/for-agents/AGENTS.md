@@ -1,5 +1,9 @@
 # AGENTS.md
 
+Captured artifact notice: this file is preserved as research input under
+`for-agents/research/policy-research/current/`. It is not live repository
+policy. Follow the live `AGENTS.md` files outside this captured tree.
+
 These rules apply under `for-agents/`.
 
 ## Purpose
@@ -18,11 +22,6 @@ Project policy becomes binding only when promoted into reviewed files such as
 root `AGENTS.md`, a nearer subtree `AGENTS.md`, READMEs, or durable project
 docs.
 
-Research bundles may preserve captured source files, generated examples,
-experiments, and helper scripts as evidence. Those captured files are not live
-runtime files, installed tools, or binding policy unless a reviewed policy
-surface explicitly promotes them.
-
 ## Placement Rules
 
 - Keep prompts, handoffs, research reports, workflow docs, decision notes, and
@@ -30,9 +29,6 @@ surface explicitly promotes them.
 - Do not put executable helper scripts, shell libraries, runtime/bootstrap
   source, tests, generated artifacts, or local tool-specific configuration
   guidance under `for-agents/`.
-- Captured research bundles are the exception: they may include copied tools,
-  generated examples, or old repo files when those files are clearly preserved
-  as non-binding evidence.
 - Future agent helper tooling needs its own reviewed placement decision before
   adding files.
 
@@ -58,10 +54,6 @@ because this subtree is meant to preserve context for future agents.
 Use plain text status near the top of new agent-facing notes when useful:
 
 ```text
-Status: Binding
-Status: Advisory
-Status: Experimental
-Status: Historical
 Status: draft
 Status: accepted
 Status: superseded by PATH

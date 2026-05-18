@@ -11,10 +11,6 @@ Files here are advisory unless they explicitly say they are binding and are
 referenced from a reviewed policy surface such as `AGENTS.md`, a README, or a
 durable project doc.
 
-Research bundles may include captured copies of tools, generated examples,
-experiments, or old repo files when those copies are clearly preserved as
-non-binding evidence.
-
 ## Layout
 
 ```text
