@@ -45,7 +45,8 @@ preserve empty planned directories with `.gitkeep` placeholders.
 
 ```text
 .bin/              intended future generated native artifact directory
-.tmp/              intended future scratch and test temporary directory
+.stash/            local in-progress untracked experiment directory
+.tmp/              transient scratch/test directory, safe to delete anytime
 bin/               future entry scripts, no extension
 docs/              intended future top-level project docs directory
 lib/std/i386/      future i386 byte fragments and docs-backed helpers
