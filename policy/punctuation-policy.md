@@ -26,6 +26,20 @@ Examples include `v0.1` and `v0.x`.
 
 The marker tells tooling which runbook profile applies.
 
+## Runner Contract
+
+`tools/run-policy.py` validates the document profile marker.
+
+The runner executes only marked `code-runme` sections.
+
+Runnable policy code must define `runbook_main(context)`.
+
+The runner provides paths and mode through `context`.
+
+The runner contains plumbing only.
+
+Punctuation rule logic belongs in this runbook.
+
 ## Scope
 
 The policy applies to prose-profile Markdown documents.
