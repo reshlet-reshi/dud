@@ -41,6 +41,13 @@ approval rules narrowly scoped.
 - Use ASCII by default when editing or creating files unless there is a clear
   reason otherwise.
 
+## Local Work Areas
+
+- In-progress untracked experiments go under repository root `.stash/`.
+- Transient scratch, generated previews, and test temporaries that are safe to
+  delete at any time go under repository root `.tmp/`.
+- Tools and tests should create these directories before writing to them.
+
 ## Human-Facing Generated Documents
 
 - When generating HTML or other prose documents for the owner to read, prefer
