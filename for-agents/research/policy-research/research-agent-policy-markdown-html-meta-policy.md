@@ -124,14 +124,7 @@ The short version is: **v2 is stricter, but not consistently clearer; it is more
 
 #### Comparison Matrix
 
-| Topic | v1 | v2 | Judgment |
-|---|---|---|---|
-| Generated and transient HTML | Implicit | Explicitly says HTML is usually transient and not meant for Git | v2 adds a useful default, but it overstates it. “Usually transient” is workable; “not meant to be checked into Git” is too absolute for docs repos and committed artifacts. |
-| Links vs app controls | Allows forms for their real jobs and has an explicit exception section for interactive apps | Says forms, controls, widgets, scripts, and client-side state do not belong in a “document” | v2 is cleaner **if** the scope is strictly “document HTML,” but it removed the exception machinery that made that claim honest. |
-| Image policy | Says images need text alternatives when they carry meaning | Says images must carry meaning, must have meaningful alt text, and if alt text is noise omit the image | v1 is closer to WAI guidance. Decorative images can be legitimate with `alt=""`; “images must carry meaning” is too rigid. See [W3C WAI: images tutorial](https://www.w3.org/WAI/tutorials/images/). |
-| CSS allowlisting | Principle-based: CSS as enhancement, not requirement for meaning | CSS is last resort; only a tiny allowlist is permitted without amendment | v2’s discipline is admirable but overfit to one aesthetic sample. Better to constrain by outcomes and checks than by two immortal CSS declarations. |
-| Checks | Includes validation, text-browser/reader-view readability, narrow-view review, link-following, and source/render story | Keeps checks but drops the richer exception framing and “source spirit” explanation | V1 has the better governance voice. V2 needs stronger distinction between required checks and advisory review heuristics. |
-| Amendment flow | Not explicit, but exceptions exist | Says unlisted CSS requires amendment | v2 invokes amendment without defining amendment. That is governance theater until `policy.md` exists. |
+See [HTML v1/v2 comparison matrix](research-agent-policy-markdown-html-meta-policy.assets/html-v1-v2-comparison-matrix.md).
 
 #### V2 Governance Risk
 
@@ -188,76 +181,7 @@ Finally, promotion should be explicit. A local experiment does **not** become po
 
 ### Policy Skeleton
 
-`policy.md` should be short and concrete. It should look more like a constitution for repo policy management than like a style guide. It should probably stay under roughly one screenful per major section, with no topic-specific rabbit holes.
-
-A good shape would be:
-
-```text
-# Policy System
-
-Status: Binding
-Scope: Repository-wide policy documents and their promotion
-Audience: Humans and coding agents
-Authority: Root policy governance for this repository
-Related docs: AGENTS.md, markdown.md, html.md, for-agents/research/
-Last reviewed: YYYY-MM-DD
-
-## Purpose
-What this file is for, and what it is not for.
-
-## Document classes
-Binding
-Advisory
-Experimental
-Historical
-
-## Where rules live
-What belongs in root AGENTS.md
-What belongs in policy.md
-What belongs in topic policies
-What belongs in subtree AGENTS.md files
-What belongs in research and experiments
-
-## Force and labeling
-How to write rules
-How to write preferences
-How to write rationale
-How to write examples
-How to write checks
-How to write exceptions
-Optional BCP 14 language if used
-
-## Required anatomy of a binding policy
-Scope
-Intent
-Principles
-Rules
-Checks
-Exceptions
-Amendment
-Status / provenance
-
-## Duplication rules
-When duplication with ambient/tool policy is useful
-When duplication is harmful
-How duplicate rules must justify themselves
-
-## Promotion flow
-How research or experiments become binding policy
-Review expectations
-What evidence must be cited
-How supersession is recorded
-
-## Testing and review
-What kinds of checks are acceptable
-When a human review question is enough
-When a runnable check is expected
-
-## Amendment flow
-Who can amend
-What changes need addenda
-How changes are announced and linked
-```
+See [policy.md skeleton](research-agent-policy-markdown-html-meta-policy.assets/policy-md-skeleton.md).
 
 ### Content Priorities
 
@@ -308,11 +232,7 @@ Do not dump a bibliography into the middle of every binding policy. Instead, req
 
 #### Scheme Comparison
 
-| Scheme | Summary | Strengths | Risks | Fit for this repo |
-|---|---|---|---|---|
-| **Minimal root `AGENTS.md` plus topic docs** | Keep root `AGENTS.md` short and binding; put doctrine directly into `html.md`, `markdown.md`, etc.; no separate meta-policy. | Lowest ceremony, easy to explain, keeps docs small. | Status drift, inconsistent force language, ad hoc amendment flow, experiments can still blur into policy. | Good only if the repo stays very small and disciplined. |
-| **Root `AGENTS.md` plus meta `policy.md` plus topic policies** | Root routes and governs agent behavior; `policy.md` defines how policy works; topic docs hold substantive rules. | Best balance of clarity, scalability, and readability; clean promotion path; easier to preserve research without bloating root docs. | One extra file to maintain; requires discipline to keep `policy.md` meta-only. | **Best fit now. Recommended.** |
-| **Policy bundle with explicit status labels and promotion flow** | A more formal family of policy docs, possibly in a dedicated policy directory, with explicit statuses, index, amendment log, and decision records. | Strongest long-term governance; best for multi-subtree or multi-team repos; easiest to audit. | More ceremony and navigation overhead; may feel heavy for a small repo with strong owner taste for directness. | Good if the repo grows or more policies accumulate. |
+See [scheme comparison matrix](research-agent-policy-markdown-html-meta-policy.assets/scheme-comparison-matrix.md).
 
 #### Scheme B Recommendation
 
@@ -363,40 +283,4 @@ The smallest set of high-impact choices is:
 
 ## Sources
 
-### Official agent-policy sources
-
-- [OpenAI Developers, *Custom instructions with AGENTS.md*](https://developers.openai.com/codex/guides/agents-md). Discovery order, overrides, fallback filenames, and verification guidance.
-- [GitHub Docs, *Adding repository custom instructions for GitHub Copilot*](https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions). Repository-wide, path-specific, and agent instructions; nearest `AGENTS.md` precedence.
-- [GitHub Docs, *About customizing GitHub Copilot responses*](https://docs.github.com/en/copilot/customizing-copilot/about-customizing-github-copilot-chat-responses). Precedence order, short self-contained statements, and scope selection.
-- [Anthropic Claude Code Docs, *How Claude remembers your project*](https://docs.anthropic.com/en/docs/claude-code/memory). When to add `CLAUDE.md`, what belongs there, scope levels, imports from `AGENTS.md`, and load order.
-- [AGENTS.md project site](https://agents.md/) and [AGENTS.md repository](https://github.com/openai/agents.md). Open format overview and examples.
-
-### Markdown sources
-
-- [*CommonMark Spec* version 0.31.2](https://spec.commonmark.org/0.31.2/). Why a spec is needed; conformance-test framing; Markdown as readable plain text.
-- [*GitHub Flavored Markdown Spec*](https://github.github.com/gfm/). GFM as a strict superset of CommonMark; post-processing and sanitization.
-- [GitHub Docs, *Basic writing and formatting syntax*](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax). Relative links, section links, image syntax and alt text.
-- [GitHub Docs, *Creating and highlighting code blocks*](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks). Fenced code blocks, blank-line readability, syntax highlighting.
-
-### HTML and accessibility sources
-
-- [MDN, *`<article>`: The article contents element*](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/article). Self-contained content and heading guidance.
-- [MDN, *`lang` HTML global attribute*](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/lang). Programmatically determinable language.
-- [MDN, *`aria-hidden` attribute*](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-hidden). Accessibility-tree removal and focusable-element warning.
-- [W3C WAI, *Page Structure Tutorial*](https://www.w3.org/WAI/tutorials/page-structure/) and [*Headings*](https://www.w3.org/WAI/tutorials/page-structure/headings/). Structure, navigation, heading ranks, and avoiding skipped levels.
-- [W3C WAI, *Images Tutorial*](https://www.w3.org/WAI/tutorials/images/). Purpose-based alt text and null alt for decorative images.
-- [W3C WCAG Understanding, *Info and Relationships*](https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships) and [*Use of Color*](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html). Preserve semantics across presentations; do not rely on color alone.
-- [MDN, *`<meta>`*](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta) and [*Viewport meta tag*](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/meta/name/viewport). Character encoding and viewport behavior.
-- [W3C Validator help](https://validator.w3.org/docs/help.html) and [Nu Html Checker](https://validator.w3.org/nu/). Validation as syntax checking, not full quality approval.
-
-### Policy-writing and testing sources
-
-- [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174). Requirement levels, sparing use, and uppercase clarification.
-- [OpenAI API docs, *Working with evals*](https://platform.openai.com/docs/guides/evals). Explicit criteria and testing as essential to reliable applications.
-
-### Empirical research
-
-- [Lulla et al., *On the Impact of AGENTS.md Files on the Efficiency of AI Coding Agents*](https://arxiv.org/abs/2601.20404). Runtime and token reductions associated with `AGENTS.md`.
-- [Gloaguen et al., *Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?*](https://arxiv.org/abs/2602.11988). Evidence that overloaded context files can reduce success and increase cost.
-- [Galster et al., *Configuring Agentic AI Coding Tools: An Exploratory Study*](https://arxiv.org/abs/2602.14690). Context files dominate configuration; `AGENTS.md` emerging as interoperable standard.
-- [Treude, Baltes, and Cheong, *Operationalizing Ethics for AI Agents*](https://arxiv.org/abs/2605.05584). Context files as developer-authored governance layers.
+See [sources](research-agent-policy-markdown-html-meta-policy.assets/sources.md).
