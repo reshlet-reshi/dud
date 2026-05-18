@@ -120,7 +120,7 @@ But as a **seed for policy**, it is over-trusted. It demonstrates one small succ
 
 #### Policy Draft Contrast
 
-The short version is: **v2 is stricter, but not consistently clearer; it is more operational in a few places and more dogmatic in several others.** V1 reads like a policy draft. V2 often reads like a reaction to a policy draft. V1 states principles, rules, checks, and exceptions in a way that still admits the existence of interactive HTML. V2 narrows the scope toward transient generated documents, but then smuggles in stylistic bans and absolutes that are too brittle for a general document policy. Local artifacts: `snapshots/html-v1-committed.md`, `current/html.md`.
+The short version is: **v2 is stricter, but not consistently clearer; it is more operational in a few places and more dogmatic in several others**. V1 reads like a policy draft. V2 often reads like a reaction to a policy draft. V1 states principles, rules, checks, and exceptions in a way that still admits the existence of interactive HTML. V2 narrows the scope toward transient generated documents, but then smuggles in stylistic bans and absolutes that are too brittle for a general document policy. Local artifacts: `snapshots/html-v1-committed.md`, `current/html.md`.
 
 #### Comparison Matrix
 
@@ -224,7 +224,7 @@ Every candidate binding rule should ship with at least one named check. For `htm
 
 ### Research Provenance
 
-Do not dump a bibliography into the middle of every binding policy. Instead, require a short provenance note in the policy header or amendment section, such as “Promoted from `for-agents/research/<artifact>.md` after review on YYYY-MM-DD.” If a specific rule came from a specific finding, that can be named in an amendment note or decision log. This preserves traceability without making the live policy unreadable.
+Do not dump a bibliography into the middle of every binding policy. Instead, require a short provenance note in the policy header or amendment section, such as “Promoted from `for-agents/research/<artifact>.md` after review on YYYY-MM-DD”. If a specific rule came from a specific finding, that can be named in an amendment note or decision log. This preserves traceability without making the live policy unreadable.
 
 ## Decision matrix, recommended next steps, and owner decision ballot
 
