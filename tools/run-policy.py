@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Run executable sections from a policy runbook."""
 
-from __future__ import annotations
-
 import argparse
 import re
 import sys
