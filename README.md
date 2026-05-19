@@ -6,7 +6,7 @@ It does not do anything yet.
 
 The project is about bootstrapping.
 
-Stay tuned ...
+_Stay tuned ..._
 
 Start with [`help.sh`](help.sh).
 
