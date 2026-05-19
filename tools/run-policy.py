@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run executable sections from a policy runbook."""
+"""Execute a policy runbook."""
 
 import argparse
 import re
