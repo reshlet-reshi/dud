@@ -35,7 +35,7 @@
         },
         "codexHere.promptFile": {
           "type": "string",
-          "default": ".codex-here.md",
+          "default": "prompts/.codex-here.md",
           "description": "Project-local prompt file to include in launched Codex sessions."
         },
         "codexHere.contextLines": {

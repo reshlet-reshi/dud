@@ -439,7 +439,7 @@ function resolveCodexExecutable(override) {
 function getSettings() {
   return {
     marker: stringConfig("marker", "`codex-here`"),
-    promptFile: stringConfig("promptFile", ".codex-here.md"),
+    promptFile: stringConfig("promptFile", "prompts/.codex-here.md"),
     contextLines: numberConfig("contextLines", 40, 0, 500),
     tmuxSession: stringConfig("tmuxSession", "codex-here"),
     ghosttyExecutable: stringConfig("ghosttyExecutable", "ghostty"),

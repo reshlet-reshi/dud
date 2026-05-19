@@ -8,6 +8,9 @@ When a matching comment appears in the current file, the extension shows an
 opens a new tmux window for the task, and attaches a single Ghostty window when
 no Ghostty tmux client is already attached.
 
+By default, Codex Here includes the project prompt at
+`prompts/.codex-here.md`.
+
 ## Local install
 
 Install `tmux` first, then expose this directory to VS Code as a local
