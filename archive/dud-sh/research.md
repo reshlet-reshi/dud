@@ -2,11 +2,11 @@
 
 Standalone markdown edition with ordinary inline citation links.
 
-Citation note: this version replaces the deep-research UI citation tokens with normal markdown links. Citations to the uploaded project handoff point to the companion file [`AGENTS-seed-0.md`](AGENTS-seed-0.md); external citations point directly to their public source URLs.
+Citation note: this version replaces the deep-research UI citation tokens with normal markdown links. Citations to the uploaded project handoff point to the companion file [`prompt.md`](prompt.md); external citations point directly to their public source URLs.
 
 ## 1. Executive summary
 
-I treated the attached handoff as the governing brief for repo identity, settled constraints, owner priorities, current `dud-sh` subset, the proposed layout, and the `patch-elf`-first bootstrap ladder. This report does not try to reopen choices the handoff already marks as decided; it focuses on the remaining policy decisions that matter most for a future `AGENTS.md`. Source basis: [`AGENTS-seed-0.md`](AGENTS-seed-0.md).
+I treated the attached handoff as the governing brief for repo identity, settled constraints, owner priorities, current `dud-sh` subset, the proposed layout, and the `patch-elf`-first bootstrap ladder. This report does not try to reopen choices the handoff already marks as decided; it focuses on the remaining policy decisions that matter most for a future `AGENTS.md`. Source basis: [`prompt.md`](prompt.md).
 
 My strongest recommendation is a **literate, conformance-first, portability-preserving policy**: keep shared bootstrap source in a tiny shell-hosted `dud-sh` subset; use **POSIX-portable octal byte emission in source** while allowing **hex in comments and docs**; split **shared `.dsh` files** from **host-only `.sh` helpers**; treat root `.bin/` as generated native outputs and root `.tmp/` as scratch; use a **Python-stdlib test runner** as the canonical conformance harness; and keep `exec`, FD tricks, general quoting, and most shell features **reserved but out of scope**. That package best matches the project’s stated priorities of correctness, low hidden host-dependency risk, easy conformance testing, future non-shell hosts, and auditable provenance. It also fits the lineage of bootstrappable systems that favor explicit provenance and tiny, comprehensible stages, including [Bootstrappable Builds](https://www.bootstrappable.org/), [live-bootstrap](https://github.com/fosslinux/live-bootstrap/blob/master/README.rst), [live-bootstrap `parts.rst`](https://github.com/fosslinux/live-bootstrap/blob/master/parts.rst), [Mu](https://github.com/akkartik/mu), [Akkartik’s Mu notes](https://akkartik.name/post/mu-2019-1), and [SectorLISP](https://github.com/jart/sectorlisp).
 
@@ -26,7 +26,7 @@ The following assumptions are inherited from the handoff rather than re-argued h
 - current shared source host: `/bin/sh`-compatible syntax with only `printf`, `chmod`, and explicit-path project executables allowed
 - current language subset: `set -e`, `set --`, `.`, `:`, `printf`, `chmod +x`, explicit-path commands, `>`/`>>`, `$1`…`$9`, `"$1"`…`"$9"`, and whole-line comments only
 
-Source: [`AGENTS-seed-0.md`](AGENTS-seed-0.md).
+Source: [`prompt.md`](prompt.md).
 
 The most important external sources consulted were standards/manpage materials for shell, `printf`, `chmod`, `set`, and dot-sourcing; bootstrapping projects; ELF materials; i386/syscall provenance sources; QEMU user-mode docs; modern `AGENTS.md` docs; and 0BSD license sources. Key sources include [POSIX `printf`](https://man7.org/linux/man-pages/man1/printf.1p.html), [POSIX `chmod`](https://man7.org/linux/man-pages/man1/chmod.1p.html), [POSIX `set`](https://man7.org/linux/man-pages/man1/set.1p.html), [POSIX `.`](https://man7.org/linux/man-pages/man1/dot.1p.html), [POSIX `sh`](https://man7.org/linux/man-pages/man1/sh.1p.html), [The Open Group Shell Command Language](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html), [ELF gABI header](https://gabi.xinuos.com/elf/02-eheader.html), [ELF gABI program header](https://gabi.xinuos.com/elf/07-pheader.html), [`elf(5)`](https://man7.org/linux/man-pages/man5/elf.5.html), [Intel SDM](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html), [ChromiumOS syscall constants](https://www.chromium.org/chromium-os/developer-library/reference/linux-constants/syscalls/), [QEMU user-mode docs](https://www.qemu.org/docs/master/user/main.html), [QEMU user guide mirror](https://qemu-project.gitlab.io/qemu/user/index.html), [GitHub Copilot custom instructions](https://docs.github.com/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot), [OpenAI Codex `AGENTS.md` guide](https://developers.openai.com/codex/guides/agents-md), [OSI 0BSD](https://opensource.org/license/0bsd), and [SPDX 0BSD](https://spdx.org/licenses/0BSD.html).
 
@@ -42,7 +42,7 @@ The most important external sources consulted were standards/manpage materials f
 
 **Sacrifice:** less pleasant byte authoring if the author thinks in hex first. Octal is uglier for opcodes and ELF fields.
 
-**Why it fits:** it best matches the owner’s preference for correctness, conformance testing, hidden dependency avoidance, and future non-shell hosts. Source: [`AGENTS-seed-0.md`](AGENTS-seed-0.md).
+**Why it fits:** it best matches the owner’s preference for correctness, conformance testing, hidden dependency avoidance, and future non-shell hosts. Source: [`prompt.md`](prompt.md).
 
 **Risk:** octal source can be harder to audit by humans.
 
@@ -56,7 +56,7 @@ The most important external sources consulted were standards/manpage materials f
 
 **Sacrifice:** POSIX portability. POSIX `printf` guarantees octal escapes but not `\x`; GNU `printf` documents `\xHH`; `dash` documents octal escapes and does not advertise `\x`. Sources: [POSIX `printf`](https://man7.org/linux/man-pages/man1/printf.1p.html), [GNU Coreutils `printf`](https://www.gnu.org/software/coreutils/manual/html_node/printf-invocation.html), and [dash(1)](https://man7.org/linux/man-pages/man1/dash.1.html).
 
-**Why it conflicts:** it weakens the stated preference to avoid hidden host dependencies. If the project really wants this mode, AGENTS must say so bluntly: this is not “plain POSIX”; it is “common GNU-ish host profile.” Source: [`AGENTS-seed-0.md`](AGENTS-seed-0.md).
+**Why it conflicts:** it weakens the stated preference to avoid hidden host dependencies. If the project really wants this mode, AGENTS must say so bluntly: this is not “plain POSIX”; it is “common GNU-ish host profile.” Source: [`prompt.md`](prompt.md).
 
 **Risk:** casual use of `printf '\x..'` makes later portability fixes painful because byte fragments become saturated with non-portable syntax.
 
@@ -66,7 +66,7 @@ The most important external sources consulted were standards/manpage materials f
 
 **What it optimizes for:** preventing `dud-sh` from drifting into a small-but-still-general shell.
 
-**Policy shape:** keep the current allowlist brutally small, avoid `exec`, FD redirection, `$0`, `$#`, `shift`, functions, pipelines, variables, loops, tests, command substitution, and generalized quoting. Future features are named only as reserved and ask-first. The tokenizer remains “newline-separated commands, whitespace-separated tokens”; extra interpretation belongs to commands, not the file parser. Source: [`AGENTS-seed-0.md`](AGENTS-seed-0.md).
+**Policy shape:** keep the current allowlist brutally small, avoid `exec`, FD redirection, `$0`, `$#`, `shift`, functions, pipelines, variables, loops, tests, command substitution, and generalized quoting. Future features are named only as reserved and ask-first. The tokenizer remains “newline-separated commands, whitespace-separated tokens”; extra interpretation belongs to commands, not the file parser. Source: [`prompt.md`](prompt.md).
 
 **Sacrifice:** less ergonomic composition and fewer conveniences for later stages. Some useful shell-shaped affordances, especially FD output via `exec`, remain unavailable until a future milestone.
 
@@ -86,7 +86,7 @@ The style is close to the pattern visible in [SectorLISP](https://github.com/jar
 
 **Sacrifice:** slightly more initial process and documentation overhead.
 
-**Why it fits:** it best serves the owner priorities in the handoff: technical correctness, fast iteration through clean tests, simplicity, learning, maintainability, and low dependency risk. Source: [`AGENTS-seed-0.md`](AGENTS-seed-0.md).
+**Why it fits:** it best serves the owner priorities in the handoff: technical correctness, fast iteration through clean tests, simplicity, learning, maintainability, and low dependency risk. Source: [`prompt.md`](prompt.md).
 
 **Risk:** the docs can become heavier than the bootstrap.
 
@@ -109,7 +109,7 @@ I recommend **Set D: Literate conformance-first**, with the slogan:
 
 > portable source, explicit docs, exact bytes, tiny language.
 
-That recommendation follows from the owner’s priority order in the handoff, from the portability constraints around `printf`, from the complexity of real shell parsing, from the loader-facing reality of ELF program headers, and from modern agent tooling that supports layered local instruction files. Sources: [`AGENTS-seed-0.md`](AGENTS-seed-0.md), [POSIX `printf`](https://man7.org/linux/man-pages/man1/printf.1p.html), [dash(1)](https://man7.org/linux/man-pages/man1/dash.1.html), [Morbig POSIX-shell parser paper](https://www.niols.fr/paper/Jeannerod%2B17a.pdf), [ELF gABI program header](https://gabi.xinuos.com/elf/07-pheader.html), [`elf(5)`](https://man7.org/linux/man-pages/man5/elf.5.html), [GitHub Copilot custom instructions](https://docs.github.com/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot), and [OpenAI Codex `AGENTS.md`](https://developers.openai.com/codex/guides/agents-md).
+That recommendation follows from the owner’s priority order in the handoff, from the portability constraints around `printf`, from the complexity of real shell parsing, from the loader-facing reality of ELF program headers, and from modern agent tooling that supports layered local instruction files. Sources: [`prompt.md`](prompt.md), [POSIX `printf`](https://man7.org/linux/man-pages/man1/printf.1p.html), [dash(1)](https://man7.org/linux/man-pages/man1/dash.1.html), [Morbig POSIX-shell parser paper](https://www.niols.fr/paper/Jeannerod%2B17a.pdf), [ELF gABI program header](https://gabi.xinuos.com/elf/07-pheader.html), [`elf(5)`](https://man7.org/linux/man-pages/man5/elf.5.html), [GitHub Copilot custom instructions](https://docs.github.com/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot), and [OpenAI Codex `AGENTS.md`](https://developers.openai.com/codex/guides/agents-md).
 
 ### Recommended default votes
 
@@ -134,7 +134,7 @@ These choices reinforce each other. Octal-in-source removes the `printf` portabi
 
 ### A. Project identity and naming
 
-Root `AGENTS.md` should refer to the repository as `dud`. The current work should be called `dud-sh`. `dsh` should be treated as a shorthand/internal alias unless the owner explicitly decides it is a public name. `dud-asm` and `dud-cc` should be mentioned only as long-term context, not as design drivers for the first milestone. AGENTS should include the slogan “Shell temporarily hosts dsh; later dsh runs the same files itself” because it crisply communicates the compatibility constraint. Source: [`AGENTS-seed-0.md`](AGENTS-seed-0.md).
+Root `AGENTS.md` should refer to the repository as `dud`. The current work should be called `dud-sh`. `dsh` should be treated as a shorthand/internal alias unless the owner explicitly decides it is a public name. `dud-asm` and `dud-cc` should be mentioned only as long-term context, not as design drivers for the first milestone. AGENTS should include the slogan “Shell temporarily hosts dsh; later dsh runs the same files itself” because it crisply communicates the compatibility constraint. Source: [`prompt.md`](prompt.md).
 
 ### B. First milestone and bootstrap graph
 
@@ -147,7 +147,7 @@ The first milestone should be stated explicitly:
   -> toward a native dud-sh kernel
 ```
 
-`patch-elf` should be explicitly named as the first native artifact, and `patch-elf-modular` as the first modular artifact. Labels and relocations should be explicitly out of scope for stage 0. The bootstrap graph belongs in `docs/` and should be summarized in root/subproject READMEs; AGENTS should contain only the operational rules and pointer. Source: [`AGENTS-seed-0.md`](AGENTS-seed-0.md).
+`patch-elf` should be explicitly named as the first native artifact, and `patch-elf-modular` as the first modular artifact. Labels and relocations should be explicitly out of scope for stage 0. The bootstrap graph belongs in `docs/` and should be summarized in root/subproject READMEs; AGENTS should contain only the operational rules and pointer. Source: [`prompt.md`](prompt.md).
 
 “Done” for the first milestone should mean: the hosted pipeline produces the native `patch-elf`; the modular build produces a behaviorally equivalent or byte-identical result where expected; `patch-elf` patches ELF32 program-header size fields correctly; and the conformance suite can validate the shared subset without requiring native i386 Linux execution on every host. QEMU user-mode can be optional because it supports running binaries built for another CPU architecture on the same OS family with syscall translation. Sources: [QEMU user-mode docs](https://www.qemu.org/docs/master/user/main.html) and [QEMU user guide mirror](https://qemu-project.gitlab.io/qemu/user/index.html).
 
@@ -171,11 +171,11 @@ $1..$9 and "$1".."$9" in the constrained forms documented by the subset
 whole-line comments only
 ```
 
-`exec`, FD redirection, `$0`, `$#`, `shift`, pipelines, functions, variables, loops, `exit`, and `return` should be **reserved future / not current subset**. Do not merely omit them, because omission invites agents to “helpfully” introduce them. Source: [`AGENTS-seed-0.md`](AGENTS-seed-0.md).
+`exec`, FD redirection, `$0`, `$#`, `shift`, pipelines, functions, variables, loops, `exit`, and `return` should be **reserved future / not current subset**. Do not merely omit them, because omission invites agents to “helpfully” introduce them. Source: [`prompt.md`](prompt.md).
 
 `PATH` lookup should be explicitly forbidden in shared bootstrap scripts. Dot-sourced paths must contain `/`, and explicit project commands must contain `/`, because ambient `PATH` resolution is exactly the kind of hidden dependency this project is trying to avoid. Source: [POSIX dot utility](https://man7.org/linux/man-pages/man1/dot.1p.html).
 
-Invalid-script conformance should specify accept/reject, byte output, and exit status where practical, but should not require exact stderr text. That follows the handoff’s conformance rule. Source: [`AGENTS-seed-0.md`](AGENTS-seed-0.md).
+Invalid-script conformance should specify accept/reject, byte output, and exit status where practical, but should not require exact stderr text. That follows the handoff’s conformance rule. Source: [`prompt.md`](prompt.md).
 
 ### D. Tokenization and quoting
 
@@ -206,7 +206,7 @@ Good source style:
 printf '\177\105\114\106'
 ```
 
-Every byte-emitting `printf` should be a logical unit: one instruction, one header field bundle, one marker record, or one small conceptual byte word. Do not explode everything to one byte per line unless that is genuinely clearer. Leaf instruction files may emit a small logical bundle when clearer than single-byte fragments. Source: [`AGENTS-seed-0.md`](AGENTS-seed-0.md).
+Every byte-emitting `printf` should be a logical unit: one instruction, one header field bundle, one marker record, or one small conceptual byte word. Do not explode everything to one byte per line unless that is genuinely clearer. Leaf instruction files may emit a small logical bundle when clearer than single-byte fragments. Source: [`prompt.md`](prompt.md).
 
 Fragments should default to writing bytes to stdout and let the caller own redirection. Top-level assembly/build scripts may use `>` and `>>`. FD-based output via `exec` should be delayed until after the initial path and named as future only.
 
@@ -262,7 +262,7 @@ Top-level bootstrap entry scripts belong in `src/dud-sh/bin/`, with no extension
 
 Generated native artifacts should go under root `.bin/`. Scratch, intermediates, and test temp files should go under root `.tmp/`. Build processes should not emit into the current working directory by default. `.bin/` and `.tmp/` should be untracked except `.gitkeep`.
 
-Tests may create and delete files under `.tmp/`; they should avoid `/tmp` unless a specific test documents why it needs it. Checked-in golden fixtures are allowed when they are human-readable, such as hex/octal dumps, expected stdout bytes written as escaped text, or checksum text. Raw generated ELF binaries should not be checked in unless there is an exceptional audit reason. Source: [`AGENTS-seed-0.md`](AGENTS-seed-0.md).
+Tests may create and delete files under `.tmp/`; they should avoid `/tmp` unless a specific test documents why it needs it. Checked-in golden fixtures are allowed when they are human-readable, such as hex/octal dumps, expected stdout bytes written as escaped text, or checksum text. Raw generated ELF binaries should not be checked in unless there is an exceptional audit reason. Source: [`prompt.md`](prompt.md).
 
 ### I. Testing and conformance suite
 
@@ -277,7 +277,7 @@ Primary conformance oracles:
 - whitespace/comment behavior;
 - stderr text excluded from conformance except maybe “non-empty vs empty” if needed.
 
-The suite should be organized as conformance cases that later host implementations can run. `/bin/sh` can serve as a compatibility oracle only for valid shared-subset scripts, not for invalid scripts where shell diagnostics vary. Source: [`AGENTS-seed-0.md`](AGENTS-seed-0.md).
+The suite should be organized as conformance cases that later host implementations can run. `/bin/sh` can serve as a compatibility oracle only for valid shared-subset scripts, not for invalid scripts where shell diagnostics vary. Source: [`prompt.md`](prompt.md).
 
 Defer `mypy`. Type hints are fine, but a tiny stdlib-only runner does not justify a mandatory extra tool.
 
@@ -294,7 +294,7 @@ Use a strict source hierarchy:
 
 Sources: [ELF gABI header](https://gabi.xinuos.com/elf/02-eheader.html), [ELF gABI program header](https://gabi.xinuos.com/elf/07-pheader.html), [`elf(5)`](https://man7.org/linux/man-pages/man5/elf.5.html), [Intel SDM](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html), [ChromiumOS syscall constants](https://www.chromium.org/chromium-os/developer-library/reference/linux-constants/syscalls/), and an example [`unistd_32.h`](https://chromium.googlesource.com/native_client/linux-headers-for-nacl/%2B/2dc04f8190a54defc0d59e693fa6cff3e8a916a9/include/asm/unistd_32.h).
 
-Agents should browse/re-check primary sources whenever touching instruction encodings, syscall numbers, ELF headers, POSIX portability, or licensing. Source: [`AGENTS-seed-0.md`](AGENTS-seed-0.md).
+Agents should browse/re-check primary sources whenever touching instruction encodings, syscall numbers, ELF headers, POSIX portability, or licensing. Source: [`prompt.md`](prompt.md).
 
 `patch-elf` should be described as patching **program header fields**, not section headers. `elf(5)` and the gABI describe the program header table as the loader-facing structure used to prepare an executable for execution, and section headers may be absent. Sources: [`elf(5)`](https://man7.org/linux/man-pages/man5/elf.5.html) and [ELF gABI program header](https://gabi.xinuos.com/elf/07-pheader.html).
 
@@ -334,7 +334,7 @@ Sealed gadget:
 
 This is not over-engineering. Direct machine-code emission without labels/relocations makes manual jump-offset computation fragile; live-bootstrap’s early `hex0` lineage is a useful cautionary precedent. Source: [live-bootstrap `parts.rst`](https://github.com/fosslinux/live-bootstrap/blob/master/parts.rst).
 
-The proposed marker byte pattern `90 6a ID 8d 64 24 04` should be treated as **provisional**, not settled. Standardize semantics now: marker records must be executable-safe or trivially skippable, documented, and test-covered. Defer exact byte ABI until the first implementation and stripper/consumer logic exist. Source: [`AGENTS-seed-0.md`](AGENTS-seed-0.md).
+The proposed marker byte pattern `90 6a ID 8d 64 24 04` should be treated as **provisional**, not settled. Standardize semantics now: marker records must be executable-safe or trivially skippable, documented, and test-covered. Defer exact byte ABI until the first implementation and stripper/consumer logic exist. Source: [`prompt.md`](prompt.md).
 
 Parameterized fragments using `set --` are allowed but should be minimized. POSIX `set --` can set positional parameters, and dot-sourced scripts run in the current shell environment, so parameterization is real but global-stateful. Sources: [POSIX `set`](https://man7.org/linux/man-pages/man1/set.1p.html) and [POSIX dot utility](https://man7.org/linux/man-pages/man1/dot.1p.html).
 
@@ -351,7 +351,7 @@ Root AGENTS should say:
 - edits should stay inside the repo and project scratch/output directories;
 - do not modify public API/ABI, emitted ABI, conformance expectations, language subset, dependencies, or legal files without explicit owner approval.
 
-Off `main`, agents may edit freely. Prefer one coherent final commit over WIP commits unless checkpointing is requested. When GitHub tooling and credentials are available, opening/updating a PR automatically is reasonable after tests pass. AGENTS changes and license-file changes should be ask-first or task-specific because they alter future project behavior. Source: [`AGENTS-seed-0.md`](AGENTS-seed-0.md).
+Off `main`, agents may edit freely. Prefer one coherent final commit over WIP commits unless checkpointing is requested. When GitHub tooling and credentials are available, opening/updating a PR automatically is reasonable after tests pass. AGENTS changes and license-file changes should be ask-first or task-specific because they alter future project behavior. Source: [`prompt.md`](prompt.md).
 
 After edits, agents should report changed files, why they changed, tests run, tests skipped, relevant test output, and open risks. Commit messages should have a short line under 60 characters and a body with the change explanation, files touched, tests run/not run, and relevant output.
 
@@ -415,7 +415,7 @@ dsh1: adds exec/fd redirection if needed
 dsh2: later native kernel conveniences
 ```
 
-Do not optimize for conventional assembler design too early. `dud-asm` and `dud-cc` should remain long-term context only. Source: [`AGENTS-seed-0.md`](AGENTS-seed-0.md).
+Do not optimize for conventional assembler design too early. `dud-asm` and `dud-cc` should remain long-term context only. Source: [`prompt.md`](prompt.md).
 
 ### Q. Risk register / ask-before-changing rules
 
@@ -442,7 +442,7 @@ Mitigations:
 - root `.bin/` and `.tmp/` discipline;
 - compact layered AGENTS files.
 
-Sources: [`AGENTS-seed-0.md`](AGENTS-seed-0.md), [POSIX `printf`](https://man7.org/linux/man-pages/man1/printf.1p.html), [POSIX dot utility](https://man7.org/linux/man-pages/man1/dot.1p.html), [POSIX shell language](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html), and [Morbig POSIX-shell parser paper](https://www.niols.fr/paper/Jeannerod%2B17a.pdf).
+Sources: [`prompt.md`](prompt.md), [POSIX `printf`](https://man7.org/linux/man-pages/man1/printf.1p.html), [POSIX dot utility](https://man7.org/linux/man-pages/man1/dot.1p.html), [POSIX shell language](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/V3_chap02.html), and [Morbig POSIX-shell parser paper](https://www.niols.fr/paper/Jeannerod%2B17a.pdf).
 
 ## 7. Open risks and mitigations
 
@@ -571,7 +571,7 @@ Must-decide items:
 
 ### Project source
 
-- [`AGENTS-seed-0.md`](AGENTS-seed-0.md) — uploaded project handoff and governing brief.
+- [`prompt.md`](prompt.md) — uploaded project handoff and governing brief.
 
 ### POSIX, shell, and portability
 
