@@ -5,6 +5,10 @@ Generic repository helper tooling lives under `tools/`.
 Tooling here should not contain policy-specific rule logic unless a future
 reviewed plan says otherwise.
 
+`check-python.sh` runs the ordinary vendored Python quality checks.
+
+`check-shell.sh` runs the ordinary vendored ShellCheck check.
+
 `tools/run-policy.py` runs marked executable sections from policy runbooks.
 
 Use self-test mode with a policy runbook:
