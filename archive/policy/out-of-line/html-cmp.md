@@ -1,6 +1,6 @@
 # HTML v1/v2 Comparison Matrix
 
-Back to [Comparison Matrix](../research-agent-policy-markdown-html-meta-policy.md#comparison-matrix).
+Back to [Comparison Matrix](../report.md#comparison-matrix).
 
 | Topic | v1 | v2 | Judgment |
 |---|---|---|---|

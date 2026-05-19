@@ -332,7 +332,7 @@ Local artifacts: `snapshots/html-v1-committed.md`, `current/html.md`.
 
 #### Comparison Matrix
 
-See [HTML v1 versus v2 comparison matrix](research-agent-policy-markdown-html-meta-policy.assets/html-v1-v2-comparison-matrix.md).
+See [HTML v1 versus v2 comparison matrix](out-of-line/html-cmp.md).
 
 #### V2 Governance Risk
 
@@ -459,7 +459,7 @@ The repo already has the beginnings of this in `for-agents/research/`; `policy.m
 
 ### Policy Skeleton
 
-See [policy.md skeleton](research-agent-policy-markdown-html-meta-policy.assets/policy-md-skeleton.md).
+See [policy.md skeleton](out-of-line/policy.md).
 
 ### Content Priorities
 
@@ -570,7 +570,7 @@ This preserves traceability without making the live policy unreadable.
 
 #### Scheme Comparison
 
-See [scheme comparison matrix](research-agent-policy-markdown-html-meta-policy.assets/scheme-comparison-matrix.md).
+See [scheme comparison matrix](out-of-line/matrix.md).
 
 #### Scheme B Recommendation
 
@@ -643,4 +643,4 @@ The smallest set of `high-impact` choices is:
 
 ## Sources
 
-See [sources](research-agent-policy-markdown-html-meta-policy.assets/sources.md).
+See [sources](out-of-line/sources.md).

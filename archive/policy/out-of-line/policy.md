@@ -1,6 +1,6 @@
 # Policy.md Skeleton
 
-Back to [Policy Skeleton](../research-agent-policy-markdown-html-meta-policy.md#policy-skeleton).
+Back to [Policy Skeleton](../report.md#policy-skeleton).
 
 `policy.md` should be short and concrete. It should look more like a constitution for repo policy management than like a style guide. It should probably stay under roughly one screenful per major section, with no topic-specific rabbit holes.
 

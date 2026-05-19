@@ -1,6 +1,6 @@
 # Sources
 
-Back to [Sources](../research-agent-policy-markdown-html-meta-policy.md#sources).
+Back to [Sources](../report.md#sources).
 
 ## Official agent-policy sources
 

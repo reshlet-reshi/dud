@@ -1,6 +1,6 @@
 # Scheme Comparison Matrix
 
-Back to [Scheme Comparison](../research-agent-policy-markdown-html-meta-policy.md#scheme-comparison).
+Back to [Scheme Comparison](../report.md#scheme-comparison).
 
 | Scheme | Summary | Strengths | Risks | Fit for this repo |
 |---|---|---|---|---|
