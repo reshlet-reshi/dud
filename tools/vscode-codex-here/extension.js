@@ -111,6 +111,10 @@ async function openAtMarker(target) {
   }
 
   const document = await vscode.workspace.openTextDocument(target.uri);
+  if (!(await confirmSavedEditors())) {
+    return;
+  }
+
   const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
   const repoRoot = workspaceFolder
     ? workspaceFolder.uri.fsPath
@@ -144,6 +148,32 @@ async function openAtMarker(target) {
   } catch (error) {
     vscode.window.showErrorMessage(error instanceof Error ? error.message : String(error));
   }
+}
+
+async function confirmSavedEditors() {
+  if (!vscode.workspace.textDocuments.some((document) => document.isDirty)) {
+    return true;
+  }
+
+  const saveAction = "Save All and Continue";
+  const cancelAction = "Cancel";
+  const choice = await vscode.window.showWarningMessage(
+    "Codex Here needs all dirty editor changes saved before launch so prompt context matches VS Code.",
+    { modal: true },
+    saveAction,
+    cancelAction
+  );
+  if (choice !== saveAction) {
+    return false;
+  }
+
+  const saved = await vscode.workspace.saveAll(true);
+  if (!saved || vscode.workspace.textDocuments.some((document) => document.isDirty)) {
+    vscode.window.showWarningMessage("Codex Here did not launch because some editor changes are still unsaved.");
+    return false;
+  }
+
+  return true;
 }
 
 function findMarkers(document, marker) {
