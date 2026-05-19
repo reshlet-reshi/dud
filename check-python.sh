@@ -4,7 +4,9 @@ set -euo pipefail
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd -- "${script_dir}/.." && pwd)"
 
-venv_dir="${repo_root}/.tmp/python-tools-venv"
+tmp_root="/tmp/dud-$(id -u)"
+venv_dir="${tmp_root}/python-tools-venv"
+mypy_cache_dir="${tmp_root}/mypy-cache"
 wheel_dir="${repo_root}/vendor/python-tools/wheels"
 requirements="${repo_root}/vendor/python-tools/requirements.txt"
 
@@ -23,16 +25,19 @@ if [ ! -f "${requirements}" ]; then
   exit 1
 fi
 
+mkdir -p "${tmp_root}"
+
 if [ ! -x "${venv_dir}/bin/python" ]; then
   python3 -m venv "${venv_dir}"
 fi
 
 "${venv_dir}/bin/python" -m pip install \
+  --no-cache-dir \
   --no-index \
   --find-links "${wheel_dir}" \
   -r "${requirements}"
 
 cd "${repo_root}"
 
-"${venv_dir}/bin/python" -m mypy --config-file mypy.ini
+"${venv_dir}/bin/python" -m mypy --config-file mypy.ini --cache-dir "${mypy_cache_dir}"
 "${venv_dir}/bin/python" -m ruff check --config ruff.toml tools
