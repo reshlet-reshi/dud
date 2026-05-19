@@ -35,6 +35,11 @@ context unless a live policy surface explicitly promotes something from it.
 
 - Prefer `rg` or `rg --files` for searching.
 - Use `apply_patch` for manual file edits.
+- Be eager to run the ordinary vendored checks before staging or committing.
+- For tracked Python edits, run `tools/check-python.sh`.
+- For tracked shell edits, and before running changed shell scripts, run
+  `tools/check-shell.sh`.
+- Treat failing checks as blockers unless the owner explicitly says otherwise.
 - Use ASCII by default unless the file already needs another character set.
 - Network access is restricted in the shell environment.
 - Request escalation when sandboxing, network access, GUI use, or approval
