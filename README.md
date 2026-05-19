@@ -12,9 +12,9 @@ _Stay tuned ..._
 
 Start with [`help.sh`](help.sh).
 
-Read it in the browser first. 
+Read it in your web browser first. 
 
-Later, on a POSIX checkout, run:
+Later, on a POSIX machine, run:
 
 ```sh
 sh ./help.sh
