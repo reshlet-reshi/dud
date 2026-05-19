@@ -1,0 +1,74 @@
+{
+  "name": "codex-here",
+  "displayName": "Codex Here",
+  "description": "Open a focused Codex planning agent from exact `codex-here` comment markers.",
+  "version": "0.0.1",
+  "publisher": "local",
+  "license": "0BSD",
+  "engines": {
+    "vscode": "^1.96.2"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished",
+    "onCommand:codexHere.openAtMarker"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "codexHere.openAtMarker",
+        "title": "Open Codex Here",
+        "category": "Codex Here"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Codex Here",
+      "properties": {
+        "codexHere.marker": {
+          "type": "string",
+          "default": "`codex-here`",
+          "description": "Exact stripped comment body that should receive the CodeLens."
+        },
+        "codexHere.promptFile": {
+          "type": "string",
+          "default": ".codex-here.md",
+          "description": "Project-local prompt file to include in launched Codex sessions."
+        },
+        "codexHere.contextLines": {
+          "type": "number",
+          "default": 200,
+          "minimum": 0,
+          "maximum": 1000,
+          "description": "Number of nearby lines to include before and after the marker."
+        },
+        "codexHere.tmuxSession": {
+          "type": "string",
+          "default": "codex-here",
+          "description": "Named tmux session used to host Codex Here windows."
+        },
+        "codexHere.ghosttyExecutable": {
+          "type": "string",
+          "default": "ghostty",
+          "description": "Ghostty executable used to attach to the tmux session."
+        },
+        "codexHere.codexExecutable": {
+          "type": "string",
+          "default": "",
+          "description": "Optional Codex executable override. Leave blank to auto-detect."
+        },
+        "codexHere.extraCodexArgs": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "Extra arguments passed to Codex before the prompt."
+        }
+      }
+    }
+  }
+}
