@@ -8,6 +8,8 @@ The project is about bootstrapping.
 
 _Stay tuned ..._
 
+## advice
+
 Start with [`help.sh`](help.sh).
 
 Read it in the browser first. 
