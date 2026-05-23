@@ -3,7 +3,7 @@ set -eu
 
 . ./lib/set-musl-cc-tarball.sh
 
-if ! ./lib/should-fetch-musl-cc.sh; then
+if ! ./bin/should-fetch-musl-cc; then
     exit 0
 fi
 
