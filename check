@@ -1,10 +1,41 @@
 #!/bin/sh
 set -eu
+
+# `sh -n` on scripts we run before we have a working shellcheck
+
 sh -n check
 sh -n bin/cache-vendored
 sh -n bin/fetch
 sh -n bin/fetch-source
 sh -n bin/shellcheck-all
+
+# unpack the goodies
+
 ./bin/cache-vendored
+
+# lint shell
+
 ./bin/shellcheck-all
-./bin/musl-cc.test
+
+# musl-cc smoke test
+
+musl_cc=\
+'.cache/vendor/musl-cc/x86_64-linux-musl-native/'\
+'x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc'
+
+return_0_c='.cache/test/return-0.c'
+return_0='.cache/test/return-0'
+
+mkdir -p "$(dirname "$return_0")"
+cat >"$return_0_c" <<'EOF'
+int main(void) {
+    return 0;
+}
+EOF
+
+"$musl_cc" -static "$return_0_c" -o "$return_0"
+"$return_0"
+
+# build dud-sh
+
+"$musl_cc" -static src/dud-sh.c -o .cache/dud-sh
