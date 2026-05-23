@@ -2,7 +2,7 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: ./bin/mock-curl <calls-file> <curl-args...>'
+    printf '%s\n' 'usage: ./tests/mock-curl <calls-file> <curl-args...>'
 }
 
 if [ "${1:-}" = "--help" ]; then
