@@ -1,9 +1,0 @@
-#!/bin/sh
-set -eu
-
-. ./lib/set-musl-cc-tarball.sh
-
-musl_cc_sha512=\
-'checksums/musl-cc-11.2.1-x86_64-linux-musl-cross.tgz.sha512'
-
-./bin/check-sha512 "$musl_cc_sha512" "$musl_cc_tarball"
