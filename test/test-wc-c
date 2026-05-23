@@ -1,0 +1,25 @@
+#!/bin/sh
+set -eu
+
+# shellcheck disable=SC1091
+. ./lib/expect.sh
+
+if [ ! -d .cache/test ]
+then
+    printf '%s\n' 'test/test-wc-c: .cache/test does not exist' >&2
+    exit 1
+fi
+
+expect_output 1 "$(.cache/dud-sh --wc-c -c ':')" 'argument source byte count'
+expect_output 0 "$(.cache/dud-sh --wc-c -c '')" 'empty argument source byte count'
+expect_output 3 "$(printf abc | .cache/dud-sh --wc-c -)" 'stdin byte count'
+
+printf 'hello' >.cache/test/wc-normal
+expect_output 5 "$(.cache/dud-sh --wc-c .cache/test/wc-normal)" 'file byte count'
+
+printf 'dash' >.cache/test/-wc-dash
+dash_count=$(
+    cd .cache/test
+    ../dud-sh --wc-c -- -wc-dash
+)
+expect_output 4 "$dash_count" 'dash-leading file byte count'

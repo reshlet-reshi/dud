@@ -38,8 +38,23 @@ EOF
 
 # build dud-sh
 
-"$musl_cc" -static src/dud-sh.c -o .cache/dud-sh
+"$musl_cc" \
+    -static \
+    src/main.c \
+    src/action.c \
+    src/fopen_argv.c \
+    src/wc_c.c \
+    src/exit.c \
+    -o .cache/dud-sh
 
 # dud-sh smoke tests
 
-.cache/dud-sh -c ':'
+# shellcheck disable=SC1091
+. ./lib/expect.sh
+
+expect_error 2 '???' .cache/dud-sh
+expect_error 2 '???' .cache/dud-sh --wc-c
+expect_error 2 '???' .cache/dud-sh -c ':'
+expect_error 1 '!!!' .cache/dud-sh --wc-c .cache/test/no-such-file
+
+./test/test-wc-c
