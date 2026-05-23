@@ -39,3 +39,7 @@ EOF
 # build dud-sh
 
 "$musl_cc" -static src/dud-sh.c -o .cache/dud-sh
+
+# dud-sh smoke tests
+
+.cache/dud-sh -c ':'
