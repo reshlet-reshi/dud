@@ -2,7 +2,7 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: ./bin/fetch <path_to_curl> <url> <out>'
+    printf '%s\n' 'usage: ./bin/fetch <path_to_curl> <url> <out> [sha512]'
 }
 
 if [ "${1:-}" = "--help" ]; then
@@ -10,7 +10,7 @@ if [ "${1:-}" = "--help" ]; then
     exit 0
 fi
 
-if [ "$#" -ne 3 ]; then
+if [ "$#" -ne 3 ] && [ "$#" -ne 4 ]; then
     usage >&2
     exit 2
 fi
@@ -18,10 +18,13 @@ fi
 path_to_curl=$1
 url=$2
 out=$3
+sha512=${4:-}
 
-if [ -e "$out" ]; then
-    exit 0
+if [ ! -e "$out" ]; then
+    mkdir -p "$(dirname "$out")"
+    "$path_to_curl" -fL "$url" -o "$out"
 fi
 
-mkdir -p "$(dirname "$out")"
-"$path_to_curl" -fL "$url" -o "$out"
+if [ -n "$sha512" ]; then
+    printf '%s  %s\n' "$sha512" "$out" | sha512sum -c -
+fi
