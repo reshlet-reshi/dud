@@ -1,4 +1,4 @@
-musl.cc x86_64-linux-musl cross toolchain archive.
+musl.cc x86_64-linux-musl native toolchain archive.
 
 Fetch/update with:
     ./bin/fetch-source vendor/musl-cc/source.fetch

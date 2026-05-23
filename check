@@ -7,3 +7,4 @@ sh -n bin/fetch-source
 sh -n bin/shellcheck-all
 ./bin/cache-vendored
 ./bin/shellcheck-all
+./bin/musl-cc.test

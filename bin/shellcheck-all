@@ -15,6 +15,8 @@ if [ "$#" -ne 0 ]; then
     exit 2
 fi
 
+./bin/cache-vendored
+
 shellcheck='.cache/vendor/shellcheck/shellcheck-v0.11.0.linux.x86_64/shellcheck-v0.11.0/shellcheck'
 
 tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-shellcheck-all.XXXXXX")
