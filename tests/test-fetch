@@ -49,7 +49,6 @@ chmod 755 "$mock_curl"
 
 fetch_out="$tmp/rfc20.txt"
 fetch_url='https://www.rfc-editor.org/rfc/rfc20.txt'
-fetch_sha512="$tmp/rfc20.txt.sha512"
 expected_sha512=\
 '4c79bbd370f91098ebce376b9c44b84d'\
 '9a2a0d7e11ae7db87bd08026a7abe097'\
@@ -67,5 +66,4 @@ test "$(wc -l <"$mock_curl_calls")" -eq 1
 rm -f "$fetch_out"
 
 ./bin/fetch 'curl' "$fetch_url" "$fetch_out"
-printf '%s\n' "$expected_sha512" >"$fetch_sha512"
-./bin/check-sha512 "$fetch_sha512" "$fetch_out"
+printf '%s  %s\n' "$expected_sha512" "$fetch_out" | sha512sum -c -
