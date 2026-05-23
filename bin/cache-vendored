@@ -1,0 +1,123 @@
+#!/bin/sh
+set -eu
+
+usage() {
+    printf '%s\n' 'usage: ./bin/cache-vendored'
+}
+
+if [ "${1:-}" = "--help" ]; then
+    usage
+    exit 0
+fi
+
+if [ "$#" -ne 0 ]; then
+    usage >&2
+    exit 2
+fi
+
+cache_tmp=
+_cleanup_cache_tmp() {
+    if [ -n "$cache_tmp" ]; then
+        rm -rf "$cache_tmp"
+    fi
+}
+trap _cleanup_cache_tmp EXIT HUP INT TERM
+
+cache_path_for_artifact() {
+    artifact=$1
+
+    case "$artifact" in
+        vendor/*) ;;
+        *)
+            printf '%s\n' "artifact path must start with vendor/: $artifact" >&2
+            return 2
+            ;;
+    esac
+
+    case "$artifact" in
+        *.tar.xz) printf '.cache/%s\n' "${artifact%.tar.xz}" ;;
+        *.tar.gz) printf '.cache/%s\n' "${artifact%.tar.gz}" ;;
+        *.tgz) printf '.cache/%s\n' "${artifact%.tgz}" ;;
+        *.tar.bz2) printf '.cache/%s\n' "${artifact%.tar.bz2}" ;;
+        *)
+            printf '%s\n' "unsupported archive suffix: $artifact" >&2
+            return 2
+            ;;
+    esac
+}
+
+extract_artifact() {
+    artifact=$1
+    destination=$2
+
+    case "$artifact" in
+        *.tar.xz) tar -xJf "$artifact" -C "$destination" ;;
+        *.tar.gz) tar -xzf "$artifact" -C "$destination" ;;
+        *.tgz) tar -xzf "$artifact" -C "$destination" ;;
+        *.tar.bz2) tar -xjf "$artifact" -C "$destination" ;;
+        *)
+            printf '%s\n' "unsupported archive suffix: $artifact" >&2
+            return 2
+            ;;
+    esac
+}
+
+cache_source_fetch() {
+    source_fetch=$1
+
+    if [ ! -f "$source_fetch" ]; then
+        printf '%s\n' "source.fetch is not a regular file: $source_fetch" >&2
+        return 2
+    fi
+
+    if [ ! -r "$source_fetch" ]; then
+        printf '%s\n' "source.fetch is not readable: $source_fetch" >&2
+        return 2
+    fi
+
+    # shellcheck disable=SC2046
+    set -- $(sed -n '1,$p' "$source_fetch")
+
+    if [ "$#" -ne 3 ]; then
+        printf '%s\n' "source.fetch must contain exactly three fields: $source_fetch" >&2
+        return 2
+    fi
+
+    artifact=$2
+    cache_dir=$(cache_path_for_artifact "$artifact")
+
+    ./bin/fetch-source "$source_fetch"
+
+    if [ -d "$cache_dir" ]; then
+        return 0
+    fi
+
+    if [ -e "$cache_dir" ]; then
+        printf '%s\n' "cache destination exists but is not a directory: $cache_dir" >&2
+        return 1
+    fi
+
+    cache_parent=$(dirname "$cache_dir")
+    mkdir -p "$cache_parent"
+
+    cache_tmp=$(mktemp -d "$cache_parent/.cache-vendored.XXXXXX")
+    extract_artifact "$artifact" "$cache_tmp"
+
+    if [ -e "$cache_dir" ]; then
+        printf '%s\n' "cache destination appeared during extraction: $cache_dir" >&2
+        return 1
+    fi
+
+    mv "$cache_tmp" "$cache_dir"
+    cache_tmp=
+}
+
+if [ ! -d vendor ]; then
+    exit 0
+fi
+
+source_fetches=$(find vendor -type f -name source.fetch | sort)
+
+for source_fetch in $source_fetches; do
+    cache_source_fetch "$source_fetch"
+done
