@@ -1,6 +1,24 @@
 #!/bin/sh
 set -eu
 
+if [ "${mock_curl_calls:-}" = "" ]; then
+    printf '%s\n' 'mock_curl_calls is not set' >&2
+    exit 2
+fi
+
+case "$mock_curl_calls" in
+    /*) ;;
+    *)
+        printf '%s\n' "mock_curl_calls is not absolute: $mock_curl_calls" >&2
+        exit 2
+        ;;
+esac
+
+if [ -d "$mock_curl_calls" ]; then
+    printf '%s\n' "mock_curl_calls is a directory: $mock_curl_calls" >&2
+    exit 2
+fi
+
 printf 'curl\n' >>"$mock_curl_calls"
 
 while [ "$#" -gt 0 ]; do

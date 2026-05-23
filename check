@@ -1,8 +1,8 @@
 #!/bin/sh
 set -eu
 
-tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-musl-cc.XXXXXX")
-trap 'rm -rf "$tmp"' EXIT HUP INT TERM
+. ./lib/set-dud-tmp.sh
+rm -rf "$dud_tmp"
 
 self_check=false
 for arg in "$@"; do
@@ -13,13 +13,16 @@ for arg in "$@"; do
 done
 
 if [ "$self_check" = true ]; then
-    MUSL_CC_TARBALL="$tmp/x86_64-linux-musl-cross.tgz"
+    . ./lib/ensure-dud-tmp-dir.sh
+
+    MUSL_CC_TARBALL="$dud_tmp/x86_64-linux-musl-cross.tgz"
     export MUSL_CC_TARBALL
 
     path_to_curl=./bin/mock-curl
 
-    mock_curl_calls="$tmp/mock-curl-calls"
+    mock_curl_calls="$dud_tmp/mock-curl-calls"
     export mock_curl_calls
+    : >"$mock_curl_calls"
 
     sh -n steps/0000-fetch-musl-cc
     ./steps/0000-fetch-musl-cc "$path_to_curl"
@@ -29,6 +32,10 @@ if [ "$self_check" = true ]; then
     ./steps/0000-fetch-musl-cc "$path_to_curl"
     test "$(wc -l <"$mock_curl_calls")" -eq 1
 
+    unset mock_curl_calls
+    rm -f "$MUSL_CC_TARBALL"
+
+    ./steps/0000-fetch-musl-cc 'curl'
+
     unset MUSL_CC_TARBALL
 fi
-
