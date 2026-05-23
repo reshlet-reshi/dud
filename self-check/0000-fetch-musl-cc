@@ -92,22 +92,24 @@ mock_curl_calls="$mock_curl.calls"
 } >"$mock_curl"
 chmod 755 "$mock_curl"
 
-MUSL_CC_TARBALL="$dud_tmp/x86_64-linux-musl-cross.tgz"
-export MUSL_CC_TARBALL
+musl_cc_tarball="$dud_tmp/x86_64-linux-musl-cross.tgz"
+musl_cc_url=\
+'https://more.musl.cc/11.2.1/x86_64-linux-musl/'\
+'x86_64-linux-musl-cross.tgz'
 
-sh -n steps/0000-fetch-musl-cc
-./steps/0000-fetch-musl-cc "$mock_curl"
+sh -n bin/fetch
+./bin/fetch "$mock_curl" "$musl_cc_url" "$musl_cc_tarball"
 test "$(wc -l <"$mock_curl_calls")" -eq 1
-test -e "$MUSL_CC_TARBALL"
+test -e "$musl_cc_tarball"
 
-./steps/0000-fetch-musl-cc "$mock_curl"
+./bin/fetch "$mock_curl" "$musl_cc_url" "$musl_cc_tarball"
 test "$(wc -l <"$mock_curl_calls")" -eq 1
 
-rm -f "$MUSL_CC_TARBALL"
+rm -f "$musl_cc_tarball"
 
 if [ "$allow_curl" = true ]; then
-    ./steps/0000-fetch-musl-cc 'curl'
+    ./bin/fetch 'curl' "$musl_cc_url" "$musl_cc_tarball"
     musl_cc_sha512='checksums/musl-cc-11.2.1-x86_64-linux-musl-cross.tgz.sha512'
-    ./bin/check-sha512 "$musl_cc_sha512" "$MUSL_CC_TARBALL"
-    tar -tzf "$MUSL_CC_TARBALL" >/dev/null
+    ./bin/check-sha512 "$musl_cc_sha512" "$musl_cc_tarball"
+    tar -tzf "$musl_cc_tarball" >/dev/null
 fi

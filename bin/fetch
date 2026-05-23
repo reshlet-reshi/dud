@@ -1,0 +1,27 @@
+#!/bin/sh
+set -eu
+
+usage() {
+    printf '%s\n' 'usage: ./bin/fetch <path_to_curl> <url> <out>'
+}
+
+if [ "${1:-}" = "--help" ]; then
+    usage
+    exit 0
+fi
+
+if [ "$#" -ne 3 ]; then
+    usage >&2
+    exit 2
+fi
+
+path_to_curl=$1
+url=$2
+out=$3
+
+if [ -e "$out" ]; then
+    exit 0
+fi
+
+mkdir -p "$(dirname "$out")"
+"$path_to_curl" -fL "$url" -o "$out"
