@@ -28,7 +28,7 @@ shell_files_sorted="$tmp/shell-files-sorted"
 
 : >"$shell_files"
 
-find . -path ./.git -prune -o -type f -print >"$repo_files"
+git ls-files --cached --others --exclude-standard >"$repo_files"
 
 while IFS= read -r path; do
     path=${path#./}
