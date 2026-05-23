@@ -8,13 +8,13 @@ path_to_curl=./bin/mock-curl
 
 MUSL_CC_TARBALL="$tmp/x86_64-linux-musl-cross.tgz"
 export MUSL_CC_TARBALL
-curl_calls="$tmp/curl-calls"
-export curl_calls
+mock_curl_calls="$tmp/mock-curl-calls"
+export mock_curl_calls
 
 sh -n steps/0000-fetch-musl-cc
 ./steps/0000-fetch-musl-cc "$path_to_curl"
-test "$(wc -l <"$curl_calls")" -eq 1
+test "$(wc -l <"$mock_curl_calls")" -eq 1
 test -e "$MUSL_CC_TARBALL"
 
 ./steps/0000-fetch-musl-cc "$path_to_curl"
-test "$(wc -l <"$curl_calls")" -eq 1
+test "$(wc -l <"$mock_curl_calls")" -eq 1
