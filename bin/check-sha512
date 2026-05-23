@@ -2,7 +2,7 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: ./bin/check-sha512 <expected-sha512> <file-path>'
+    printf '%s\n' 'usage: ./bin/check-sha512 <sha512-file> <file-path>'
 }
 
 if [ "${1:-}" = "--help" ]; then
@@ -15,7 +15,7 @@ if [ "$#" -ne 2 ]; then
     exit 2
 fi
 
-expected_sha512=$1
+sha512_file=$1
 file_path=$2
 
 if ! command -v sha512sum >/dev/null 2>&1; then
@@ -23,14 +23,36 @@ if ! command -v sha512sum >/dev/null 2>&1; then
     exit 2
 fi
 
+if [ ! -e "$sha512_file" ]; then
+    printf '%s\n' "$sha512_file does not exist" >&2
+    exit 2
+fi
+
+if [ -d "$sha512_file" ]; then
+    printf '%s\n' "$sha512_file is a directory" >&2
+    exit 2
+fi
+
+if [ ! -f "$sha512_file" ]; then
+    printf '%s\n' "$sha512_file is not a regular file" >&2
+    exit 2
+fi
+
+if [ ! -r "$sha512_file" ]; then
+    printf '%s\n' "$sha512_file is not readable" >&2
+    exit 2
+fi
+
+expected_sha512=$(tr -d '[:space:]' <"$sha512_file")
+
 if [ "${#expected_sha512}" -ne 128 ]; then
-    printf '%s\n' 'expected-sha512 must be 128 hex characters' >&2
+    printf '%s\n' "$sha512_file must contain 128 hex characters" >&2
     exit 2
 fi
 
 case "$expected_sha512" in
     *[!0123456789abcdefABCDEF]*)
-        printf '%s\n' 'expected-sha512 must be hex' >&2
+        printf '%s\n' "$sha512_file must contain only hex" >&2
         exit 2
         ;;
 esac
