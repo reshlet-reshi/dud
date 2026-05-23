@@ -5,13 +5,22 @@ set -eu
 rm -rf "$dud_tmp"
 
 self_check=false
+allow_curl=false
 for arg in "$@"; do
-    if [ "$arg" = "--self-check" ]; then
-        self_check=true
-        break
-    fi
+    case "$arg" in
+        --self-check)
+            self_check=true
+            ;;
+        --allow-curl)
+            allow_curl=true
+            ;;
+    esac
 done
 
 if [ "$self_check" = true ]; then
-    ./self-check/0000-fetch-musl-cc
+    if [ "$allow_curl" = true ]; then
+        ./self-check/0000-fetch-musl-cc --allow-curl
+    else
+        ./self-check/0000-fetch-musl-cc
+    fi
 fi

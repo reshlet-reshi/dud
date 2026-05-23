@@ -1,6 +1,14 @@
 #!/bin/sh
 set -eu
 
+allow_curl=false
+for arg in "$@"; do
+    if [ "$arg" = "--allow-curl" ]; then
+        allow_curl=true
+        break
+    fi
+done
+
 . ./lib/set-dud-tmp.sh
 . ./lib/ensure-dud-tmp-dir.sh
 
@@ -24,4 +32,6 @@ test "$(wc -l <"$mock_curl_calls")" -eq 1
 unset mock_curl_calls
 rm -f "$MUSL_CC_TARBALL"
 
-./steps/0000-fetch-musl-cc 'curl'
+if [ "$allow_curl" = true ]; then
+    ./steps/0000-fetch-musl-cc 'curl'
+fi
