@@ -37,13 +37,13 @@ if [ "$help" = true ]; then
     exit 0
 fi
 
-dud_tmp=${TMPDIR:-/tmp}/dud-tmp
-rm -rf "$dud_tmp"
+tmp=${TMPDIR:-/tmp}/dud-tmp
+rm -rf "$tmp"
 
 if [ "$self_check" = true ]; then
     if [ "$allow_curl" = true ]; then
-        ./self-check/0000-fetch-musl-cc --tmp "$dud_tmp" --allow-curl
+        ./self-check/0000-fetch-musl-cc --tmp "$tmp" --allow-curl
     else
-        ./self-check/0000-fetch-musl-cc --tmp "$dud_tmp"
+        ./self-check/0000-fetch-musl-cc --tmp "$tmp"
     fi
 fi

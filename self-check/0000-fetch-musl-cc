@@ -39,49 +39,47 @@ if [ "$tmp" = "" ]; then
     exit 2
 fi
 
-dud_tmp=$tmp
-
-if [ "${dud_tmp:-}" = "" ]; then
+if [ "${tmp:-}" = "" ]; then
     printf '%s\n' '--tmp is not set' >&2
     exit 1
 fi
 
-case "$dud_tmp" in
+case "$tmp" in
     /*) ;;
     *)
-        printf '%s\n' "--tmp is not absolute: $dud_tmp" >&2
+        printf '%s\n' "--tmp is not absolute: $tmp" >&2
         exit 1
         ;;
 esac
 
-if [ "$dud_tmp" = "/" ]; then
+if [ "$tmp" = "/" ]; then
     printf '%s\n' '--tmp must not be /' >&2
     exit 1
 fi
 
-if [ -e "$dud_tmp" ]; then
-    if [ ! -d "$dud_tmp" ]; then
-        printf '%s\n' "--tmp exists but is not a directory: $dud_tmp" >&2
+if [ -e "$tmp" ]; then
+    if [ ! -d "$tmp" ]; then
+        printf '%s\n' "--tmp exists but is not a directory: $tmp" >&2
         exit 1
     fi
-    if [ ! -r "$dud_tmp" ]; then
-        printf '%s\n' "--tmp exists but is not readable: $dud_tmp" >&2
+    if [ ! -r "$tmp" ]; then
+        printf '%s\n' "--tmp exists but is not readable: $tmp" >&2
         exit 1
     fi
-    if [ ! -w "$dud_tmp" ]; then
-        printf '%s\n' "--tmp exists but is not writable: $dud_tmp" >&2
+    if [ ! -w "$tmp" ]; then
+        printf '%s\n' "--tmp exists but is not writable: $tmp" >&2
         exit 1
     fi
 else
-    mkdir -p "$dud_tmp"
-    _dud_tmp_created_path=$dud_tmp
-    _cleanup_dud_tmp() {
-        rm -rf "$_dud_tmp_created_path"
+    mkdir -p "$tmp"
+    _created_tmp=$tmp
+    _cleanup_tmp() {
+        rm -rf "$_created_tmp"
     }
-    trap _cleanup_dud_tmp EXIT HUP INT TERM
+    trap _cleanup_tmp EXIT HUP INT TERM
 fi
 
-mock_curl="$dud_tmp/mock-curl"
+mock_curl="$tmp/mock-curl"
 mock_curl_calls="$mock_curl.calls"
 : >"$mock_curl_calls"
 
@@ -92,7 +90,7 @@ mock_curl_calls="$mock_curl.calls"
 } >"$mock_curl"
 chmod 755 "$mock_curl"
 
-musl_cc_tarball="$dud_tmp/x86_64-linux-musl-cross.tgz"
+musl_cc_tarball="$tmp/x86_64-linux-musl-cross.tgz"
 musl_cc_url=\
 'https://more.musl.cc/11.2.1/x86_64-linux-musl/'\
 'x86_64-linux-musl-cross.tgz'
