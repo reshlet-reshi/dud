@@ -32,8 +32,8 @@ sha256=${4:-}
 if [ ! -e "$out" ]; then
     mkdir -p "$(dirname "$out")"
     "$path_to_curl" -fL "$url" -o "$out"
-fi
 
-if [ -n "$sha256" ]; then
-    printf '%s  %s\n' "$sha256" "$out" | sha256sum -c -
+    if [ -n "$sha256" ]; then
+        printf '%s  %s\n' "$sha256" "$out" | sha256sum -c -
+    fi
 fi
