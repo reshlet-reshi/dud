@@ -2,7 +2,7 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: ./bin/fetch <path_to_curl> <url> <out> [sha512]'
+    printf '%s\n' 'usage: ./bin/fetch <path_to_curl> <url> <out> [sha256]'
     printf '%s\n' ''
     printf '%s\n' './bin/fetch --test : run self test'
     printf '%s\n' './bin/fetch --help : show this help'
@@ -26,13 +26,13 @@ fi
 path_to_curl=$1
 url=$2
 out=$3
-sha512=${4:-}
+sha256=${4:-}
 
 if [ ! -e "$out" ]; then
     mkdir -p "$(dirname "$out")"
     "$path_to_curl" -fL "$url" -o "$out"
 fi
 
-if [ -n "$sha512" ]; then
-    printf '%s  %s\n' "$sha512" "$out" | sha512sum -c -
+if [ -n "$sha256" ]; then
+    printf '%s  %s\n' "$sha256" "$out" | sha256sum -c -
 fi

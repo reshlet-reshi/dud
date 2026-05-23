@@ -1,0 +1,7 @@
+ShellCheck v0.11.0 Linux x86_64 release archive.
+
+Fetch/update with:
+    ./bin/fetch-source vendor/shellcheck/source.fetch
+
+Upstream: https://github.com/koalaman/shellcheck
+License: GPL-3.0-only; upstream LICENSE.txt is inside the archive.
