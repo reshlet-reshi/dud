@@ -22,25 +22,25 @@ shellcheck='.cache/vendor/shellcheck/shellcheck-v0.11.0.linux.x86_64/shellcheck-
 tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-shellcheck-all.XXXXXX")
 trap 'rm -rf "$tmp"' EXIT HUP INT TERM
 
-tracked_files="$tmp/tracked-files"
-shebang_files="$tmp/shebang-files"
+repo_files="$tmp/repo-files"
 shell_files="$tmp/shell-files"
 shell_files_sorted="$tmp/shell-files-sorted"
 
 : >"$shell_files"
 
-git ls-files >"$tracked_files"
+find . -path ./.git -prune -o -type f -print >"$repo_files"
 
 while IFS= read -r path; do
+    path=${path#./}
+    [ -n "$path" ] || continue
+
+    if git check-ignore -q -- "$path"; then
+        continue
+    fi
+
     case "$path" in
         *.sh) printf '%s\n' "$path" >>"$shell_files" ;;
     esac
-done <"$tracked_files"
-
-git grep -Il '^#!' >"$shebang_files" || true
-
-while IFS= read -r path; do
-    [ -n "$path" ] || continue
 
     first_line=
     IFS= read -r first_line <"$path" || true
@@ -50,7 +50,7 @@ while IFS= read -r path; do
             printf '%s\n' "$path" >>"$shell_files"
             ;;
     esac
-done <"$shebang_files"
+done <"$repo_files"
 
 sort -u "$shell_files" >"$shell_files_sorted"
 
