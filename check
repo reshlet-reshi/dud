@@ -37,7 +37,7 @@ if [ "$help" = true ]; then
     exit 0
 fi
 
-. ./lib/set-dud-tmp.sh
+dud_tmp=${TMPDIR:-/tmp}/dud-tmp
 rm -rf "$dud_tmp"
 
 if [ "$self_check" = true ]; then

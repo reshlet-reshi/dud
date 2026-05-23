@@ -81,14 +81,19 @@ else
     trap _cleanup_dud_tmp EXIT HUP INT TERM
 fi
 
+mock_curl="$dud_tmp/mock-curl"
+mock_curl_calls="$mock_curl.calls"
+: >"$mock_curl_calls"
+
+{
+    printf '%s\n' '#!/bin/sh'
+    printf '%s\n' 'set -eu'
+    printf '%s\n' 'exec ./bin/mock-curl "$0.calls" "$@"'
+} >"$mock_curl"
+chmod 755 "$mock_curl"
+
 MUSL_CC_TARBALL="$dud_tmp/x86_64-linux-musl-cross.tgz"
 export MUSL_CC_TARBALL
-
-mock_curl=./bin/mock-curl
-
-mock_curl_calls="$dud_tmp/mock-curl-calls"
-export mock_curl_calls
-: >"$mock_curl_calls"
 
 sh -n steps/0000-fetch-musl-cc
 ./steps/0000-fetch-musl-cc "$mock_curl"
@@ -98,7 +103,6 @@ test -e "$MUSL_CC_TARBALL"
 ./steps/0000-fetch-musl-cc "$mock_curl"
 test "$(wc -l <"$mock_curl_calls")" -eq 1
 
-unset mock_curl_calls
 rm -f "$MUSL_CC_TARBALL"
 
 if [ "$allow_curl" = true ]; then

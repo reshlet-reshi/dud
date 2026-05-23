@@ -1,21 +1,33 @@
 #!/bin/sh
 set -eu
 
-if [ "${mock_curl_calls:-}" = "" ]; then
-    printf '%s\n' 'mock_curl_calls is not set' >&2
+usage() {
+    printf '%s\n' 'usage: ./bin/mock-curl <calls-file> <curl-args...>'
+}
+
+if [ "${1:-}" = "--help" ]; then
+    usage
+    exit 0
+fi
+
+if [ "$#" -lt 1 ]; then
+    usage >&2
     exit 2
 fi
+
+mock_curl_calls=$1
+shift
 
 case "$mock_curl_calls" in
     /*) ;;
     *)
-        printf '%s\n' "mock_curl_calls is not absolute: $mock_curl_calls" >&2
+        printf '%s\n' "calls-file is not absolute: $mock_curl_calls" >&2
         exit 2
         ;;
 esac
 
 if [ -d "$mock_curl_calls" ]; then
-    printf '%s\n' "mock_curl_calls is a directory: $mock_curl_calls" >&2
+    printf '%s\n' "calls-file is a directory: $mock_curl_calls" >&2
     exit 2
 fi
 
