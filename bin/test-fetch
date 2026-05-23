@@ -1,0 +1,71 @@
+#!/bin/sh
+set -eu
+
+if [ "$#" -ne 0 ]; then
+    printf '%s\n' "unknown argument: $1" >&2
+    exit 2
+fi
+
+tmp_base=${TMPDIR:-/tmp}
+case "$tmp_base" in
+    /*) ;;
+    *)
+        printf '%s\n' "TMPDIR is not absolute: $tmp_base" >&2
+        exit 1
+        ;;
+esac
+
+if [ ! -d "$tmp_base" ]; then
+    printf '%s\n' "TMPDIR is not a directory: $tmp_base" >&2
+    exit 1
+fi
+
+if [ ! -r "$tmp_base" ]; then
+    printf '%s\n' "TMPDIR is not readable: $tmp_base" >&2
+    exit 1
+fi
+
+if [ ! -w "$tmp_base" ]; then
+    printf '%s\n' "TMPDIR is not writable: $tmp_base" >&2
+    exit 1
+fi
+
+tmp=$(mktemp -d "$tmp_base/dud-test-fetch.XXXXXX")
+_cleanup_tmp() {
+    rm -rf "$tmp"
+}
+trap _cleanup_tmp EXIT HUP INT TERM
+
+mock_curl="$tmp/mock-curl"
+mock_curl_calls="$mock_curl.calls"
+: >"$mock_curl_calls"
+
+{
+    printf '%s\n' '#!/bin/sh'
+    printf '%s\n' 'set -eu'
+    printf '%s\n' 'exec ./bin/mock-curl "$0.calls" "$@"'
+} >"$mock_curl"
+chmod 755 "$mock_curl"
+
+fetch_out="$tmp/rfc20.txt"
+fetch_url='https://www.rfc-editor.org/rfc/rfc20.txt'
+fetch_sha512="$tmp/rfc20.txt.sha512"
+expected_sha512=\
+'4c79bbd370f91098ebce376b9c44b84d'\
+'9a2a0d7e11ae7db87bd08026a7abe097'\
+'e890caed1c11a71498041bfd0cbdffb1'\
+'afd1a038e763d738f9a8904edcfb563f'
+
+sh -n bin/fetch
+./bin/fetch "$mock_curl" "$fetch_url" "$fetch_out"
+test "$(wc -l <"$mock_curl_calls")" -eq 1
+test -e "$fetch_out"
+
+./bin/fetch "$mock_curl" "$fetch_url" "$fetch_out"
+test "$(wc -l <"$mock_curl_calls")" -eq 1
+
+rm -f "$fetch_out"
+
+./bin/fetch 'curl' "$fetch_url" "$fetch_out"
+printf '%s\n' "$expected_sha512" >"$fetch_sha512"
+./bin/check-sha512 "$fetch_sha512" "$fetch_out"
