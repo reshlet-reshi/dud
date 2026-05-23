@@ -1,0 +1,64 @@
+#!/bin/sh
+set -eu
+
+usage() {
+    printf '%s\n' 'usage: ./bin/shellcheck-all'
+}
+
+if [ "${1:-}" = "--help" ]; then
+    usage
+    exit 0
+fi
+
+if [ "$#" -ne 0 ]; then
+    usage >&2
+    exit 2
+fi
+
+shellcheck='.cache/vendor/shellcheck/shellcheck-v0.11.0.linux.x86_64/shellcheck-v0.11.0/shellcheck'
+
+tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-shellcheck-all.XXXXXX")
+trap 'rm -rf "$tmp"' EXIT HUP INT TERM
+
+tracked_files="$tmp/tracked-files"
+shebang_files="$tmp/shebang-files"
+shell_files="$tmp/shell-files"
+shell_files_sorted="$tmp/shell-files-sorted"
+
+: >"$shell_files"
+
+git ls-files >"$tracked_files"
+
+while IFS= read -r path; do
+    case "$path" in
+        *.sh) printf '%s\n' "$path" >>"$shell_files" ;;
+    esac
+done <"$tracked_files"
+
+git grep -Il '^#!' >"$shebang_files" || true
+
+while IFS= read -r path; do
+    [ -n "$path" ] || continue
+
+    first_line=
+    IFS= read -r first_line <"$path" || true
+
+    case "$first_line" in
+        '#!/bin/sh' | '#!/usr/bin/env sh')
+            printf '%s\n' "$path" >>"$shell_files"
+            ;;
+    esac
+done <"$shebang_files"
+
+sort -u "$shell_files" >"$shell_files_sorted"
+
+status=0
+while IFS= read -r path; do
+    [ -n "$path" ] || continue
+
+    if ! "$shellcheck" -s sh -- "$path"; then
+        status=1
+    fi
+done <"$shell_files_sorted"
+
+exit "$status"

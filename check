@@ -4,4 +4,6 @@ sh -n check
 sh -n bin/cache-vendored
 sh -n bin/fetch
 sh -n bin/fetch-source
+sh -n bin/shellcheck-all
 ./bin/cache-vendored
+./bin/shellcheck-all
