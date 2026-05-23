@@ -34,4 +34,6 @@ rm -f "$MUSL_CC_TARBALL"
 
 if [ "$allow_curl" = true ]; then
     ./steps/0000-fetch-musl-cc 'curl'
+    ./bin/verify-musl-cc-tarball
+    tar -tzf "$MUSL_CC_TARBALL" >/dev/null
 fi
