@@ -1,11 +1,12 @@
 #!/bin/sh
 set -eu
 
-if ! ./bin/should-fetch-musl-cc; then
+. ./lib/set-musl-cc-tarball.sh
+
+if [ -e "$musl_cc_tarball" ]; then
     exit 0
 fi
 
-. ./lib/set-musl-cc-tarball.sh
 mkdir -p "$(dirname "$musl_cc_tarball")"
 
 musl_cc_url=\
