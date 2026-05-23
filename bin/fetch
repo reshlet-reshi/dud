@@ -3,7 +3,15 @@ set -eu
 
 usage() {
     printf '%s\n' 'usage: ./bin/fetch <path_to_curl> <url> <out> [sha512]'
+    printf '%s\n' ''
+    printf '%s\n' './bin/fetch --test : run self test'
+    printf '%s\n' './bin/fetch --help : show this help'
 }
+
+if [ "${1:-}" = "--test" ]; then
+    ./bin/fetch.test
+    exit $?
+fi
 
 if [ "${1:-}" = "--help" ]; then
     usage
