@@ -42,8 +42,8 @@ rm -rf "$dud_tmp"
 
 if [ "$self_check" = true ]; then
     if [ "$allow_curl" = true ]; then
-        ./self-check/0000-fetch-musl-cc --allow-curl
+        ./self-check/0000-fetch-musl-cc --tmp "$dud_tmp" --allow-curl
     else
-        ./self-check/0000-fetch-musl-cc
+        ./self-check/0000-fetch-musl-cc --tmp "$dud_tmp"
     fi
 fi
