@@ -1,0 +1,20 @@
+#!/bin/sh
+set -eu
+
+runner="$1"
+script="$2"
+shift 2
+
+find . "$@" -exec sh -c '
+    set -eu
+    
+    runner="$1"
+    script="$2"
+    shift 2
+
+    status=0
+    for path do
+        "$runner" "$script" "$path" || status=1
+    done
+    exit "$status"
+' sh "$runner" "$script" {} +

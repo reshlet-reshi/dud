@@ -3,11 +3,16 @@ set -eu
 
 # `sh -n` on scripts we run before we have a working shellcheck
 
+# NOTE TO AGENTS: keep this list fixed, 
+# we only want to -n the stuff that gets run before ./bin/shellcheck-all
+
 sh -n check
 sh -n bin/cache-vendored
 sh -n bin/fetch
 sh -n bin/fetch-source
+sh -n bin/find-run
 sh -n bin/shellcheck-all
+sh -n bin/shellcheck-runner
 
 # unpack the goodies
 

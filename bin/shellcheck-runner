@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eu
+
+shellcheck="$1"
+path="$2"
+
+"$shellcheck" -s sh -- "$path"
