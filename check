@@ -43,7 +43,7 @@ EOF
     src/main.c \
     src/action.c \
     src/fopen_argv.c \
-    src/quot.c \
+    src/lex.c \
     src/exit.c \
     -o .cache/dud-sh
 
@@ -53,8 +53,8 @@ EOF
 . ./lib/expect.sh
 
 expect_error 2 '???' .cache/dud-sh
-expect_error 2 '???' .cache/dud-sh --quot
+expect_error 2 '???' .cache/dud-sh --to-lexer-symbols
 expect_error 2 '???' .cache/dud-sh -c ':'
-expect_error 1 '!!!' .cache/dud-sh --quot .cache/test/no-such-file
+expect_error 1 '!!!' .cache/dud-sh --to-lexer-symbols .cache/test/no-such-file
 
-./test/test-quot
+./test/test-to-lexer-symbols

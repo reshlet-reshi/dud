@@ -1,0 +1,36 @@
+#!/bin/sh
+set -eu
+
+# shellcheck disable=SC1091
+. ./lib/expect.sh
+
+if [ ! -d .cache/test ]
+then
+    printf '%s\n' 'test/test-to-lexer-symbols: .cache/test does not exist' >&2
+    exit 1
+fi
+
+expect_output '.# ..' "$(.cache/dud-sh --to-lexer-symbols -c 'a# b~')" \
+    'argument source lexer symbols'
+expect_output '' "$(.cache/dud-sh --to-lexer-symbols -c '')" \
+    'empty argument source lexer symbols'
+
+stdin_expected=$(
+    printf '.\n\n# .\n.'
+)
+stdin_actual=$(
+    printf 'A\n\t# ~\200Z' | .cache/dud-sh --to-lexer-symbols -
+)
+expect_output "$stdin_expected" "$stdin_actual" 'stdin lexer symbols'
+
+printf 'x y#z' >.cache/test/to-lexer-symbols-normal
+expect_output '. .#.' \
+    "$(.cache/dud-sh --to-lexer-symbols .cache/test/to-lexer-symbols-normal)" \
+    'file lexer symbols'
+
+printf 'dash# name' >.cache/test/-to-lexer-symbols-dash
+dash_output=$(
+    cd .cache/test
+    ../dud-sh --to-lexer-symbols -- -to-lexer-symbols-dash
+)
+expect_output '....# ....' "$dash_output" 'dash-leading file lexer symbols'

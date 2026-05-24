@@ -2,9 +2,9 @@
 #include <string.h>
 
 #include "action.h"
-#include "quot.h"
+#include "lex.h"
 
 fn_action *action_from_arg(char *arg) {
-    if (strcmp(arg, "--quot") == 0) { return quot_bytes; }
+    if (strcmp(arg, "--to-lexer-symbols") == 0) { return to_lexer_symbols; }
     return NULL;
 }
