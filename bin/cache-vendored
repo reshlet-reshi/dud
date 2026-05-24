@@ -86,7 +86,7 @@ cache_source_fetch() {
     mkdir -p "$cache_parent"
 
     cache_tmp=$(mktemp -d "$cache_parent/.cache-vendored.XXXXXX")
-    extract_artifact "$artifact" "$cache_tmp"
+    extract_artifact "$source_fetch_out" "$cache_tmp"
 
     if [ -e "$cache_dir" ]; then
         printf '%s\n' "cache destination appeared during extraction: $cache_dir" >&2
