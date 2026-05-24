@@ -1,7 +1,7 @@
 #ifndef EXIT_H
 #define EXIT_H
 
-_Noreturn void exit_1(void);
-_Noreturn void exit_2(void);
+void exit_1(void);
+void exit_2(void);
 
 #endif

@@ -19,8 +19,10 @@ unsigned char to_lexer_symbol(int c) {
     return '\n';
 }
 
-void to_lexer_symbols(FILE *input) {
+void to_lexer_symbols(void *arg) {
+    FILE *input = (FILE *) arg;
     int c;
+
     while ((c = fgetc(input)) != EOF) {
         int written = fputc(
             to_lexer_symbol(c), 
