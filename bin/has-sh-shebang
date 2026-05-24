@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+
+path="$1"
+
+first_line=
+
+# Read the first line verbatim, tolerating empty files.
+IFS= read -r first_line <"$path" || true
+
+case "$first_line" in
+    '#!/bin/sh' | '#!/usr/bin/env sh') exit 0 ;;
+esac
+
+exit 1
