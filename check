@@ -2,7 +2,17 @@
 set -eu
 
 # `sh -n` on scripts before we have a working shellcheck
+#
+# NOTE we purposly check a number of fixed scripts
+# by hand first: those called downstream of ./bin/for-each-sh-script itself
+#
+# BUG maintainging this list by hand is gross, 
+# but is the right thing to do, I think
 
+sh -n ./bin/for-each-sh-script
+sh -n ./bin/sh-n
+sh -n ./bin/find-run
+sh -n ./bin/has-sh-shebang
 ./bin/for-each-sh-script sh ./bin/sh-n
 
 # unpack the goodies
