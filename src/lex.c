@@ -1,5 +1,5 @@
 #include "dud/io.h"
-#include "exit.h"
+#include "dud/exit.h"
 #include "lex.h"
 
 unsigned char to_lexer_symbol(int c) {
@@ -28,16 +28,16 @@ void to_lexer_symbols(void *arg) {
             dud_stdout()
         );
         if (written == dud_eof()) {
-            exit_1();
+            dud_exit_1();
         }
     }
 
     if (dud_ferror(input)) {
-        exit_1();
+        dud_exit_1();
     }
 
     if (dud_fflush(dud_stdout()) == dud_eof()) {
-        exit_1();
+        dud_exit_1();
     }
 
     return;

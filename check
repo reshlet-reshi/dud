@@ -57,9 +57,9 @@ cc_strict \
     src/action.c \
     src/dud/io.c \
     src/dud/str.c \
+    src/dud/exit.c \
     src/fopen_argv.c \
     src/lex.c \
-    src/exit.c \
     -o .cache/dud-sh
 
 # dud-sh smoke tests

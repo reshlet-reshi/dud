@@ -1,7 +1,7 @@
 #include "dud/io.h"
+#include "dud/exit.h"
 #include "dud/macro.h"
 #include "dud/str.h"
-#include "exit.h"
 #include "fopen_argv.h"
 
 enum kind {
@@ -29,7 +29,7 @@ static void * fopen_arg(char * arg) {
         "rb"
     );
     if (stream == ((void *) 0)) {
-        exit_1();
+        dud_exit_1();
     }
     return stream;
 }
@@ -37,7 +37,7 @@ static void * fopen_arg(char * arg) {
 static void * fopen_path(char * arg) {
     void *file = dud_fopen(arg, "rb");
     if (file == ((void *) 0)) {
-        exit_1();
+        dud_exit_1();
     }
     return file;
 }
@@ -69,17 +69,17 @@ void *fopen_argv(
     int *should_close
 ) {
     if (argc < 3) {
-        exit_2();
+        dud_exit_2();
     }
 
     enum kind kind = kind_from_arg(argv[2]);
     if (kind == INPUT_NIL) {
-        exit_2();
+        dud_exit_2();
     }
 
     struct config config = lookup[kind];
     if (config.argc != argc){
-        exit_2();
+        dud_exit_2();
     }
 
     char * arg = argv[argc - 1];
