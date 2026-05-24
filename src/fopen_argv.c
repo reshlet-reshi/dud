@@ -56,9 +56,9 @@ struct config lookup[] = {
 STATIC_ASSERT((sizeof(lookup)/sizeof(0[lookup])) == INPUT_MAX);
 
 static enum kind kind_from_arg(char *arg) {
-    if (dud_strcmp(arg, "-c") == 0) { return INPUT_ARG; }
-    if (dud_strcmp(arg, "--") == 0) { return INPUT_DASH_DASH;}
-    if (dud_strcmp(arg, "-") == 0) { return INPUT_STDIN; }
+    if (dud_streq(arg, "-c")) { return INPUT_ARG; }
+    if (dud_streq(arg, "--")) { return INPUT_DASH_DASH;}
+    if (dud_streq(arg, "-")) { return INPUT_STDIN; }
     if (arg[0] == '-') { return INPUT_NIL; }
     return INPUT_FILE;
 }
