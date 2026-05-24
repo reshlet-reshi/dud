@@ -33,13 +33,13 @@ sh -n ./bin/sh-n
 mkdir -p .cache
 
 ./bin/musl-cc \
-    src/main.c \
-    src/action.c \
+    src/dud-sh/main.c \
+    src/dud-sh/action.c \
     src/clib/io.c \
     src/clib/str.c \
     src/clib/exit.c \
-    src/fopen_argv.c \
-    src/lex.c \
+    src/dud-sh/fopen_argv.c \
+    src/dud-sh/lex.c \
     -o .cache/dud-sh
 
 # dud-sh smoke tests

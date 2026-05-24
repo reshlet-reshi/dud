@@ -1,10 +1,10 @@
 
 #include "fopen_argv.h"
 
-#include "clib/exit.h"
-#include "clib/io.h"
-#include "clib/macro.h"
-#include "clib/str.h"
+#include "../clib/exit.h"
+#include "../clib/io.h"
+#include "../clib/macro.h"
+#include "../clib/str.h"
 
 
 
