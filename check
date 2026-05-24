@@ -23,6 +23,19 @@ musl_cc=\
 '.cache/vendor/musl-cc/x86_64-linux-musl-native/'\
 'x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc'
 
+cc_strict() {
+    "$musl_cc" \
+        -std=c11 \
+        -Wall \
+        -Wextra \
+        -Wpedantic \
+        -Werror \
+        -Wmissing-prototypes \
+        -Wstrict-prototypes \
+        -Wold-style-definition \
+        "$@"
+}
+
 return_0_c='.cache/test/return-0.c'
 return_0='.cache/test/return-0'
 
@@ -33,12 +46,12 @@ int main(void) {
 }
 EOF
 
-"$musl_cc" -static "$return_0_c" -o "$return_0"
+cc_strict -static "$return_0_c" -o "$return_0"
 "$return_0"
 
 # build dud-sh
 
-"$musl_cc" \
+cc_strict \
     -static \
     src/main.c \
     src/action.c \
