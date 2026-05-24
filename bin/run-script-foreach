@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+
+runner="$1"
+script="$2"
+shift 2
+
+status=0
+
+for arg do
+    "$runner" "$script" "$arg" || status=1
+done
+
+exit "$status"
