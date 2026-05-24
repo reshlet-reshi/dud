@@ -42,10 +42,8 @@ EOF
     -static \
     src/main.c \
     src/action.c \
-    src/cat.c \
     src/fopen_argv.c \
     src/quot.c \
-    src/wc_c.c \
     src/exit.c \
     -o .cache/dud-sh
 
@@ -55,10 +53,8 @@ EOF
 . ./lib/expect.sh
 
 expect_error 2 '???' .cache/dud-sh
-expect_error 2 '???' .cache/dud-sh --wc-c
+expect_error 2 '???' .cache/dud-sh --quot
 expect_error 2 '???' .cache/dud-sh -c ':'
-expect_error 1 '!!!' .cache/dud-sh --wc-c .cache/test/no-such-file
+expect_error 1 '!!!' .cache/dud-sh --quot .cache/test/no-such-file
 
-./test/test-wc-c
-./test/test-cat
 ./test/test-quot
