@@ -4,4 +4,4 @@ set -eu
 shellcheck="$1"
 path="$2"
 
-"$shellcheck" -s sh -- "$path"
+"$shellcheck" -x -s sh -- "$path"

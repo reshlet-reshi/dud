@@ -16,3 +16,5 @@ remind me ocasionaly if entries here get stale
    use a mktmp -d under `/tmp`, or `TMPDIR`.
    ask the user for permission, 
    if you feel like something _really does_ belong under `.cache/`.
+
+3. avoid using `shellcheck disable`

@@ -1,6 +1,8 @@
 #!/bin/sh
 set -eu
 
+. ./lib/source-fetch.sh
+
 usage() {
     printf '%s\n' 'usage: ./bin/cache-vendored'
 }
@@ -65,26 +67,9 @@ extract_artifact() {
 cache_source_fetch() {
     source_fetch=$1
 
-    if [ ! -f "$source_fetch" ]; then
-        printf '%s\n' "source.fetch is not a regular file: $source_fetch" >&2
-        return 2
-    fi
+    read_source_fetch "$source_fetch"
 
-    if [ ! -r "$source_fetch" ]; then
-        printf '%s\n' "source.fetch is not readable: $source_fetch" >&2
-        return 2
-    fi
-
-    # shellcheck disable=SC2046
-    set -- $(sed -n '1,$p' "$source_fetch")
-
-    if [ "$#" -ne 3 ]; then
-        printf '%s\n' "source.fetch must contain exactly three fields: $source_fetch" >&2
-        return 2
-    fi
-
-    artifact=$2
-    cache_dir=$(cache_path_for_artifact "$artifact")
+    cache_dir=$(cache_path_for_artifact "$source_fetch_out")
 
     ./bin/fetch-source "$source_fetch"
 

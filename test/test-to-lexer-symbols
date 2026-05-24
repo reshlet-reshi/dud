@@ -1,7 +1,6 @@
 #!/bin/sh
 set -eu
 
-# shellcheck disable=SC1091
 . ./test/expect.sh
 
 test_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-test-to-lexer-symbols.XXXXXX")

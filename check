@@ -52,7 +52,6 @@ cleanup_check_tmp() {
 
 trap cleanup_check_tmp EXIT HUP INT TERM
 
-# shellcheck disable=SC1091
 . ./test/expect.sh
 
 expect_error 2 '???' .cache/dud-sh
