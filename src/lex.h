@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-int to_lexer_symbol(int byte);
+unsigned char to_lexer_symbol(int byte);
 void to_lexer_symbols(FILE *input);
 
 #endif

@@ -3,16 +3,16 @@
 #include "exit.h"
 #include "lex.h"
 
-int to_lexer_symbol(int byte) {
-    if (byte == '#') {
+unsigned char to_lexer_symbol(int c) {
+    if (c == '#') {
         return '#';
     }
 
-    if (byte == ' ') {
+    if (c == ' ') {
         return ' ';
     }
 
-    if (byte >= '!' && byte <= '~') {
+    if (c >= '!' && c <= '~') {
         return '.';
     }
 
@@ -20,10 +20,10 @@ int to_lexer_symbol(int byte) {
 }
 
 void to_lexer_symbols(FILE *input) {
-    int byte;
-    while ((byte = fgetc(input)) != EOF) {
+    int c;
+    while ((c = fgetc(input)) != EOF) {
         int written = fputc(
-            to_lexer_symbol(byte), 
+            to_lexer_symbol(c), 
             stdout
         );
         if (written == EOF) {
