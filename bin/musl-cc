@@ -1,0 +1,18 @@
+#!/bin/sh
+set -eu
+
+musl_cc=\
+'.cache/vendor/musl-cc/x86_64-linux-musl-native/'\
+'x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc'
+
+"$musl_cc" \
+    -std=c11 \
+    -Wall \
+    -Wextra \
+    -Wpedantic \
+    -Werror \
+    -Wmissing-prototypes \
+    -Wstrict-prototypes \
+    -Wold-style-definition \
+    -static \
+    "$@"

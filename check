@@ -26,23 +26,6 @@ sh -n ./bin/has-sh-shebang
 
 # musl-cc smoke test
 
-musl_cc=\
-'.cache/vendor/musl-cc/x86_64-linux-musl-native/'\
-'x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc'
-
-cc_strict() {
-    "$musl_cc" \
-        -std=c11 \
-        -Wall \
-        -Wextra \
-        -Wpedantic \
-        -Werror \
-        -Wmissing-prototypes \
-        -Wstrict-prototypes \
-        -Wold-style-definition \
-        "$@"
-}
-
 return_0_c='.cache/test/return-0.c'
 return_0='.cache/test/return-0'
 
@@ -53,13 +36,12 @@ int main(void) {
 }
 EOF
 
-cc_strict -static "$return_0_c" -o "$return_0"
+./bin/musl-cc "$return_0_c" -o "$return_0"
 "$return_0"
 
 # build dud-sh
 
-cc_strict \
-    -static \
+./bin/musl-cc \
     src/main.c \
     src/action.c \
     src/dud/io.c \
