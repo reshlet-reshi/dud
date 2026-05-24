@@ -11,7 +11,7 @@ set -eu
 
 sh -n ./bin/for-each-sh-script
 sh -n ./bin/sh-n
-sh -n ./bin/find-run
+sh -n ./bin/run-script-for-path-in-find
 sh -n ./bin/has-sh-shebang
 ./bin/for-each-sh-script sh ./bin/sh-n
 
