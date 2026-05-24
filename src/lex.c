@@ -1,6 +1,10 @@
-#include "dud/io.h"
-#include "dud/exit.h"
+
 #include "lex.h"
+
+#include "dud/exit.h"
+#include "dud/io.h"
+
+
 
 unsigned char to_lexer_symbol(int c) {
     if (c == '#') {

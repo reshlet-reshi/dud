@@ -1,8 +1,11 @@
+
 #define _POSIX_C_SOURCE 200809L
 
 #include <stdio.h>
 
 #include "io.h"
+
+
 
 void *dud_fopen(char *path, char *mode) {
     return fopen(path, mode);

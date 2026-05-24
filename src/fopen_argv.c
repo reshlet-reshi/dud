@@ -1,8 +1,12 @@
-#include "dud/io.h"
+
+#include "fopen_argv.h"
+
 #include "dud/exit.h"
+#include "dud/io.h"
 #include "dud/macro.h"
 #include "dud/str.h"
-#include "fopen_argv.h"
+
+
 
 enum kind {
     INPUT_ARG,

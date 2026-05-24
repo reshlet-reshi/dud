@@ -1,4 +1,7 @@
+
 #include "str.h"
+
+
 
 int dud_streq(char *s1, char *s2) {
     int i = 0;
