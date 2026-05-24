@@ -61,7 +61,7 @@ cc_strict \
 # dud-sh smoke tests
 
 # shellcheck disable=SC1091
-. ./lib/expect.sh
+. ./test/expect.sh
 
 expect_error 2 '???' .cache/dud-sh
 expect_error 2 '???' .cache/dud-sh --to-lexer-symbols

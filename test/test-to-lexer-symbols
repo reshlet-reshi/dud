@@ -2,7 +2,7 @@
 set -eu
 
 # shellcheck disable=SC1091
-. ./lib/expect.sh
+. ./test/expect.sh
 
 if [ ! -d .cache/test ]
 then
