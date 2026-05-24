@@ -10,10 +10,10 @@ set -eu
 # but is the right thing to do, I think
 
 sh -n ./bin/for-each-sh-script
-sh -n ./bin/sh-n
+sh -n ./bin/has-sh-shebang
 sh -n ./bin/run-script-for-path-in-find
 sh -n ./bin/run-script-foreach
-sh -n ./bin/has-sh-shebang
+sh -n ./bin/sh-n
 ./bin/for-each-sh-script sh ./bin/sh-n
 
 # unpack the goodies
