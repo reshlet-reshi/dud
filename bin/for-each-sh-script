@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+
+./bin/find-run "$1" "$2" \
+    \( -path './.git' -o -path './.cache' \) -prune -o \
+    -type f \
+    \( \
+        -name '*.sh' \
+        -o \
+        -exec ./bin/has-sh-shebang {} \; \
+    \)
