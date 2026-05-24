@@ -26,25 +26,7 @@ sh -n ./bin/sh-n
 
 # musl-cc smoke test
 
-check_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-check.XXXXXX")
-
-cleanup_check_tmp() {
-    rm -rf "$check_tmp"
-}
-
-trap cleanup_check_tmp EXIT HUP INT TERM
-
-return_0_c="$check_tmp/return-0.c"
-return_0="$check_tmp/return-0"
-
-cat >"$return_0_c" <<'EOF'
-int main(void) {
-    return 0;
-}
-EOF
-
-./bin/musl-cc "$return_0_c" -o "$return_0"
-"$return_0"
+./test/test-musl-cc
 
 # build dud-sh
 
@@ -61,6 +43,14 @@ mkdir -p .cache
     -o .cache/dud-sh
 
 # dud-sh smoke tests
+
+check_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-check.XXXXXX")
+
+cleanup_check_tmp() {
+    rm -rf "$check_tmp"
+}
+
+trap cleanup_check_tmp EXIT HUP INT TERM
 
 # shellcheck disable=SC1091
 . ./test/expect.sh
