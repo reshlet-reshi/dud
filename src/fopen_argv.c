@@ -1,10 +1,10 @@
 
 #include "fopen_argv.h"
 
-#include "dud/exit.h"
-#include "dud/io.h"
-#include "dud/macro.h"
-#include "dud/str.h"
+#include "clib/exit.h"
+#include "clib/io.h"
+#include "clib/macro.h"
+#include "clib/str.h"
 
 
 
@@ -27,28 +27,28 @@ struct config {
 };
 
 static void * fopen_arg(char * arg) {
-    void *stream = dud_fmemopen(
+    void *stream = clib_fmemopen(
         (void *)arg, 
-        dud_strlen(arg), 
+        clib_strlen(arg),
         "rb"
     );
     if (stream == ((void *) 0)) {
-        dud_exit_1();
+        clib_exit_1();
     }
     return stream;
 }
 
 static void * fopen_path(char * arg) {
-    void *file = dud_fopen(arg, "rb");
+    void *file = clib_fopen(arg, "rb");
     if (file == ((void *) 0)) {
-        dud_exit_1();
+        clib_exit_1();
     }
     return file;
 }
 
 static void * fopen_stdin(char * arg) {
     (void) arg;
-    return dud_stdin();
+    return clib_stdin();
 }
 
 struct config lookup[] = {
@@ -57,12 +57,12 @@ struct config lookup[] = {
     { 3, 1, fopen_path },   // INPUT_FILE
     { 3, 0, fopen_stdin},   // INPUT_STDIN
 };
-STATIC_ASSERT((sizeof(lookup)/sizeof(0[lookup])) == INPUT_MAX);
+CLIB_STATIC_ASSERT((sizeof(lookup)/sizeof(0[lookup])) == INPUT_MAX);
 
 static enum kind kind_from_arg(char *arg) {
-    if (dud_streq(arg, "-c")) { return INPUT_ARG; }
-    if (dud_streq(arg, "--")) { return INPUT_DASH_DASH;}
-    if (dud_streq(arg, "-")) { return INPUT_STDIN; }
+    if (clib_streq(arg, "-c")) { return INPUT_ARG; }
+    if (clib_streq(arg, "--")) { return INPUT_DASH_DASH;}
+    if (clib_streq(arg, "-")) { return INPUT_STDIN; }
     if (arg[0] == '-') { return INPUT_NIL; }
     return INPUT_FILE;
 }
@@ -73,17 +73,17 @@ void *fopen_argv(
     int *should_close
 ) {
     if (argc < 3) {
-        dud_exit_2();
+        clib_exit_2();
     }
 
     enum kind kind = kind_from_arg(argv[2]);
     if (kind == INPUT_NIL) {
-        dud_exit_2();
+        clib_exit_2();
     }
 
     struct config config = lookup[kind];
     if (config.argc != argc){
-        dud_exit_2();
+        clib_exit_2();
     }
 
     char * arg = argv[argc - 1];

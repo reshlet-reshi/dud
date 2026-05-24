@@ -1,8 +1,8 @@
 
 #include "lex.h"
 
-#include "dud/exit.h"
-#include "dud/io.h"
+#include "clib/exit.h"
+#include "clib/io.h"
 
 
 
@@ -26,22 +26,22 @@ void to_lexer_symbols(void *arg) {
     void *input = arg;
     int c;
 
-    while ((c = dud_fgetc(input)) != dud_eof()) {
-        int written = dud_fputc(
+    while ((c = clib_fgetc(input)) != clib_eof()) {
+        int written = clib_fputc(
             to_lexer_symbol(c), 
-            dud_stdout()
+            clib_stdout()
         );
-        if (written == dud_eof()) {
-            dud_exit_1();
+        if (written == clib_eof()) {
+            clib_exit_1();
         }
     }
 
-    if (dud_ferror(input)) {
-        dud_exit_1();
+    if (clib_ferror(input)) {
+        clib_exit_1();
     }
 
-    if (dud_fflush(dud_stdout()) == dud_eof()) {
-        dud_exit_1();
+    if (clib_fflush(clib_stdout()) == clib_eof()) {
+        clib_exit_1();
     }
 
     return;
