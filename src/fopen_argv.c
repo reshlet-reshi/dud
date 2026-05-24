@@ -1,6 +1,5 @@
-#include <assert.h>
-
 #include "dud/io.h"
+#include "dud/macro.h"
 #include "dud/str.h"
 #include "exit.h"
 #include "fopen_argv.h"
@@ -54,7 +53,7 @@ struct config lookup[] = {
     { 3, 1, fopen_path },   // INPUT_FILE
     { 3, 0, fopen_stdin},   // INPUT_STDIN
 };
-static_assert((sizeof(lookup)/sizeof(0[lookup])) == INPUT_MAX);
+STATIC_ASSERT((sizeof(lookup)/sizeof(0[lookup])) == INPUT_MAX);
 
 static enum kind kind_from_arg(char *arg) {
     if (dud_strcmp(arg, "-c") == 0) { return INPUT_ARG; }
