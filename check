@@ -46,9 +46,15 @@ sh -n ./bin/sh-n
 
 ./test/test-musl-cc
 
-# build dud-sh
+# ensure cache dir
 
 mkdir -p .cache
+
+# build ctok
+
+./bin/musl-cc src/ctok/main.c -o .cache/ctok
+
+# build dud-sh
 
 ./bin/musl-cc \
     src/dud-sh/main.c \
