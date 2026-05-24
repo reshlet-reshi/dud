@@ -1,5 +1,4 @@
-#include <stdio.h>
-
+#include "dud/io.h"
 #include "exit.h"
 #include "lex.h"
 
@@ -20,24 +19,24 @@ unsigned char to_lexer_symbol(int c) {
 }
 
 void to_lexer_symbols(void *arg) {
-    FILE *input = (FILE *) arg;
+    void *input = arg;
     int c;
 
-    while ((c = fgetc(input)) != EOF) {
-        int written = fputc(
+    while ((c = dud_fgetc(input)) != dud_eof()) {
+        int written = dud_fputc(
             to_lexer_symbol(c), 
-            stdout
+            dud_stdout()
         );
-        if (written == EOF) {
+        if (written == dud_eof()) {
             exit_1();
         }
     }
 
-    if (ferror(input)) {
+    if (dud_ferror(input)) {
         exit_1();
     }
 
-    if (fflush(stdout) == EOF) {
+    if (dud_fflush(dud_stdout()) == dud_eof()) {
         exit_1();
     }
 

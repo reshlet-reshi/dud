@@ -1,6 +1,5 @@
-#include <stdio.h>
-
 #include "action.h"
+#include "dud/io.h"
 #include "exit.h"
 #include "fopen_argv.h"
 
@@ -15,11 +14,11 @@ int main(int argc, char *argv[]) {
     }
 
     int should_close;
-    FILE *input = fopen_argv(argc, argv, &should_close);
+    void *input = fopen_argv(argc, argv, &should_close);
 
     action(input);
 
-    if (should_close && fclose(input) != 0) {
+    if (should_close && dud_fclose(input) != 0) {
         exit_1();
     }
 

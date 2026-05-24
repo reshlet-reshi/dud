@@ -1,9 +1,7 @@
-#define _POSIX_C_SOURCE 200809L
-
 #include <assert.h>
-#include <stdio.h>
 #include <string.h>
 
+#include "dud/io.h"
 #include "exit.h"
 #include "fopen_argv.h"
 
@@ -17,7 +15,7 @@ enum kind {
     INPUT_NIL = -1,
 };
 
-typedef FILE * fn_fopen(char *);
+typedef void * fn_fopen(char *);
 
 struct config {
     int argc;
@@ -25,8 +23,8 @@ struct config {
     fn_fopen *p_fopen;
 };
 
-static FILE * fopen_arg(char * arg) {
-    FILE *stream = fmemopen(
+static void * fopen_arg(char * arg) {
+    void *stream = dud_fmemopen(
         (void *)arg, 
         strlen(arg), 
         "rb"
@@ -37,17 +35,17 @@ static FILE * fopen_arg(char * arg) {
     return stream;
 }
 
-static FILE * fopen_path(char * arg) {
-    FILE *file = fopen(arg, "rb");
+static void * fopen_path(char * arg) {
+    void *file = dud_fopen(arg, "rb");
     if (file == NULL) {
         exit_1();
     }
     return file;
 }
 
-static FILE * fopen_stdin(char * arg) {
+static void * fopen_stdin(char * arg) {
     (void) arg;
-    return stdin;
+    return dud_stdin();
 }
 
 struct config lookup[] = {
@@ -66,7 +64,7 @@ static enum kind kind_from_arg(char *arg) {
     return INPUT_FILE;
 }
 
-FILE *fopen_argv(
+void *fopen_argv(
     int argc, 
     char *argv[], 
     int *should_close
