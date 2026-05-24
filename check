@@ -1,6 +1,24 @@
 #!/bin/sh
 set -eu
 
+do_clear=1
+
+if [ "${1:-}" = "--no-clear" ]; then
+    do_clear=0
+    shift
+fi
+
+if [ "$#" -ne 0 ]; then
+    printf '%s\n' 'usage: ./check [--no-clear]' >&2
+    exit 2
+fi
+
+# by default, clear the screen if writing to a tty
+
+if [ "$do_clear" -ne 0 ] && [ -t 1 ]; then
+    printf '\033[H\033[J'
+fi
+
 # `sh -n` on scripts before we have a working shellcheck
 #
 # NOTE we purposly check a number of fixed scripts
