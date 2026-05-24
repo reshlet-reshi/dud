@@ -56,6 +56,7 @@ cc_strict \
     src/main.c \
     src/action.c \
     src/dud/io.c \
+    src/dud/str.c \
     src/fopen_argv.c \
     src/lex.c \
     src/exit.c \

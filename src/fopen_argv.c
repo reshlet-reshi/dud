@@ -1,7 +1,7 @@
 #include <assert.h>
-#include <string.h>
 
 #include "dud/io.h"
+#include "dud/str.h"
 #include "exit.h"
 #include "fopen_argv.h"
 
@@ -26,10 +26,10 @@ struct config {
 static void * fopen_arg(char * arg) {
     void *stream = dud_fmemopen(
         (void *)arg, 
-        strlen(arg), 
+        dud_strlen(arg), 
         "rb"
     );
-    if (stream == NULL) {
+    if (stream == ((void *) 0)) {
         exit_1();
     }
     return stream;
@@ -37,7 +37,7 @@ static void * fopen_arg(char * arg) {
 
 static void * fopen_path(char * arg) {
     void *file = dud_fopen(arg, "rb");
-    if (file == NULL) {
+    if (file == ((void *) 0)) {
         exit_1();
     }
     return file;
@@ -57,9 +57,9 @@ struct config lookup[] = {
 static_assert((sizeof(lookup)/sizeof(0[lookup])) == INPUT_MAX);
 
 static enum kind kind_from_arg(char *arg) {
-    if (strcmp(arg, "-c") == 0) { return INPUT_ARG; }
-    if (strcmp(arg, "--") == 0) { return INPUT_DASH_DASH;}
-    if (strcmp(arg, "-") == 0) { return INPUT_STDIN; }
+    if (dud_strcmp(arg, "-c") == 0) { return INPUT_ARG; }
+    if (dud_strcmp(arg, "--") == 0) { return INPUT_DASH_DASH;}
+    if (dud_strcmp(arg, "-") == 0) { return INPUT_STDIN; }
     if (arg[0] == '-') { return INPUT_NIL; }
     return INPUT_FILE;
 }
