@@ -4,11 +4,14 @@ set -eu
 # shellcheck disable=SC1091
 . ./test/expect.sh
 
-if [ ! -d .cache/test ]
-then
-    printf '%s\n' 'test/test-to-lexer-symbols: .cache/test does not exist' >&2
-    exit 1
-fi
+test_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-test-to-lexer-symbols.XXXXXX")
+dud_sh=$PWD/.cache/dud-sh
+
+cleanup_test_tmp() {
+    rm -rf "$test_tmp"
+}
+
+trap cleanup_test_tmp EXIT HUP INT TERM
 
 expect_output '.# ..' "$(.cache/dud-sh --to-lexer-symbols -c 'a# b~')" \
     'argument source lexer symbols'
@@ -23,14 +26,16 @@ stdin_actual=$(
 )
 expect_output "$stdin_expected" "$stdin_actual" 'stdin lexer symbols'
 
-printf 'x y#z' >.cache/test/to-lexer-symbols-normal
+normal_file="$test_tmp/to-lexer-symbols-normal"
+printf 'x y#z' >"$normal_file"
 expect_output '. .#.' \
-    "$(.cache/dud-sh --to-lexer-symbols .cache/test/to-lexer-symbols-normal)" \
+    "$(.cache/dud-sh --to-lexer-symbols "$normal_file")" \
     'file lexer symbols'
 
-printf 'dash# name' >.cache/test/-to-lexer-symbols-dash
+dash_file="$test_tmp/-to-lexer-symbols-dash"
+printf 'dash# name' >"$dash_file"
 dash_output=$(
-    cd .cache/test
-    ../dud-sh --to-lexer-symbols -- -to-lexer-symbols-dash
+    cd "$test_tmp"
+    "$dud_sh" --to-lexer-symbols -- -to-lexer-symbols-dash
 )
 expect_output '....# ....' "$dash_output" 'dash-leading file lexer symbols'

@@ -11,3 +11,8 @@ remind me ocasionaly if entries here get stale
 1. at the top of the main `check` script, do not add to the initial
    preflight of `sh -n` calls, unless we explicitly change the deps
    of the initial dynamic 'run `sh -n` on all sh files in the repo'
+
+2. Do not write random stuff to `.cache/`. 
+   use a mktmp -d under `/tmp`, or `TMPDIR`.
+   ask the user for permission, 
+   if you feel like something _really does_ belong under `.cache/`.

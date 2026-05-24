@@ -26,10 +26,17 @@ sh -n ./bin/sh-n
 
 # musl-cc smoke test
 
-return_0_c='.cache/test/return-0.c'
-return_0='.cache/test/return-0'
+check_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-check.XXXXXX")
 
-mkdir -p "$(dirname "$return_0")"
+cleanup_check_tmp() {
+    rm -rf "$check_tmp"
+}
+
+trap cleanup_check_tmp EXIT HUP INT TERM
+
+return_0_c="$check_tmp/return-0.c"
+return_0="$check_tmp/return-0"
+
 cat >"$return_0_c" <<'EOF'
 int main(void) {
     return 0;
@@ -40,6 +47,8 @@ EOF
 "$return_0"
 
 # build dud-sh
+
+mkdir -p .cache
 
 ./bin/musl-cc \
     src/main.c \
@@ -59,6 +68,6 @@ EOF
 expect_error 2 '???' .cache/dud-sh
 expect_error 2 '???' .cache/dud-sh --to-lexer-symbols
 expect_error 2 '???' .cache/dud-sh -c ':'
-expect_error 1 '!!!' .cache/dud-sh --to-lexer-symbols .cache/test/no-such-file
+expect_error 1 '!!!' .cache/dud-sh --to-lexer-symbols "$check_tmp/no-such-file"
 
 ./test/test-to-lexer-symbols
