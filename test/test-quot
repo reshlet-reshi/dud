@@ -1,0 +1,32 @@
+#!/bin/sh
+set -eu
+
+# shellcheck disable=SC1091
+. ./lib/expect.sh
+
+if [ ! -d .cache/test ]
+then
+    printf '%s\n' 'test/test-quot: .cache/test does not exist' >&2
+    exit 1
+fi
+
+expect_output '.# ..' "$(.cache/dud-sh --quot -c 'a# b~')" 'argument source quot'
+expect_output '' "$(.cache/dud-sh --quot -c '')" 'empty argument source quot'
+
+stdin_expected=$(
+    printf '.\n\n# .\n.'
+)
+stdin_actual=$(
+    printf 'A\n\t# ~\200Z' | .cache/dud-sh --quot -
+)
+expect_output "$stdin_expected" "$stdin_actual" 'stdin quot'
+
+printf 'x y#z' >.cache/test/quot-normal
+expect_output '. .#.' "$(.cache/dud-sh --quot .cache/test/quot-normal)" 'file quot'
+
+printf 'dash# name' >.cache/test/-quot-dash
+dash_output=$(
+    cd .cache/test
+    ../dud-sh --quot -- -quot-dash
+)
+expect_output '....# ....' "$dash_output" 'dash-leading file quot'

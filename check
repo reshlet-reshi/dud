@@ -44,6 +44,7 @@ EOF
     src/action.c \
     src/cat.c \
     src/fopen_argv.c \
+    src/quot.c \
     src/wc_c.c \
     src/exit.c \
     -o .cache/dud-sh
@@ -60,3 +61,4 @@ expect_error 1 '!!!' .cache/dud-sh --wc-c .cache/test/no-such-file
 
 ./test/test-wc-c
 ./test/test-cat
+./test/test-quot
