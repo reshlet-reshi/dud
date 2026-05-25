@@ -54,6 +54,10 @@ mkdir -p .cache
 
 ./bin/musl-cc -Wfatal-errors src/ctok.c -o .cache/ctok
 
+# ctok tests
+
+./test/test-ctok
+
 # build dud-sh
 
 ./bin/musl-cc \
