@@ -1,6 +1,6 @@
-# seed/patches/tcc-0.9.27-tccelf.patch
+# src/dud-tcc/patches/tcc-0.9.27-tccelf.patch
 
-This note is the evidence trail for `seed/patches/tcc-0.9.27-tccelf.patch`.
+This note is the evidence trail for `src/dud-tcc/patches/tcc-0.9.27-tccelf.patch`.
 
 The short version: unpatched TCC 0.9.27 can emit static x86_64
 `-nostdlib` executables that still route default-visibility cross-object
@@ -26,16 +26,16 @@ The patch has two hunks:
 The reproduction is rooted in these two tarballs:
 
 ```text
-MUSL_CC_TARBALL  seed/vendor/x86_64-linux-musl-native.tgz
-TCC_TARBALL      seed/vendor/tcc-0.9.27.tar.bz2
+MUSL_CC_TARBALL  vendor/x86_64-linux-musl-native.tgz
+TCC_TARBALL      vendor/tcc-0.9.27.tar.bz2
 ```
 
 Hashes observed in the local investigation:
 
 ```text
-eb1db6f0f3c2bdbdbfb993d7ef7e2eeef82ac1259f6a6e1757c33a97dbcef3ad  seed/vendor/x86_64-linux-musl-native.tgz
-de23af78fca90ce32dff2dd45b3432b2334740bb9bb7b05bf60fdbfc396ceb9c  seed/vendor/tcc-0.9.27.tar.bz2
-5fc861bb9761f097fea129cde479c876a6e31acdffbc428a3038a0c1cc6294d4  seed/patches/tcc-0.9.27-tccelf.patch
+eb1db6f0f3c2bdbdbfb993d7ef7e2eeef82ac1259f6a6e1757c33a97dbcef3ad  vendor/x86_64-linux-musl-native.tgz
+de23af78fca90ce32dff2dd45b3432b2334740bb9bb7b05bf60fdbfc396ceb9c  vendor/tcc-0.9.27.tar.bz2
+5fc861bb9761f097fea129cde479c876a6e31acdffbc428a3038a0c1cc6294d4  src/dud-tcc/patches/tcc-0.9.27-tccelf.patch
 ```
 
 Tool versions used to regenerate the traces below:
@@ -70,7 +70,7 @@ project-neutral: provide the two tarball paths and it writes only under
 set -eu
 
 : "${TCC_TARBALL:?set TCC_TARBALL=/path/to/tcc-0.9.27.tar.bz2}"
-: "${MUSL_CC_TARBALL:?set MUSL_CC_TARBALL=/path/to/seed/vendor/x86_64-linux-musl-native.tgz}"
+: "${MUSL_CC_TARBALL:?set MUSL_CC_TARBALL=/path/to/vendor/x86_64-linux-musl-native.tgz}"
 
 work=$(mktemp -d "${TMPDIR:-/tmp}/tccelf-repro.XXXXXX")
 printf 'work=%s\n' "$work"
@@ -436,7 +436,7 @@ to vanish.
 ## Minimality Checks
 
 A follow-up run on 2026-05-25 tested variants under
-`/tmp/tccgot-plan.1pHU9u` from fresh `seed/vendor/tcc-0.9.27.tar.bz2`
+`/tmp/tccgot-plan.1pHU9u` from fresh `vendor/tcc-0.9.27.tar.bz2`
 extracts. The host
 `tcc0` binaries were built with the local system compiler:
 

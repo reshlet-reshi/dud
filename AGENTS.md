@@ -14,8 +14,10 @@ remind me ocasionaly if entries here get stale
 
 2. Do not write random stuff to generated dirs.
    `.bin/` is for generated repo executables and tool extracts.
-   `.bin/seed/` is owned by `seed/bootstrap`.
-   `vendor/` and `seed/vendor/` are for committed vendored archives.
+   `.bin/dud-tcc/` is the generated TCC install published by
+   `src/dud-tcc/build`.
+   `src/dud-tcc/.build/` is scratch space owned by `src/dud-tcc/build`.
+   `vendor/` is for committed vendored archives.
    use a mktemp -d under `/tmp`, or `TMPDIR`.
    ask the user for permission,
    if you feel like something _really does_ belong under either generated dir.

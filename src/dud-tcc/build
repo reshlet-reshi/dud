@@ -1,26 +1,18 @@
 #!/bin/sh
 set -eu
 
-# clean seed dir
+# clean build dir
 
-mkdir -p .bin
-rm -rf .bin/seed
-mkdir .bin/seed
+work_dir=src/dud-tcc/.build
+rm -rf "$work_dir"
+mkdir -p "$work_dir"
 
-# unpack bootstrap compiler
-
-tar -xzf seed/vendor/x86_64-linux-musl-native.tgz -C .bin/seed
-bootstrap_musl_cc=$PWD/.bin/seed/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc
-
-# bootstrap dir
-
-boostrap=.bin/seed/bootstrap
-mkdir "$boostrap"
+bootstrap_musl_cc=$PWD/.bin/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc
 
 # unpack tcc src
 
-tar -xjf seed/vendor/tcc-0.9.27.tar.bz2 -C "$boostrap"
-tcc_src=$boostrap/tcc-0.9.27
+tar -xjf vendor/tcc-0.9.27.tar.bz2 -C "$work_dir"
+tcc_src=$work_dir/tcc-0.9.27
 
 # empty config.h
 
@@ -28,18 +20,18 @@ tcc_src=$boostrap/tcc-0.9.27
 
 # patch tcc src
 
-# SEE seed/patches/tcc-0.9.27-tccelf.patch.md
-patch -s -d "$tcc_src" -p0 < seed/patches/tcc-0.9.27-tccelf.patch
+# SEE src/dud-tcc/patches/tcc-0.9.27-tccelf.patch.md
+patch -s -d "$tcc_src" -p0 < src/dud-tcc/patches/tcc-0.9.27-tccelf.patch
 
-# SEE seed/patches/tcc-0.9.27-self-lib-path.patch.md
-patch -s -d "$tcc_src" -p0 < seed/patches/tcc-0.9.27-self-lib-path.patch
+# SEE src/dud-tcc/patches/tcc-0.9.27-self-lib-path.patch.md
+patch -s -d "$tcc_src" -p0 < src/dud-tcc/patches/tcc-0.9.27-self-lib-path.patch
 
-# SEE seed/patches/tcc-0.9.27-static-only.patch.md
-patch -s -d "$tcc_src" -p0 < seed/patches/tcc-0.9.27-static-only.patch
+# SEE src/dud-tcc/patches/tcc-0.9.27-static-only.patch.md
+patch -s -d "$tcc_src" -p0 < src/dud-tcc/patches/tcc-0.9.27-static-only.patch
 
 # build dir
 
-build=$PWD/$boostrap/build
+build=$PWD/$work_dir/dud-tcc
 mkdir -p "$build"
 
 # tcc0
@@ -66,23 +58,23 @@ tcc0=$build/tcc0
 # smoke test tcc0
 
 "$tcc0" -static -nostdlib \
-    seed/test/tcc0-start.c \
-    -o "$boostrap/start"
-"$boostrap/start"
+    test/dud-tcc/tcc0-start.c \
+    -o "$work_dir/start"
+"$work_dir/start"
 
 "$tcc0" -static -nostdlib \
-    seed/test/tcc0-func-start.c \
-    seed/test/tcc0-func-foo.c \
-    -o "$boostrap/tcc0-func"
-"$boostrap/tcc0-func"
+    test/dud-tcc/tcc0-func-start.c \
+    test/dud-tcc/tcc0-func-foo.c \
+    -o "$work_dir/tcc0-func"
+"$work_dir/tcc0-func"
 
 "$tcc0" \
     -static \
     -nostdlib \
-    seed/test/tcc0-data-start.c \
-    seed/test/tcc0-data-data.c \
-    -o "$boostrap/tcc0-data"
-"$boostrap/tcc0-data"
+    test/dud-tcc/tcc0-data-start.c \
+    test/dud-tcc/tcc0-data-data.c \
+    -o "$work_dir/tcc0-data"
+"$work_dir/tcc0-data"
 
 # libtcc1.a
 
@@ -107,8 +99,8 @@ rm "$build/va_list.o"
 
 # ...
 
-tar -xzf seed/vendor/musl-1.2.6.tar.gz -C "$boostrap"
-musl_src=$PWD/$boostrap/musl-1.2.6
+tar -xzf vendor/musl-1.2.6.tar.gz -C "$work_dir"
+musl_src=$PWD/$work_dir/musl-1.2.6
 musl_obj=$build/musl-obj
 musl_lib=$build/lib
 
@@ -131,7 +123,7 @@ find "$musl_src" \
         mv "$tcc_compat_file.tmp" "$tcc_compat_file"
     done
 
-cp seed/src/stdarg.h "$musl_src/include/stdarg.h"
+cp src/dud-tcc/stdarg.h "$musl_src/include/stdarg.h"
 
 cat >"$musl_src/arch/x86_64/syscall_arch.h" <<'EOF'
 #define __SYSCALL_LL_E(x) (x)
@@ -248,11 +240,11 @@ musl_cc() {
         "$@"
 }
 
-musl_base_srcs=$boostrap/musl-base-srcs
-musl_arch_srcs=$boostrap/musl-arch-srcs
-musl_replaced_objs=$boostrap/musl-replaced-objs
-musl_libc_srcs=$boostrap/musl-libc-srcs
-musl_libc_objs=$boostrap/musl-libc-objs
+musl_base_srcs=$work_dir/musl-base-srcs
+musl_arch_srcs=$work_dir/musl-arch-srcs
+musl_replaced_objs=$work_dir/musl-replaced-objs
+musl_libc_srcs=$work_dir/musl-libc-srcs
+musl_libc_objs=$work_dir/musl-libc-objs
 
 find "$musl_src/src" \
     -mindepth 2 \
@@ -463,7 +455,7 @@ tcc1=$build/tcc1
 
 # smoke test tcc1
 
-cat >"$boostrap/tcc1-smoke.c" <<'EOF'
+cat >"$work_dir/tcc1-smoke.c" <<'EOF'
 #include <stdio.h>
 
 int main(void) {
@@ -471,8 +463,8 @@ int main(void) {
     return 0;
 }
 EOF
-"$tcc1" -static "$boostrap/tcc1-smoke.c" -o "$boostrap/tcc1-smoke"
-"$boostrap/tcc1-smoke" >/dev/null
+"$tcc1" -static "$work_dir/tcc1-smoke.c" -o "$work_dir/tcc1-smoke"
+"$work_dir/tcc1-smoke" >/dev/null
 
 # remove old tcc0
 
@@ -480,8 +472,9 @@ rm "$tcc0"
 
 # 'install' tcc1 into the project, by just copying it
 
-install_dir=.bin/seed/tcc
-install_tmp=.bin/seed/tcc.tmp.$$
+mkdir -p .bin
+install_dir=.bin/dud-tcc
+install_tmp=.bin/dud-tcc.tmp.$$
 rm -rf "$install_tmp"
 mkdir -p "$install_tmp"
 cp -R "$build"/. "$install_tmp"
@@ -490,5 +483,5 @@ mv "$install_tmp" "$install_dir"
 
 # smoke test isntalled tcc1
 
-"$install_dir/tcc1" -static "$boostrap/tcc1-smoke.c" -o "$boostrap/tcc1-smoke"
-"$boostrap/tcc1-smoke" >/dev/null
+"$install_dir/tcc1" -static "$work_dir/tcc1-smoke.c" -o "$work_dir/tcc1-smoke"
+"$work_dir/tcc1-smoke" >/dev/null

@@ -1,7 +1,4 @@
-vendor/**/*.tar.xz filter=lfs diff=lfs merge=lfs -text
-vendor/**/*.tar.gz filter=lfs diff=lfs merge=lfs -text
-vendor/**/*.tgz filter=lfs diff=lfs merge=lfs -text
-vendor/**/*.tar.bz2 filter=lfs diff=lfs merge=lfs -text
-seed/vendor/*.tgz filter=lfs diff=lfs merge=lfs -text
-seed/vendor/*.tar.gz filter=lfs diff=lfs merge=lfs -text
-seed/vendor/*.tar.bz2 filter=lfs diff=lfs merge=lfs -text
+vendor/*.tar.xz filter=lfs diff=lfs merge=lfs -text
+vendor/*.tar.gz filter=lfs diff=lfs merge=lfs -text
+vendor/*.tgz filter=lfs diff=lfs merge=lfs -text
+vendor/*.tar.bz2 filter=lfs diff=lfs merge=lfs -text

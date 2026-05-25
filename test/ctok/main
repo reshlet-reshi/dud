@@ -464,7 +464,7 @@ EOF
 }
 
 trim_source_line() {
-    sed -n "${1}p" "$repo_dir/src/ctok.c" |
+    sed -n "${1}p" "$repo_dir/src/ctok/main.c" |
         sed 's/^[	 ]*//; s/[	 ]*$//'
 }
 
@@ -490,14 +490,16 @@ EOF
 
 validate_coverage() {
     cov_tmp=$1
-    gcov_file=$cov_tmp/ctok.c.gcov
+    gcov_file=$cov_tmp/main.c.gcov
     allowlist=$test_tmp/ctok-coverage-allowlist
     allow_lines=$test_tmp/ctok-coverage-allow-lines
     uncovered=$test_tmp/ctok-coverage-uncovered
 
     (
         cd "$cov_tmp"
-        gcov -o "$cov_tmp" "$repo_dir/src/ctok.c" >/dev/null
+        gcov -o "$cov_tmp/ctok-main.gcno" \
+            "$repo_dir/src/ctok/main.c" \
+            >/dev/null
     )
 
     awk -F: '$1 ~ /#####/ { gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2 }' \
@@ -574,11 +576,11 @@ validate_coverage() {
 }
 
 run_coverage_report_self_tests() {
-    ./test/test-ctok/coverage-report-test
+    ./test/ctok/coverage-report-test
 }
 
 print_coverage_details() {
-    ./test/test-ctok/coverage-report report "$1" "$repo_dir" "$test_tmp"
+    ./test/ctok/coverage-report report "$1" "$repo_dir" "$test_tmp"
 }
 
 build_coverage_ctok() {
@@ -599,7 +601,7 @@ build_coverage_ctok() {
             -ftest-coverage \
             -fcondition-coverage \
             -fpath-coverage \
-            "$repo_dir/src/ctok.c" \
+            "$repo_dir/src/ctok/main.c" \
             -o "$cov_tmp/ctok"
     )
 
