@@ -56,7 +56,7 @@ mkdir -p .cache
 
 # ctok tests
 
-./test/test-ctok
+./test/test-ctok/main
 
 # build dud-sh
 

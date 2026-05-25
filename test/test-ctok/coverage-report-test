@@ -1,0 +1,358 @@
+#!/bin/sh
+set -eu
+
+. ./test/expect.sh
+
+COVERAGE_REPORT_LIB=1
+. ./test/test-ctok/coverage-report
+unset COVERAGE_REPORT_LIB
+
+test_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-test-ctok-report.XXXXXX")
+repo_dir=$PWD
+
+cleanup_test_tmp() {
+    rm -rf "$test_tmp"
+}
+
+trap cleanup_test_tmp EXIT HUP INT TERM
+
+expect_parser_success() {
+    label=$1
+    expected_output=$2
+    shift 2
+
+    set +e
+    actual_output=$("$@" 2>&1)
+    actual_status=$?
+    set -e
+
+    if [ "$actual_status" -ne 0 ]
+    then
+        printf '%s: expected parser success, got exit %s\n' \
+            "$label" \
+            "$actual_status" \
+            >&2
+        printf '%s\n' "$actual_output" >&2
+        exit 1
+    fi
+
+    expect_output "$expected_output" "$actual_output" "$label"
+}
+
+expect_parser_failure() {
+    label=$1
+    expected=$2
+    shift 2
+
+    set +e
+    actual_output=$("$@" 2>&1)
+    actual_status=$?
+    set -e
+
+    if [ "$actual_status" -eq 0 ]
+    then
+        printf '%s: expected parser failure\n' "$label" >&2
+        printf '%s\n' "$actual_output" >&2
+        exit 1
+    fi
+
+    case $actual_output in
+    *"$expected"*)
+        ;;
+    *)
+        printf '%s: expected parser failure containing: %s\n' \
+            "$label" \
+            "$expected" \
+            >&2
+        printf '%s\n' "$actual_output" >&2
+        exit 1
+        ;;
+    esac
+}
+
+expect_key_value() {
+    label=$1
+    key=$2
+    expected=$3
+    path=$4
+    actual=$(read_key_value "$key" "$path")
+
+    if [ "$actual" != "$expected" ]
+    then
+        printf '%s: expected %s=%s, got %s\n' \
+            "$label" \
+            "$key" \
+            "$expected" \
+            "$actual" \
+            >&2
+        exit 1
+    fi
+}
+
+write_coverage_parser_gcov_fixture() {
+    cat >"$1" <<'EOF'
+        -:    0:Source:fixture.c
+function LongName called 1 returned 100% blocks executed 100%
+paths covered 10 of 15
+function Alpha called 1 returned 100% blocks executed 100%
+paths covered 1 of 3
+function Beta called 1 returned 100% blocks executed 100%
+paths covered 3 of 3
+        1:   10:if (a)
+branch  0 taken 1 (fallthrough)
+branch  1 taken 0
+branch  2 never executed
+        1:   11:foo()
+call    0 returned 1
+call    1 never executed
+        1:   12:if (b)
+condition outcomes covered 1/2
+condition  0 not covered (false)
+EOF
+}
+
+write_coverage_parser_metrics_fixture() {
+    {
+        cat <<'EOF'
+File '/tmp/not-ctok.c'
+Branches executed:100.00% of 1
+Taken at least once:100.00% of 1
+Calls executed:100.00% of 1
+Condition outcomes covered:100.00% of 1
+Prime paths covered:100.00% of 1
+Creating 'not-ctok.c.gcov'
+
+EOF
+        printf "File '%s'\n" "$repo_dir/src/ctok.c"
+        cat <<'EOF'
+Branches executed:66.67% of 3
+Taken at least once:33.33% of 3
+Calls executed:50.00% of 2
+Condition outcomes covered:50.00% of 2
+Prime paths covered:66.67% of 21
+Creating 'ctok.c.gcov'
+EOF
+    } >"$1"
+}
+
+gcov_file=$test_tmp/ctok.c.gcov
+metrics_output=$test_tmp/gcov-output
+metrics_file=$test_tmp/metrics
+model_file=$test_tmp/model
+stats_file=$test_tmp/stats
+
+write_coverage_parser_gcov_fixture "$gcov_file"
+write_coverage_parser_metrics_fixture "$metrics_output"
+
+parse_coverage_metrics "$metrics_output" "$repo_dir/src/ctok.c" "$metrics_file"
+parse_gcov_model "$gcov_file" "$model_file" "$stats_file"
+
+expect_parser_success \
+    'coverage metrics parser fixture' \
+    'ctok coverage metrics:
+  branches executed          : 66.67% of 3
+  branch directions taken    : 33.33% of 3
+  calls executed             : 50.00% of 2
+  condition outcomes covered : 50.00% of 2
+  prime paths covered        : 66.67% of 21' \
+    format_coverage_metrics \
+    "$metrics_file"
+
+expect_parser_success \
+    'normalized model parser fixture' \
+    'prime_path|LongName|paths covered 10 of 15|10|15|5|missed
+prime_path|Alpha|paths covered 1 of 3|1|3|2|missed
+prime_path|Beta|paths covered 3 of 3|3|3|0|covered
+branch|10|if (a)|branch  0 taken 1 (fallthrough)|covered
+branch|10|if (a)|branch  1 taken 0|missed
+branch|10|if (a)|branch  2 never executed|missed
+call|11|foo()|call    0 returned 1|covered
+call|11|foo()|call    1 never executed|missed
+condition_summary|12|if (b)|1|2
+condition|12|if (b)|condition  0 not covered (false)|missed' \
+    format_model_records_for_test \
+    "$model_file"
+
+expect_parser_success \
+    'branch parser fixture' \
+    'ctok coverage missed branch directions:
+  10 | if (a) | branch  1 taken 0
+  10 | if (a) | branch  2 never executed' \
+    format_detail_misses \
+    'ctok coverage missed branch directions:' \
+    branch \
+    "$model_file"
+
+expect_parser_success \
+    'call parser fixture' \
+    'ctok coverage missed calls:
+  11 | foo() | call    1 never executed' \
+    format_detail_misses \
+    'ctok coverage missed calls:' \
+    call \
+    "$model_file"
+
+expect_parser_success \
+    'condition parser fixture' \
+    'ctok coverage missed condition outcomes:
+  12 | if (b) | condition  0 not covered (false)' \
+    format_detail_misses \
+    'ctok coverage missed condition outcomes:' \
+    condition \
+    "$model_file"
+
+expect_parser_success \
+    'prime path parser fixture' \
+    'ctok coverage prime paths:
+  LongName | paths covered 10 of 15 (5 uncovered)
+  Alpha    | paths covered 1 of 3   (2 uncovered)' \
+    format_prime_path_misses \
+    "$model_file"
+
+verify_coverage_report "$metrics_file" "$stats_file"
+
+bad_metric_totals=$test_tmp/bad-metric-totals
+cat >"$bad_metric_totals" <<'EOF'
+branches_executed_value=100.00% of 4
+branches_executed_total=4
+EOF
+expect_parser_failure \
+    'metric total mismatch fixture' \
+    'summary/detail total mismatch' \
+    verify_metric_stats \
+    'parser fixture branches executed' \
+    branches_executed \
+    "$stats_file" \
+    branch_executed \
+    branch_total \
+    "$bad_metric_totals"
+
+bad_metric_percent=$test_tmp/bad-metric-percent
+cat >"$bad_metric_percent" <<'EOF'
+branches_executed_value=0.00% of 3
+branches_executed_total=3
+EOF
+expect_parser_failure \
+    'metric rounded percent mismatch fixture' \
+    'rounded summary/detail mismatch' \
+    verify_metric_stats \
+    'parser fixture branches executed' \
+    branches_executed \
+    "$stats_file" \
+    branch_executed \
+    branch_total \
+    "$bad_metric_percent"
+
+expect_key_value 'branch parser fixture' branch_total 3 "$stats_file"
+expect_key_value 'branch parser fixture' branch_executed 2 "$stats_file"
+expect_key_value 'branch parser fixture' branch_covered 1 "$stats_file"
+expect_key_value 'branch parser fixture' branch_missed 2 "$stats_file"
+expect_key_value 'call parser fixture' call_total 2 "$stats_file"
+expect_key_value 'call parser fixture' call_covered 1 "$stats_file"
+expect_key_value 'call parser fixture' call_missed 1 "$stats_file"
+expect_key_value 'condition parser fixture' condition_total 2 "$stats_file"
+expect_key_value 'condition parser fixture' condition_covered 1 "$stats_file"
+expect_key_value 'condition parser fixture' condition_missed 1 "$stats_file"
+expect_key_value 'prime path parser fixture' prime_path_total 21 "$stats_file"
+expect_key_value 'prime path parser fixture' prime_path_covered 14 "$stats_file"
+expect_key_value 'prime path parser fixture' prime_path_missed 7 "$stats_file"
+
+bad_metrics=$test_tmp/bad-metrics
+{
+    printf "File '%s'\n" "$repo_dir/src/ctok.c"
+    cat <<'EOF'
+Branches executed:100.00% of 1
+Creating 'ctok.c.gcov'
+EOF
+} >"$bad_metrics"
+expect_parser_failure \
+    'metrics parser missing metric fixture' \
+    'missing metric: branch directions taken' \
+    parse_coverage_metrics \
+    "$bad_metrics" \
+    "$repo_dir/src/ctok.c" \
+    "$test_tmp/bad-metrics-out"
+
+bad_branch=$test_tmp/bad-branch.gcov
+cat >"$bad_branch" <<'EOF'
+function MissingSource called 1 returned 100% blocks executed 100%
+paths covered 1 of 1
+branch  0 taken 0
+EOF
+expect_parser_failure \
+    'branch parser source context fixture' \
+    'no source line for branch' \
+    parse_gcov_model \
+    "$bad_branch" \
+    "$test_tmp/bad-branch-model" \
+    "$test_tmp/bad-branch-stats"
+
+stale_branch=$test_tmp/stale-branch.gcov
+cat >"$stale_branch" <<'EOF'
+        1:   10:if (a)
+surprise gcov metadata
+branch  0 taken 0
+EOF
+expect_parser_failure \
+    'branch parser stale context fixture' \
+    'unknown gcov metadata after source line' \
+    parse_gcov_model \
+    "$stale_branch" \
+    "$test_tmp/stale-branch-model" \
+    "$test_tmp/stale-branch-stats"
+
+bad_call=$test_tmp/bad-call.gcov
+cat >"$bad_call" <<'EOF'
+        1:   10:foo()
+call    0 returned nope
+EOF
+expect_parser_failure \
+    'call parser syntax fixture' \
+    'unknown call detail syntax' \
+    parse_gcov_model \
+    "$bad_call" \
+    "$test_tmp/bad-call-model" \
+    "$test_tmp/bad-call-stats"
+
+bad_condition=$test_tmp/bad-condition.gcov
+cat >"$bad_condition" <<'EOF'
+        1:   10:if (a)
+condition outcomes covered 1/3
+condition  0 not covered (false)
+EOF
+expect_parser_failure \
+    'condition parser miss count fixture' \
+    'condition miss rows missing at end of file' \
+    parse_gcov_model \
+    "$bad_condition" \
+    "$test_tmp/bad-condition-model" \
+    "$test_tmp/bad-condition-stats"
+
+misplaced_condition=$test_tmp/misplaced-condition.gcov
+cat >"$misplaced_condition" <<'EOF'
+        1:   10:if (a)
+condition outcomes covered 1/2
+        1:   11:if (b)
+condition  0 not covered (false)
+EOF
+expect_parser_failure \
+    'condition parser misplaced miss fixture' \
+    'condition miss rows missing before source line' \
+    parse_gcov_model \
+    "$misplaced_condition" \
+    "$test_tmp/misplaced-condition-model" \
+    "$test_tmp/misplaced-condition-stats"
+
+bad_prime_path=$test_tmp/bad-prime-path.gcov
+cat >"$bad_prime_path" <<'EOF'
+function MissingPath called 1 returned 100% blocks executed 100%
+        1:   10:int x;
+paths covered 1 of 1
+EOF
+expect_parser_failure \
+    'prime path parser stale function fixture' \
+    'function summary without path summary' \
+    parse_gcov_model \
+    "$bad_prime_path" \
+    "$test_tmp/bad-prime-path-model" \
+    "$test_tmp/bad-prime-path-stats"

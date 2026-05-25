@@ -1,0 +1,786 @@
+#!/bin/sh
+set -eu
+
+read_key_value() {
+    key=$1
+    path=$2
+
+    sed -n "s/^$key=//p" "$path"
+}
+
+require_unsigned_value() {
+    label=$1
+    value=$2
+
+    case $value in
+    ''|*[!0-9]*)
+        printf 'ctok coverage parser error: bad %s count: %s\n' \
+            "$label" \
+            "$value" \
+            >&2
+        exit 1
+        ;;
+    esac
+}
+
+verify_detail_stats() {
+    label=$1
+    stats_file=$2
+    covered_key=$3
+    total_key=$4
+    missed_key=$5
+
+    total=$(read_key_value "$total_key" "$stats_file")
+    covered=$(read_key_value "$covered_key" "$stats_file")
+    missed=$(read_key_value "$missed_key" "$stats_file")
+
+    require_unsigned_value "$label total" "$total"
+    require_unsigned_value "$label covered" "$covered"
+    require_unsigned_value "$label missed" "$missed"
+
+    if [ "$covered" -gt "$total" ]
+    then
+        printf 'ctok coverage parser error: %s covered exceeds total: ' \
+            "$label" \
+            >&2
+        printf '%s > %s\n' "$covered" "$total" >&2
+        exit 1
+    fi
+
+    computed_missed=$((total - covered))
+    if [ "$computed_missed" -ne "$missed" ]
+    then
+        printf 'ctok coverage parser error: %s missed mismatch: ' \
+            "$label" \
+            >&2
+        printf 'total %s - covered %s != missed %s\n' \
+            "$total" \
+            "$covered" \
+            "$missed" \
+            >&2
+        exit 1
+    fi
+}
+
+verify_metric_stats() {
+    label=$1
+    metric_key=$2
+    stats_file=$3
+    covered_key=$4
+    total_key=$5
+    metrics_file=$6
+
+    metric_value=$(read_key_value "${metric_key}_value" "$metrics_file")
+    metric_total=$(read_key_value "${metric_key}_total" "$metrics_file")
+    covered=$(read_key_value "$covered_key" "$stats_file")
+    total=$(read_key_value "$total_key" "$stats_file")
+
+    require_unsigned_value "$label metric total" "$metric_total"
+    require_unsigned_value "$label covered" "$covered"
+    require_unsigned_value "$label total" "$total"
+
+    if [ "$covered" -gt "$total" ]
+    then
+        printf 'ctok coverage parser error: %s covered exceeds total: ' \
+            "$label" \
+            >&2
+        printf '%s > %s\n' "$covered" "$total" >&2
+        exit 1
+    fi
+
+    if [ "$metric_total" -ne "$total" ]
+    then
+        printf 'ctok coverage parser error: %s summary/detail total mismatch: ' \
+            "$label" \
+            >&2
+        printf 'summary "%s", detail "%s", metric "%s"\n' \
+            "$metric_total" \
+            "$total" \
+            "$metric_value" \
+            >&2
+        exit 1
+    fi
+
+    metric_check=$(
+        awk -v metric_value="$metric_value" \
+            -v covered="$covered" \
+            -v total="$total" '
+            BEGIN {
+                metric_percent = metric_value
+                sub(/% of .*/, "", metric_percent)
+
+                if (metric_percent !~ /^[0-9]+([.][0-9]+)?$/) {
+                    printf "bad percent"
+                    exit
+                }
+
+                if (total == 0)
+                    detail_percent = 100
+                else
+                    detail_percent = (covered * 100) / total
+
+                delta = detail_percent - metric_percent
+                if (delta < 0)
+                    delta = -delta
+
+                if (delta <= 0.0050001)
+                    printf "ok"
+                else
+                    printf "mismatch"
+            }
+        '
+    )
+
+    case $metric_check in
+    ok)
+        ;;
+    bad\ percent)
+        printf 'ctok coverage parser error: bad %s metric percent: %s\n' \
+            "$label" \
+            "$metric_value" \
+            >&2
+        exit 1
+        ;;
+    *)
+        printf 'ctok coverage parser error: %s rounded summary/detail mismatch: ' \
+            "$label" \
+            >&2
+        printf 'summary "%s", detail "%s/%s"\n' \
+            "$metric_value" \
+            "$covered" \
+            "$total" \
+            >&2
+        exit 1
+        ;;
+    esac
+}
+
+parse_coverage_metrics() {
+    gcov_output=$1
+    expected_file=$2
+    metrics_file=$3
+
+    : >"$metrics_file"
+    awk -v expected_file="$expected_file" -v metrics_file="$metrics_file" '
+        function fail(message) {
+            printf "ctok coverage parser error: %s\n", message > "/dev/stderr"
+            bad = 1
+            exit 1
+        }
+        function trim(str) {
+            gsub(/^[ \t]+|[ \t]+$/, "", str)
+            return str
+        }
+        function add_metric(key, label, value) {
+            if (seen[key]) {
+                printf "ctok coverage parser error: duplicate metric: %s\n",
+                    label > "/dev/stderr"
+                bad = 1
+            }
+
+            values_by_key[key] = trim(value)
+            seen[key] = 1
+
+            if (values_by_key[key] !~ /^[0-9]+([.][0-9]+)?% of [0-9]+$/) {
+                printf "ctok coverage parser error: bad metric value for %s: %s\n",
+                    label,
+                    values_by_key[key] > "/dev/stderr"
+                bad = 1
+            }
+
+            metric_total = values_by_key[key]
+            sub(/^.*% of /, "", metric_total)
+            totals_by_key[key] = metric_total
+        }
+        BEGIN {
+            quote = sprintf("%c", 39)
+            num_required = 5
+            required_keys[1] = "branches_executed"
+            required_keys[2] = "branch_directions_taken"
+            required_keys[3] = "calls_executed"
+            required_keys[4] = "condition_outcomes_covered"
+            required_keys[5] = "prime_paths_covered"
+
+            labels["branches_executed"] = "branches executed"
+            labels["branch_directions_taken"] = "branch directions taken"
+            labels["calls_executed"] = "calls executed"
+            labels["condition_outcomes_covered"] = "condition outcomes covered"
+            labels["prime_paths_covered"] = "prime paths covered"
+        }
+        /^File / {
+            in_file = 0
+            if (substr($0, 6, 1) != quote || substr($0, length($0), 1) != quote)
+                fail("bad file summary line: " $0)
+
+            path = substr($0, 7, length($0) - 7)
+            if (path == expected_file) {
+                ++file_blocks
+                in_file = 1
+            }
+            next
+        }
+        /^Creating / {
+            in_file = 0
+            next
+        }
+        !in_file { next }
+        /^Branches executed:/ {
+            sub(/^Branches executed:/, "")
+            add_metric("branches_executed", "branches executed", $0)
+            next
+        }
+        /^Taken at least once:/ {
+            sub(/^Taken at least once:/, "")
+            add_metric("branch_directions_taken", "branch directions taken", $0)
+            next
+        }
+        /^Calls executed:/ {
+            sub(/^Calls executed:/, "")
+            add_metric("calls_executed", "calls executed", $0)
+            next
+        }
+        /^Condition outcomes covered:/ {
+            sub(/^Condition outcomes covered:/, "")
+            add_metric("condition_outcomes_covered", "condition outcomes covered", $0)
+            next
+        }
+        /^Prime paths covered:/ {
+            sub(/^Prime paths covered:/, "")
+            add_metric("prime_paths_covered", "prime paths covered", $0)
+            next
+        }
+        END {
+            if (bad)
+                exit 1
+
+            if (file_blocks != 1) {
+                printf "ctok coverage parser error: expected one file summary for %s, found %s\n",
+                    expected_file,
+                    file_blocks + 0 > "/dev/stderr"
+                exit 1
+            }
+
+            for (i = 1; i <= num_required; ++i) {
+                key = required_keys[i]
+                if (!seen[key]) {
+                    printf "ctok coverage parser error: missing metric: %s\n",
+                        labels[key] > "/dev/stderr"
+                    bad = 1
+                }
+            }
+
+            if (bad)
+                exit 1
+
+            for (i = 1; i <= num_required; ++i) {
+                key = required_keys[i]
+                print key "_value=" values_by_key[key] >> metrics_file
+                print key "_total=" totals_by_key[key] >> metrics_file
+            }
+        }
+    ' "$gcov_output"
+}
+
+format_coverage_metrics() {
+    metrics_file=$1
+
+    printf 'ctok coverage metrics:\n'
+    awk -F= '
+        BEGIN {
+            num_required = 5
+            required_keys[1] = "branches_executed"
+            required_keys[2] = "branch_directions_taken"
+            required_keys[3] = "calls_executed"
+            required_keys[4] = "condition_outcomes_covered"
+            required_keys[5] = "prime_paths_covered"
+
+            labels["branches_executed"] = "branches executed"
+            labels["branch_directions_taken"] = "branch directions taken"
+            labels["calls_executed"] = "calls executed"
+            labels["condition_outcomes_covered"] = "condition outcomes covered"
+            labels["prime_paths_covered"] = "prime paths covered"
+
+            for (i = 1; i <= num_required; ++i) {
+                key = required_keys[i]
+                if (length(labels[key]) > label_width)
+                    label_width = length(labels[key])
+            }
+        }
+        {
+            values[$1] = $2
+        }
+        END {
+            for (i = 1; i <= num_required; ++i) {
+                key = required_keys[i]
+                printf "  %-*s : %s\n", label_width, labels[key], values[key "_value"]
+            }
+        }
+    ' "$metrics_file"
+}
+
+parse_gcov_model() {
+    gcov_file=$1
+    model_file=$2
+    stats_file=$3
+
+    : >"$model_file"
+    : >"$stats_file"
+    awk -F: -v model_file="$model_file" -v stats_file="$stats_file" '
+        function fail(message) {
+            printf "ctok coverage parser error: %s\n", message > "/dev/stderr"
+            bad = 1
+            exit 1
+        }
+        function trim(str) {
+            gsub(/^[ \t]+|[ \t]+$/, "", str)
+            return str
+        }
+        function source_text(    i, text) {
+            text = $3
+            for (i = 4; i <= NF; ++i)
+                text = text ":" $i
+            return trim(text)
+        }
+        function emit(kind, a, b, c, d, e, f) {
+            print kind sep a sep b sep c sep d sep e sep f >> model_file
+        }
+        function clear_source() {
+            source_line = ""
+            source_snippet = ""
+        }
+        function require_source(detail) {
+            if (source_line == "")
+                fail("no source line for " detail)
+        }
+        function require_no_pending(reason) {
+            if (pending_condition_misses > 0)
+                fail("condition miss rows missing before " reason ": " pending_condition_line)
+        }
+        function parse_words() {
+            split($0, words, /[[:space:]]+/)
+        }
+        BEGIN {
+            sep = sprintf("%c", 28)
+        }
+        expect_path && $0 !~ /^[[:space:]]*$/ && $0 !~ /^paths covered / {
+            fail("function summary without path summary: " function_line)
+        }
+        $2 ~ /^[ \t]*[0-9]+[ \t]*$/ {
+            require_no_pending("source line")
+            source_line = trim($2)
+            if (source_line == "0") {
+                clear_source()
+                next
+            }
+            source_snippet = source_text()
+            next
+        }
+        /^function / {
+            require_no_pending("function summary")
+            if (function_name != "")
+                fail("function summary without path summary: " function_line)
+
+            parse_words()
+            function_name = words[2]
+            function_line = $0
+            if (function_name == "")
+                fail("bad function summary line: " $0)
+
+            expect_path = 1
+            clear_source()
+            next
+        }
+        /^paths covered / {
+            require_no_pending("path summary")
+            if ($0 !~ /^paths covered [0-9]+ of [0-9]+$/)
+                fail("bad prime path line: " $0)
+
+            if (function_name == "")
+                fail("prime path line without function summary: " $0)
+
+            parse_words()
+            if (words[3] > words[5])
+                fail("prime path covered count exceeds total: " $0)
+
+            ++prime_path_rows
+            prime_path_total += words[5]
+            prime_path_covered += words[3]
+            uncovered = words[5] - words[3]
+            prime_path_missed += uncovered
+
+            if (uncovered)
+                status = "missed"
+            else
+                status = "covered"
+
+            emit("prime_path", function_name, $0, words[3], words[5], uncovered, status)
+
+            function_name = ""
+            function_line = ""
+            expect_path = 0
+            clear_source()
+            next
+        }
+        /^branch[[:space:]]+[0-9]+[[:space:]]/ {
+            require_no_pending("branch detail")
+            require_source($0)
+            parse_words()
+            ++branch_total
+
+            if (words[3] == "taken" && words[4] ~ /^[0-9]+$/) {
+                ++branch_executed
+                if (words[4] == 0) {
+                    ++branch_missed
+                    status = "missed"
+                } else {
+                    ++branch_covered
+                    status = "covered"
+                }
+            } else if (words[3] == "never" && words[4] == "executed") {
+                ++branch_missed
+                status = "missed"
+            } else {
+                fail("unknown branch detail syntax: " $0)
+            }
+
+            emit("branch", source_line, source_snippet, $0, status, "", "")
+            next
+        }
+        /^call[[:space:]]+[0-9]+[[:space:]]/ {
+            require_no_pending("call detail")
+            require_source($0)
+            parse_words()
+            ++call_total
+
+            if (words[3] == "returned" && words[4] ~ /^[0-9]+$/) {
+                ++call_covered
+                status = "covered"
+            } else if (words[3] == "never" && words[4] == "executed") {
+                ++call_missed
+                status = "missed"
+            } else {
+                fail("unknown call detail syntax: " $0)
+            }
+
+            emit("call", source_line, source_snippet, $0, status, "", "")
+            next
+        }
+        /^condition outcomes covered / {
+            require_no_pending("condition summary")
+            require_source($0)
+            parse_words()
+            if (words[4] !~ /^[0-9]+\/[0-9]+$/)
+                fail("bad condition outcome summary: " $0)
+
+            split(words[4], counts, "/")
+            if (counts[1] > counts[2])
+                fail("condition covered count exceeds total: " $0)
+
+            condition_covered += counts[1]
+            condition_total += counts[2]
+            pending_condition_misses = counts[2] - counts[1]
+            pending_condition_line = $0
+            pending_condition_source_line = source_line
+            pending_condition_source_snippet = source_snippet
+
+            emit("condition_summary", source_line, source_snippet, counts[1], counts[2], "", "")
+            next
+        }
+        /^condition[[:space:]]+[0-9]+[[:space:]]/ {
+            require_source($0)
+            if (pending_condition_misses <= 0)
+                fail("condition miss without pending condition summary: " $0)
+            if (source_line != pending_condition_source_line ||
+                    source_snippet != pending_condition_source_snippet)
+                fail("condition miss source does not match summary: " $0)
+
+            parse_words()
+            if (words[3] != "not" || words[4] != "covered")
+                fail("unknown condition detail syntax: " $0)
+
+            --pending_condition_misses
+            ++condition_missed
+            emit("condition", source_line, source_snippet, $0, "missed", "", "")
+            next
+        }
+        /^[[:space:]]*$/ {
+            require_no_pending("blank line")
+            clear_source()
+            next
+        }
+        {
+            require_no_pending("gcov metadata")
+            if (source_line != "")
+                fail("unknown gcov metadata after source line: " $0)
+
+            clear_source()
+            next
+        }
+        END {
+            if (bad)
+                exit 1
+
+            if (function_name != "")
+                fail("function summary without path summary: " function_line)
+
+            if (pending_condition_misses > 0)
+                fail("condition miss rows missing at end of file: " pending_condition_line)
+
+            if (condition_total - condition_covered != condition_missed)
+                fail("condition miss row count does not match missed count")
+
+            print "branch_total=" branch_total + 0 >> stats_file
+            print "branch_executed=" branch_executed + 0 >> stats_file
+            print "branch_covered=" branch_covered + 0 >> stats_file
+            print "branch_missed=" branch_missed + 0 >> stats_file
+            print "call_total=" call_total + 0 >> stats_file
+            print "call_covered=" call_covered + 0 >> stats_file
+            print "call_missed=" call_missed + 0 >> stats_file
+            print "condition_total=" condition_total + 0 >> stats_file
+            print "condition_covered=" condition_covered + 0 >> stats_file
+            print "condition_missed=" condition_missed + 0 >> stats_file
+            print "prime_path_total=" prime_path_total + 0 >> stats_file
+            print "prime_path_covered=" prime_path_covered + 0 >> stats_file
+            print "prime_path_missed=" prime_path_missed + 0 >> stats_file
+            print "prime_path_rows=" prime_path_rows + 0 >> stats_file
+        }
+    ' "$gcov_file"
+}
+
+format_detail_misses() {
+    heading=$1
+    kind=$2
+    model_file=$3
+
+    printf '%s\n' "$heading"
+    awk -v kind="$kind" '
+        BEGIN {
+            sep = sprintf("%c", 28)
+            FS = sep
+        }
+        $1 == kind && $5 == "missed" {
+            ++rows
+            lines[rows] = $2
+            snippets[rows] = $3
+            details[rows] = $4
+
+            if (length($2) > line_width)
+                line_width = length($2)
+            if (length($3) > snippet_width)
+                snippet_width = length($3)
+        }
+        END {
+            if (!rows) {
+                print "  (none)"
+                exit
+            }
+
+            for (i = 1; i <= rows; ++i) {
+                printf "  %*s | %-*s | %s\n",
+                    line_width,
+                    lines[i],
+                    snippet_width,
+                    snippets[i],
+                    details[i]
+            }
+        }
+    ' "$model_file"
+}
+
+format_prime_path_misses() {
+    model_file=$1
+
+    printf 'ctok coverage prime paths:\n'
+    awk '
+        BEGIN {
+            sep = sprintf("%c", 28)
+            FS = sep
+        }
+        $1 == "prime_path" && $7 == "missed" {
+            ++rows
+            function_names[rows] = $2
+            paths[rows] = $3
+            uncovered[rows] = $6
+
+            if (length($2) > function_width)
+                function_width = length($2)
+            if (length($3) > paths_width)
+                paths_width = length($3)
+        }
+        END {
+            if (!rows) {
+                print "  (none)"
+                exit
+            }
+
+            for (i = 1; i < rows; ++i) {
+                for (j = i + 1; j <= rows; ++j) {
+                    if (uncovered[i] < uncovered[j]) {
+                        swap = uncovered[i]
+                        uncovered[i] = uncovered[j]
+                        uncovered[j] = swap
+
+                        swap = function_names[i]
+                        function_names[i] = function_names[j]
+                        function_names[j] = swap
+
+                        swap = paths[i]
+                        paths[i] = paths[j]
+                        paths[j] = swap
+                    }
+                }
+            }
+
+            for (i = 1; i <= rows; ++i) {
+                printf "  %-*s | %-*s (%s uncovered)\n",
+                    function_width,
+                    function_names[i],
+                    paths_width,
+                    paths[i],
+                    uncovered[i]
+            }
+        }
+    ' "$model_file"
+}
+
+format_model_records_for_test() {
+    model_file=$1
+
+    awk '
+        BEGIN {
+            sep = sprintf("%c", 28)
+            FS = sep
+            OFS = "|"
+        }
+        {
+            for (i = NF; i > 1 && $i == ""; --i)
+                --NF
+            $1 = $1
+            print
+        }
+    ' "$model_file"
+}
+
+verify_coverage_report() {
+    metrics_file=$1
+    stats_file=$2
+
+    verify_detail_stats \
+        'branch directions' \
+        "$stats_file" \
+        branch_covered \
+        branch_total \
+        branch_missed
+    verify_metric_stats \
+        'branches executed' \
+        branches_executed \
+        "$stats_file" \
+        branch_executed \
+        branch_total \
+        "$metrics_file"
+    verify_metric_stats \
+        'branch directions taken' \
+        branch_directions_taken \
+        "$stats_file" \
+        branch_covered \
+        branch_total \
+        "$metrics_file"
+
+    verify_detail_stats \
+        calls \
+        "$stats_file" \
+        call_covered \
+        call_total \
+        call_missed
+    verify_metric_stats \
+        'calls executed' \
+        calls_executed \
+        "$stats_file" \
+        call_covered \
+        call_total \
+        "$metrics_file"
+
+    verify_detail_stats \
+        'condition outcomes' \
+        "$stats_file" \
+        condition_covered \
+        condition_total \
+        condition_missed
+    verify_metric_stats \
+        'condition outcomes covered' \
+        condition_outcomes_covered \
+        "$stats_file" \
+        condition_covered \
+        condition_total \
+        "$metrics_file"
+
+    verify_detail_stats \
+        'prime paths' \
+        "$stats_file" \
+        prime_path_covered \
+        prime_path_total \
+        prime_path_missed
+    verify_metric_stats \
+        'prime paths covered' \
+        prime_paths_covered \
+        "$stats_file" \
+        prime_path_covered \
+        prime_path_total \
+        "$metrics_file"
+}
+
+coverage_report() {
+    cov_tmp=$1
+    repo_dir=$2
+    test_tmp=$3
+
+    gcov_file=$cov_tmp/ctok.c.gcov
+    gcov_output=$test_tmp/ctok-coverage-gcov-output
+    metrics_file=$test_tmp/ctok-coverage-metrics
+    model_file=$test_tmp/ctok-coverage-model
+    stats_file=$test_tmp/ctok-coverage-stats
+
+    (
+        cd "$cov_tmp"
+        gcov -b -c -f -g -e -o "$cov_tmp" "$repo_dir/src/ctok.c"
+    ) >"$gcov_output"
+
+    parse_coverage_metrics "$gcov_output" "$repo_dir/src/ctok.c" "$metrics_file"
+    parse_gcov_model "$gcov_file" "$model_file" "$stats_file"
+
+    verify_coverage_report "$metrics_file" "$stats_file"
+
+    format_coverage_metrics "$metrics_file"
+    format_detail_misses \
+        'ctok coverage missed branch directions:' \
+        branch \
+        "$model_file"
+    format_detail_misses \
+        'ctok coverage missed calls:' \
+        call \
+        "$model_file"
+    format_detail_misses \
+        'ctok coverage missed condition outcomes:' \
+        condition \
+        "$model_file"
+    format_prime_path_misses "$model_file"
+}
+
+coverage_report_usage() {
+    printf '%s\n' 'usage: coverage-report report COV_TMP REPO_DIR TEST_TMP' >&2
+    exit 2
+}
+
+coverage_report_main() {
+    if [ "$#" -ne 4 ] || [ "$1" != report ]
+    then
+        coverage_report_usage
+    fi
+
+    coverage_report "$2" "$3" "$4"
+}
+
+if [ "${COVERAGE_REPORT_LIB:-0}" != 1 ]
+then
+    coverage_report_main "$@"
+fi

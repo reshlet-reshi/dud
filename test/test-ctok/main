@@ -550,10 +550,37 @@ validate_coverage() {
     printf 'ctok coverage: adjusted line coverage 100%% '
     printf '(%s raw uncovered lines allowlisted)\n' "$raw_uncovered_count"
     printf 'ctok coverage allowlist:\n'
-    while IFS='|' read -r line snippet reason
-    do
-        printf '  %s | %s | %s\n' "$line" "$snippet" "$reason"
-    done <"$allowlist"
+    awk -F '|' '
+        {
+            lines[NR] = $1
+            snippets[NR] = $2
+            reasons[NR] = $3
+
+            if (length($1) > line_width)
+                line_width = length($1)
+
+            if (length($2) > snippet_width)
+                snippet_width = length($2)
+        }
+        END {
+            for (i = 1; i <= NR; ++i) {
+                printf "  %*s | %-*s | %s\n",
+                    line_width,
+                    lines[i],
+                    snippet_width,
+                    snippets[i],
+                    reasons[i]
+            }
+        }
+    ' "$allowlist"
+}
+
+run_coverage_report_self_tests() {
+    ./test/test-ctok/coverage-report-test
+}
+
+print_coverage_details() {
+    ./test/test-ctok/coverage-report report "$1" "$repo_dir" "$test_tmp"
 }
 
 build_coverage_ctok() {
@@ -572,6 +599,8 @@ build_coverage_ctok() {
             -Wold-style-definition \
             -fprofile-arcs \
             -ftest-coverage \
+            -fcondition-coverage \
+            -fpath-coverage \
             "$repo_dir/src/ctok.c" \
             -o "$cov_tmp/ctok"
     )
@@ -579,8 +608,10 @@ build_coverage_ctok() {
     printf '%s\n' "$cov_tmp/ctok"
 }
 
+run_coverage_report_self_tests
 run_ctok_suite "$repo_dir/.cache/ctok" 'ctok'
 
 coverage_ctok=$(build_coverage_ctok)
 run_ctok_suite "$coverage_ctok" 'coverage ctok'
 validate_coverage "$test_tmp/coverage"
+print_coverage_details "$test_tmp/coverage"
