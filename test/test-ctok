@@ -474,19 +474,19 @@ write_coverage_allowlist() {
     cat >"$1" <<'EOF'
 60|return 0;|Byte_span_len null begin guard; no CLI path can pass a null span.
 64|return 0;|Byte_span_len reversed span guard; no CLI path can pass an inverted span.
-1009|continue;|Defensive empty punctuation entry guard; puncts has no empty entries.
-1217|return invalid;|Lex_ucn non-backslash guard; callers only enter this helper after seeing backslash.
-1759|return 0;|Len_leading_line_break empty range guard; printed tokens always have positive byte length.
-1881|printf(|fseek SEEK_END hard failure path; normal temp files do not trigger it.
-1885|return 1;|fseek SEEK_END hard failure path; normal temp files do not trigger it.
-1891|printf(|ftell hard failure path; normal temp files do not trigger it.
-1895|return 1;|ftell hard failure path; normal temp files do not trigger it.
-1902|printf(|fseek SEEK_SET hard failure path; normal temp files do not trigger it.
-1906|return 1;|fseek SEEK_SET hard failure path; normal temp files do not trigger it.
-1914|printf(|calloc failure path; normal-sized temp files do not trigger it portably.
-1920|return 1;|calloc failure path; normal-sized temp files do not trigger it portably.
-1933|printf(|short fread path; normal temp files do not trigger it portably.
-1940|return 1;|short fread path; normal temp files do not trigger it portably.
+1011|continue;|Defensive empty punctuation entry guard; puncts has no empty entries.
+1219|return invalid;|Lex_ucn non-backslash guard; callers only enter this helper after seeing backslash.
+1761|return 0;|Len_leading_line_break empty range guard; printed tokens always have positive byte length.
+1883|printf(|fseek SEEK_END hard failure path; normal temp files do not trigger it.
+1887|return 1;|fseek SEEK_END hard failure path; normal temp files do not trigger it.
+1893|printf(|ftell hard failure path; normal temp files do not trigger it.
+1897|return 1;|ftell hard failure path; normal temp files do not trigger it.
+1904|printf(|fseek SEEK_SET hard failure path; normal temp files do not trigger it.
+1908|return 1;|fseek SEEK_SET hard failure path; normal temp files do not trigger it.
+1916|printf(|calloc failure path; normal-sized temp files do not trigger it portably.
+1922|return 1;|calloc failure path; normal-sized temp files do not trigger it portably.
+1935|printf(|short fread path; normal temp files do not trigger it portably.
+1942|return 1;|short fread path; normal temp files do not trigger it portably.
 EOF
 }
 

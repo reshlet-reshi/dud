@@ -925,80 +925,82 @@ static Tokk_end_t Make_tokk_end(Tokk_t tokk, Ch_loc_t * end)
 	return result;
 }
 
-static Tokk_end_t Lex_punctuation(
-	Ch_loc_t * it)
+typedef struct
 {
-	// Punctuation sorted by length
+	const char32_t * str;
+	Tokk_t tokk;
+} Str_tokk_t;
 
-	// "::" is included to match clang
-	// https://github.com/llvm/llvm-project/commit/874217f99b99ab3c9026dc3b7bd84cd2beebde6e
+// Punctuation sorted by length
 
-	typedef struct
-	{
-		const char32_t * str;
-		Tokk_t tokk;
-	} Str_tokk_t;
+// "::" is included to match clang
+// https://github.com/llvm/llvm-project/commit/874217f99b99ab3c9026dc3b7bd84cd2beebde6e
 
-	static Str_tokk_t puncts[] =
-	{
-		{U"%:%:", Tokk_hashhash},
-		{U">>=", Tokk_greatergreaterequal},
-		{U"<<=", Tokk_lesslessequal},
-		{U"...", Tokk_ellipsis},
-		{U"|=", Tokk_pipeequal},
-		{U"||", Tokk_pipepipe},
-		{U"^=", Tokk_caretequal},
-		{U"==", Tokk_equalequal},
-		{U"::", Tokk_coloncolon},
-		{U":>", Tokk_r_square},
-		{U"-=", Tokk_minusequal},
-		{U"--", Tokk_minusminus},
-		{U"->", Tokk_arrow},
-		{U"+=", Tokk_plusequal},
-		{U"++", Tokk_plusplus},
-		{U"*=", Tokk_starequal},
-		{U"&=", Tokk_ampequal},
-		{U"&&", Tokk_ampamp},
-		{U"##", Tokk_hashhash},
-		{U"!=", Tokk_exclaimequal},
-		{U">=", Tokk_greaterequal},
-		{U">>", Tokk_greatergreater},
-		{U"<=", Tokk_lessequal},
-		{U"<:", Tokk_l_square},
-		{U"<%", Tokk_l_brace},
-		{U"<<", Tokk_lessless},
-		{U"%>", Tokk_r_brace},
-		{U"%=", Tokk_percentequal},
-		{U"%:", Tokk_hash},
-		{U"/=", Tokk_slashequal},
-		{U"~", Tokk_tilde},
-		{U"}", Tokk_r_brace},
-		{U"{", Tokk_l_brace},
-		{U"]", Tokk_r_square},
-		{U"[", Tokk_l_square},
-		{U"?", Tokk_question},
-		{U";", Tokk_semi},
-		{U",", Tokk_comma},
-		{U")", Tokk_r_paren},
-		{U"(", Tokk_l_paren},
-		{U"|", Tokk_pipe},
-		{U"^", Tokk_caret},
-		{U"=", Tokk_equal},
-		{U":", Tokk_colon},
-		{U"-", Tokk_minus},
-		{U"+", Tokk_plus},
-		{U"*", Tokk_star},
-		{U"&", Tokk_amp},
-		{U"#", Tokk_hash},
-		{U"!", Tokk_exclaim},
-		{U">", Tokk_greater},
-		{U"<", Tokk_less},
-		{U"%", Tokk_percent},
-		{U".", Tokk_period},
-		{U"/", Tokk_slash},
-	};
+static const Str_tokk_t default_puncts[] =
+{
+	{U"%:%:", Tokk_hashhash},
+	{U">>=", Tokk_greatergreaterequal},
+	{U"<<=", Tokk_lesslessequal},
+	{U"...", Tokk_ellipsis},
+	{U"|=", Tokk_pipeequal},
+	{U"||", Tokk_pipepipe},
+	{U"^=", Tokk_caretequal},
+	{U"==", Tokk_equalequal},
+	{U"::", Tokk_coloncolon},
+	{U":>", Tokk_r_square},
+	{U"-=", Tokk_minusequal},
+	{U"--", Tokk_minusminus},
+	{U"->", Tokk_arrow},
+	{U"+=", Tokk_plusequal},
+	{U"++", Tokk_plusplus},
+	{U"*=", Tokk_starequal},
+	{U"&=", Tokk_ampequal},
+	{U"&&", Tokk_ampamp},
+	{U"##", Tokk_hashhash},
+	{U"!=", Tokk_exclaimequal},
+	{U">=", Tokk_greaterequal},
+	{U">>", Tokk_greatergreater},
+	{U"<=", Tokk_lessequal},
+	{U"<:", Tokk_l_square},
+	{U"<%", Tokk_l_brace},
+	{U"<<", Tokk_lessless},
+	{U"%>", Tokk_r_brace},
+	{U"%=", Tokk_percentequal},
+	{U"%:", Tokk_hash},
+	{U"/=", Tokk_slashequal},
+	{U"~", Tokk_tilde},
+	{U"}", Tokk_r_brace},
+	{U"{", Tokk_l_brace},
+	{U"]", Tokk_r_square},
+	{U"[", Tokk_l_square},
+	{U"?", Tokk_question},
+	{U";", Tokk_semi},
+	{U",", Tokk_comma},
+	{U")", Tokk_r_paren},
+	{U"(", Tokk_l_paren},
+	{U"|", Tokk_pipe},
+	{U"^", Tokk_caret},
+	{U"=", Tokk_equal},
+	{U":", Tokk_colon},
+	{U"-", Tokk_minus},
+	{U"+", Tokk_plus},
+	{U"*", Tokk_star},
+	{U"&", Tokk_amp},
+	{U"#", Tokk_hash},
+	{U"!", Tokk_exclaim},
+	{U">", Tokk_greater},
+	{U"<", Tokk_less},
+	{U"%", Tokk_percent},
+	{U".", Tokk_period},
+	{U"/", Tokk_slash},
+};
 
-	for (size_t i_punct = 0; i_punct < ARY_LEN(puncts); ++i_punct)
+static Tokk_end_t Lex_punctuation(
+	Ch_loc_t * it,
+	const Str_tokk_t * puncts,
+	size_t num_puncts)
+{
+	for (size_t i_punct = 0; i_punct < num_puncts; ++i_punct)
 	{
 		Str_tokk_t punct = puncts[i_punct];
 		const char32_t * str = punct.str;
@@ -1644,7 +1646,7 @@ static Tokk_end_t Lex_leading_token(Ch_loc_t * it)
 	}
 	else
 	{
-		return Lex_punctuation(it);
+		return Lex_punctuation(it, default_puncts, ARY_LEN(default_puncts));
 	}
 }
 
