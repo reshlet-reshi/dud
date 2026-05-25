@@ -3,7 +3,7 @@
 This note is the evidence trail for `src/dud-tcc/patches/tcc-0.9.27-self-lib-path.patch`.
 
 The short version: final bootstrap `tcc1` is installed as a relocatable tree
-under `.bin/dud-tcc`. TCC already has a `{B}` path substitution mechanism, but
+under `.bin/bootstrap-tcc`. TCC already has a `{B}` path substitution mechanism, but
 upstream initializes `{B}` from `CONFIG_TCCDIR`. If `CONFIG_TCCDIR` itself is
 the literal string `{B}`, then `{B}/include`, `{B}/lib`, and `{B}/libtcc1.a`
 stay literal instead of becoming paths beside the running `tcc1` executable.
@@ -51,31 +51,31 @@ So the value of `s->tcc_lib_path` is the source of truth for all configured
 The install layout is:
 
 ```text
-.bin/dud-tcc/tcc1
-.bin/dud-tcc/include
-.bin/dud-tcc/lib
-.bin/dud-tcc/libtcc1.a
+.bin/bootstrap-tcc/tcc1
+.bin/bootstrap-tcc/include
+.bin/bootstrap-tcc/lib
+.bin/bootstrap-tcc/libtcc1.a
 ```
 
 Without this patch, upstream would set `s->tcc_lib_path` to the literal string
 `{B}`. Expanding `{B}/lib` would produce the literal path `{B}/lib`, not
-`.bin/dud-tcc/lib`. The compiler could still be used with an explicit `-B`, but
+`.bin/bootstrap-tcc/lib`. The compiler could still be used with an explicit `-B`, but
 the installed bootstrap compiler would not be self-locating.
 
 With the patch, the installed compiler reports paths rooted at its own
 directory. In this repo shape, that should look like:
 
 ```text
-install: <repo>/.bin/dud-tcc
+install: <repo>/.bin/bootstrap-tcc
 include:
-  <repo>/.bin/dud-tcc/include
+  <repo>/.bin/bootstrap-tcc/include
 libraries:
-  <repo>/.bin/dud-tcc/lib
-  <repo>/.bin/dud-tcc
+  <repo>/.bin/bootstrap-tcc/lib
+  <repo>/.bin/bootstrap-tcc
 libtcc1:
-  <repo>/.bin/dud-tcc/libtcc1.a
+  <repo>/.bin/bootstrap-tcc/libtcc1.a
 crt:
-  <repo>/.bin/dud-tcc/lib
+  <repo>/.bin/bootstrap-tcc/lib
 elfinterp:
   -
 ```
@@ -89,13 +89,13 @@ This is a bootstrap patch, not a general upstream-quality install-path design.
 - `/proc/self/exe` is Linux-specific.
 - The path buffer is fixed at 4096 bytes. That is practical here, but not a
   perfect general solution.
-- Moving only `.bin/dud-tcc/tcc1` without its sibling `include/`, `lib/`, and
+- Moving only `.bin/bootstrap-tcc/tcc1` without its sibling `include/`, `lib/`, and
   `libtcc1.a` still breaks the install.
 - The patch is in `tcc.c`, so it affects the command-line compiler, not libtcc
   API users.
 
 Those limits are acceptable for this repo because the bootstrap is already a
-Linux x86_64 bootstrap and installs a self-contained tree under `.bin/dud-tcc`.
+Linux x86_64 bootstrap and installs a self-contained tree under `.bin/bootstrap-tcc`.
 The patch does not replace TCC's existing path model; it supplies the missing
 runtime value for the existing `{B}` substitution. Because it runs before
 `tcc_parse_args()`, a user-provided `-B` remains the later, explicit override.

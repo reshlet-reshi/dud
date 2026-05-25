@@ -473,8 +473,8 @@ rm "$tcc0"
 # 'install' tcc1 into the project, by just copying it
 
 mkdir -p .bin
-install_dir=.bin/dud-tcc
-install_tmp=.bin/dud-tcc.tmp.$$
+install_dir=.bin/bootstrap-tcc
+install_tmp=.bin/bootstrap-tcc.tmp.$$
 rm -rf "$install_tmp"
 mkdir -p "$install_tmp"
 cp -R "$build"/. "$install_tmp"

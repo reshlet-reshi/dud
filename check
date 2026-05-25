@@ -66,7 +66,7 @@ mv "$tmp_dir/musl-cc" .bin/musl-cc
 smoke_cc .bin/musl-cc
 
 # dud-tcc
-tcc_dir=.bin/dud-tcc
+tcc_dir=.bin/bootstrap-tcc
 tcc_stamp=src/dud-tcc/.stamp
 tcc1=$tcc_dir/tcc1
 if [ ! -d "$tcc_dir" ] ||
@@ -75,7 +75,15 @@ if [ ! -d "$tcc_dir" ] ||
 then
     ./src/dud-tcc/build
 fi
-smoke_cc "$tcc1"
+cat > "$tmp_dir/dud-tcc" <<'EOF'
+#!/bin/sh
+set -eu
+exec .bin/bootstrap-tcc/tcc1 -static "$@"
+EOF
+chmod +x "$tmp_dir/dud-tcc"
+rm -rf .bin/dud-tcc
+mv "$tmp_dir/dud-tcc" .bin/dud-tcc
+smoke_cc .bin/dud-tcc
 
 # build + test
 

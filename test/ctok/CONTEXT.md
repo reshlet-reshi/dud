@@ -81,7 +81,7 @@
 - Ported the shared `expect_output`, `expect_status`, and `expect_error`
   helpers from `test/expect.sh` to the compiled `src/expect/main.c` utility.
 - Generated project outputs live in `.bin/`; the generated TCC install lives
-  under `.bin/dud-tcc/`.
+  under `.bin/bootstrap-tcc/`.
 
 ## Turn Log Rules
 
