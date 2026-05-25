@@ -21,6 +21,103 @@ sh -n ./bin/run-script-foreach
 sh -n ./bin/sh-n
 ./bin/for-each-sh-script sh ./bin/sh-n
 
+# bootstrap musl-cc
+
+musl_cc_source_fetch=vendor/musl-cc/source.fetch
+musl_cc_artifact_expected=vendor/musl-cc/x86_64-linux-musl-native.tgz
+musl_cc_vendor_dir=.vendor/musl-cc/x86_64-linux-musl-native
+musl_cc_vendor_tmp=
+
+cleanup_musl_cc_vendor_tmp() {
+    if [ -n "$musl_cc_vendor_tmp" ]; then
+        rm -rf "$musl_cc_vendor_tmp"
+    fi
+}
+
+trap cleanup_musl_cc_vendor_tmp EXIT HUP INT TERM
+
+if [ ! -f "$musl_cc_source_fetch" ]; then
+    printf '%s\n' "source.fetch is not a regular file: $musl_cc_source_fetch" >&2
+    exit 2
+fi
+
+if [ ! -r "$musl_cc_source_fetch" ]; then
+    printf '%s\n' "source.fetch is not readable: $musl_cc_source_fetch" >&2
+    exit 2
+fi
+
+musl_cc_source_fetch_fields=$(wc -w <"$musl_cc_source_fetch")
+if [ "$musl_cc_source_fetch_fields" -ne 3 ]; then
+    printf '%s\n' \
+        "source.fetch must contain exactly three fields: $musl_cc_source_fetch" \
+        >&2
+    exit 2
+fi
+
+musl_cc_url=
+musl_cc_artifact=
+musl_cc_sha256=
+musl_cc_extra=
+IFS=' 	' read -r \
+    musl_cc_url \
+    musl_cc_artifact \
+    musl_cc_sha256 \
+    musl_cc_extra \
+    <"$musl_cc_source_fetch" \
+    || true
+
+if [ -z "$musl_cc_url" ] \
+    || [ -z "$musl_cc_artifact" ] \
+    || [ -z "$musl_cc_sha256" ] \
+    || [ -n "$musl_cc_extra" ]
+then
+    printf '%s\n' \
+        "source.fetch must contain exactly three fields: $musl_cc_source_fetch" \
+        >&2
+    exit 2
+fi
+
+if [ "$musl_cc_artifact" != "$musl_cc_artifact_expected" ]; then
+    printf '%s\n' \
+        "unexpected musl-cc artifact path: $musl_cc_artifact" \
+        >&2
+    exit 2
+fi
+
+if [ ! -e "$musl_cc_artifact" ]; then
+    mkdir -p "$(dirname "$musl_cc_artifact")"
+    curl -fL "$musl_cc_url" -o "$musl_cc_artifact"
+fi
+
+printf '%s  %s\n' "$musl_cc_sha256" "$musl_cc_artifact" | sha256sum -c -
+
+if [ -e "$musl_cc_vendor_dir" ] && [ ! -d "$musl_cc_vendor_dir" ]; then
+    printf '%s\n' \
+        "vendor destination exists but is not a directory: $musl_cc_vendor_dir" \
+        >&2
+    exit 1
+fi
+
+if [ ! -d "$musl_cc_vendor_dir" ]; then
+    mkdir -p "$(dirname "$musl_cc_vendor_dir")"
+    musl_cc_vendor_tmp=$(mktemp -d "$(dirname "$musl_cc_vendor_dir")/.musl-cc.XXXXXX")
+    tar -xzf "$musl_cc_artifact" -C "$musl_cc_vendor_tmp"
+
+    if [ -e "$musl_cc_vendor_dir" ]; then
+        printf '%s\n' \
+            "vendor destination appeared during extraction: $musl_cc_vendor_dir" \
+            >&2
+        exit 1
+    fi
+
+    mv "$musl_cc_vendor_tmp" "$musl_cc_vendor_dir"
+    musl_cc_vendor_tmp=
+fi
+
+# musl-cc smoke test
+
+./test/test-musl-cc
+
 # unpack the goodies
 
 ./bin/cache-vendored
@@ -28,10 +125,6 @@ sh -n ./bin/sh-n
 # lint shell
 
 ./bin/shellcheck-all
-
-# musl-cc smoke test
-
-./test/test-musl-cc
 
 # ensure build output dir
 
