@@ -66,12 +66,12 @@ mv "$tmp_dir/musl-cc" .bin/musl-cc
 smoke_cc .bin/musl-cc
 
 # dud-tcc
-dud_tcc_dir=.bin/dud-tcc
-dud_tcc_stamp=src/dud-tcc/.stamp
-tcc1=$dud_tcc_dir/tcc1
-if [ ! -d "$dud_tcc_dir" ] ||
+tcc_dir=.bin/dud-tcc
+tcc_stamp=src/dud-tcc/.stamp
+tcc1=$tcc_dir/tcc1
+if [ ! -d "$tcc_dir" ] ||
     [ ! -x "$tcc1" ] ||
-    [ "$dud_tcc_stamp" -nt "$dud_tcc_dir" ]
+    [ "$tcc_stamp" -nt "$tcc_dir" ]
 then
     ./src/dud-tcc/build
 fi
