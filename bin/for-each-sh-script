@@ -1,11 +1,20 @@
 #!/bin/sh
 set -eu
 
+usage() {
+    printf '%s\n' 'usage: ./bin/for-each-sh-script <runner> <script>'
+}
+
+if [ "$#" -ne 2 ]; then
+    usage >&2
+    exit 2
+fi
+
 ./bin/run-script-for-path-in-find "$1" "$2" \
     \( -path './.git' -o -path './.bin' -o -path './.vendor' \) -prune -o \
     -type f \
     \( \
         -name '*.sh' \
         -o \
-        -exec ./bin/has-sh-shebang {} \; \
+        ! -name '*.*' -exec ./bin/has-sh-shebang {} \; \
     \)

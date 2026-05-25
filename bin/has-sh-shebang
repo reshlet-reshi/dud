@@ -1,15 +1,24 @@
 #!/bin/sh
 set -eu
 
+usage() {
+    printf '%s\n' 'usage: ./bin/has-sh-shebang <path>'
+}
+
+if [ "$#" -ne 1 ]; then
+    usage >&2
+    exit 2
+fi
+
 path="$1"
+newline='
+'
 
-first_line=
+prefix=$(dd if="$path" bs=18 count=1 2>/dev/null || true)
 
-# Read the first line verbatim, tolerating empty files.
-IFS= read -r first_line <"$path" || true
-
-case "$first_line" in
-    '#!/bin/sh' | '#!/usr/bin/env sh') exit 0 ;;
+case "$prefix" in
+    '#!/bin/sh' | "#!/bin/sh$newline"* | \
+    '#!/usr/bin/env sh' | "#!/usr/bin/env sh$newline"*) exit 0 ;;
 esac
 
 exit 1

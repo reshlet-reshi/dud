@@ -9,8 +9,8 @@ usage() {
 }
 
 if [ "${1:-}" = "--test" ]; then
-    sh -n bin/fetch.test
-    ./bin/fetch.test
+    sh -n test/test-fetch
+    ./test/test-fetch
     exit $?
 fi
 
