@@ -1,0 +1,17 @@
+#!/bin/sh
+set -eu
+
+test_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-test-dud-sh.XXXXXX")
+
+cleanup_test_tmp() {
+    rm -rf "$test_tmp"
+}
+
+trap cleanup_test_tmp EXIT HUP INT TERM
+
+.bin/expect error 2 '???' .bin/dud-sh
+.bin/expect error 2 '???' .bin/dud-sh --to-lexer-symbols
+.bin/expect error 2 '???' .bin/dud-sh -c ':'
+.bin/expect error 1 '!!!' .bin/dud-sh --to-lexer-symbols "$test_tmp/no-such-file"
+
+./test/dud-sh/to-lexer-symbols

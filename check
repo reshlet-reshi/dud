@@ -1,66 +1,51 @@
 #!/bin/sh
 set -eu
 
+# we expect no args
 if [ "$#" -ne 0 ]; then
     printf '%s\n' 'usage: ./check' >&2
     exit 2
 fi
 
-shellcheck_archive=vendor/shellcheck-v0.11.0.linux.x86_64.tar.xz
-shellcheck_dir=.bin/shellcheck-v0.11.0.linux.x86_64
-shellcheck=$shellcheck_dir/shellcheck-v0.11.0/shellcheck
-shellcheck_tmp=
-musl_cc_tmp=
-check_tmp=
-
-cleanup_tmp() {
-    if [ -n "$shellcheck_tmp" ]; then
-        rm -rf "$shellcheck_tmp"
-    fi
-    if [ -n "$musl_cc_tmp" ]; then
-        rm -rf "$musl_cc_tmp"
-    fi
-    if [ -n "$check_tmp" ]; then
-        rm -rf "$check_tmp"
-    fi
-}
-
+# make scratch dir
+tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/dud-check.XXXXXX")
+cleanup_tmp() { rm -rf "$tmp_dir"; }
 trap cleanup_tmp EXIT HUP INT TERM
 
+# ensure .bin dir
+mkdir -p .bin
+
+# ./shellcheck-all
+shellcheck_dir=.bin/shellcheck-v0.11.0.linux.x86_64
+shellcheck=$shellcheck_dir/shellcheck-v0.11.0/shellcheck
 if [ ! -x "$shellcheck" ]; then
-    mkdir -p .bin
-    shellcheck_tmp=$(mktemp -d .bin/shellcheck.XXXXXX)
-    tar -xJf "$shellcheck_archive" -C "$shellcheck_tmp"
+    mkdir "$tmp_dir/shellcheck"
+    tar -xJf vendor/shellcheck-v0.11.0.linux.x86_64.tar.xz \
+        -C "$tmp_dir/shellcheck"
     rm -rf "$shellcheck_dir"
-    mv "$shellcheck_tmp" "$shellcheck_dir"
-    shellcheck_tmp=
+    mv "$tmp_dir/shellcheck" "$shellcheck_dir"
 fi
-
 "$shellcheck" -x -s sh -- ./shellcheck-all
-
-# lint shell
-
 ./shellcheck-all
 
-# bootstrap dud-tcc toolchain
+# smoke test a c compiler
+smoke_cc() {
+    cc=$1
+    return_0=$tmp_dir/return-0
 
+    "$cc" -static test/c/return-0.c -o "$return_0"
+    "$return_0"
+}
+
+# musl_cc
 musl_cc_dir=.bin/x86_64-linux-musl-native
 musl_cc=$musl_cc_dir/bin/x86_64-linux-musl-gcc
 if [ ! -x "$musl_cc" ]; then
-    mkdir -p .bin
-    musl_cc_tmp=$(mktemp -d .bin/x86_64-linux-musl-native.XXXXXX)
-    tar -xzf vendor/x86_64-linux-musl-native.tgz -C "$musl_cc_tmp"
+    mkdir "$tmp_dir/musl-cc"
+    tar -xzf vendor/x86_64-linux-musl-native.tgz -C "$tmp_dir/musl-cc"
     rm -rf "$musl_cc_dir"
-    mv "$musl_cc_tmp/x86_64-linux-musl-native" "$musl_cc_dir"
-    rmdir "$musl_cc_tmp"
-    musl_cc_tmp=
+    mv "$tmp_dir/musl-cc/x86_64-linux-musl-native" "$musl_cc_dir"
 fi
-
-tcc1=.bin/dud-tcc/tcc1
-if [ ! -x "$tcc1" ]; then
-    ./src/dud-tcc/build
-fi
-
 musl_cc() {
     "$musl_cc" \
         -std=c11 \
@@ -68,38 +53,29 @@ musl_cc() {
         -Wextra \
         -Wpedantic \
         -Werror \
+        -Wfatal-errors \
         -Wmissing-prototypes \
         -Wstrict-prototypes \
         -Wold-style-definition \
         -static \
         "$@"
 }
+smoke_cc musl_cc
 
-# musl-cc smoke test
+# tcc1
+tcc1=.bin/dud-tcc/tcc1
+if [ ! -x "$tcc1" ]; then
+    ./src/dud-tcc/build
+fi
+smoke_cc "$tcc1"
 
-check_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-check.XXXXXX")
-return_0="$check_tmp/return-0"
+# build + test
 
-musl_cc test/c/return-0.c -o "$return_0"
-"$return_0"
+musl_cc src/expect/main.c -o .bin/expect
+./test/expect/main
 
-# ensure build output dir
-
-mkdir -p .bin
-
-# build expect
-
-musl_cc -Wfatal-errors src/expect/main.c -o .bin/expect
-
-# build ctok
-
-musl_cc -Wfatal-errors src/ctok/main.c -o .bin/ctok
-
-# ctok tests
-
+musl_cc src/ctok/main.c -o .bin/ctok
 ./test/ctok/main
-
-# build dud-sh
 
 musl_cc \
     src/dud-sh/main.c \
@@ -110,12 +86,4 @@ musl_cc \
     src/dud-sh/fopen_argv.c \
     src/dud-sh/lex.c \
     -o .bin/dud-sh
-
-# dud-sh smoke tests
-
-.bin/expect error 2 '???' .bin/dud-sh
-.bin/expect error 2 '???' .bin/dud-sh --to-lexer-symbols
-.bin/expect error 2 '???' .bin/dud-sh -c ':'
-.bin/expect error 1 '!!!' .bin/dud-sh --to-lexer-symbols "$check_tmp/no-such-file"
-
-./test/dud-sh/to-lexer-symbols
+./test/dud-sh/main
