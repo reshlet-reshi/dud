@@ -52,7 +52,7 @@ mkdir -p .cache
 
 # build ctok
 
-./bin/musl-cc src/ctok/main.c -o .cache/ctok
+./bin/musl-cc src/ctok.c -o .cache/ctok
 
 # build dud-sh
 
