@@ -1,8 +1,6 @@
 #!/bin/sh
 set -eu
 
-. ./test/expect.sh
-
 test_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-test-ctok.XXXXXX")
 repo_dir=$PWD
 
@@ -34,7 +32,7 @@ expect_status_output() {
         exit 1
     fi
 
-    expect_output "$expected_output" "$actual_output" "$label"
+    .cache/expect output "$expected_output" "$actual_output" "$label"
 }
 
 case_i=0

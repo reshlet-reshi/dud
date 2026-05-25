@@ -17,6 +17,8 @@
 
 - `test/test-ctok/main` is the moved former `test/test-ctok` script.
 - The top-level `check` script calls `./test/test-ctok/main`.
+- Shared exact-output assertions use `.cache/expect`, built from
+  `src/expect.c`, instead of sourcing `test/expect.sh`.
 - `main` now orchestrates ctok behavior cases, coverage build/run, the adjusted
   line coverage gate, reporter fixture tests, and the coverage reporter call.
 - `test/test-ctok/coverage-report` owns gcov stdout parsing, `ctok.c.gcov`
@@ -75,6 +77,8 @@
   misses, prime-path sorting, and prime-path alignment.
 - Clarified metric validation around exact totals versus rounded percentage
   consistency.
+- Ported the shared `expect_output`, `expect_status`, and `expect_error`
+  helpers from `test/expect.sh` to the compiled `src/expect.c` utility.
 
 ## Turn Log Rules
 
@@ -126,3 +130,15 @@
   `./check --no-clear`.
 - Remaining concern: the reporter is still shell/awk-heavy; future parser edits
   should start with focused fixtures.
+
+### Turn 7
+
+- User asked to port `test/expect.sh` to `src/expect.c` with `output`,
+  `status`, and `error` subcommands.
+- Migrated `test/test-ctok/main` and `coverage-report-test` to call
+  `.cache/expect output`.
+- Files touched: `src/expect.c`, `check`, `test/test-ctok/main`,
+  `test/test-ctok/coverage-report-test`, `test/test-to-lexer-symbols`,
+  `test/expect.sh`, and this context doc.
+- Tests run: focused `.cache/expect` checks, `sh -n` for changed shell
+  scripts, and `./check --no-clear`.

@@ -50,6 +50,10 @@ sh -n ./bin/sh-n
 
 mkdir -p .cache
 
+# build expect
+
+./bin/musl-cc -Wfatal-errors src/expect.c -o .cache/expect
+
 # build ctok
 
 ./bin/musl-cc -Wfatal-errors src/ctok.c -o .cache/ctok
@@ -80,11 +84,9 @@ cleanup_check_tmp() {
 
 trap cleanup_check_tmp EXIT HUP INT TERM
 
-. ./test/expect.sh
-
-expect_error 2 '???' .cache/dud-sh
-expect_error 2 '???' .cache/dud-sh --to-lexer-symbols
-expect_error 2 '???' .cache/dud-sh -c ':'
-expect_error 1 '!!!' .cache/dud-sh --to-lexer-symbols "$check_tmp/no-such-file"
+.cache/expect error 2 '???' .cache/dud-sh
+.cache/expect error 2 '???' .cache/dud-sh --to-lexer-symbols
+.cache/expect error 2 '???' .cache/dud-sh -c ':'
+.cache/expect error 1 '!!!' .cache/dud-sh --to-lexer-symbols "$check_tmp/no-such-file"
 
 ./test/test-to-lexer-symbols

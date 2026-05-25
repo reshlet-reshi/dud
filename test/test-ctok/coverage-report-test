@@ -1,8 +1,6 @@
 #!/bin/sh
 set -eu
 
-. ./test/expect.sh
-
 COVERAGE_REPORT_LIB=1
 . ./test/test-ctok/coverage-report
 unset COVERAGE_REPORT_LIB
@@ -36,7 +34,7 @@ expect_parser_success() {
         exit 1
     fi
 
-    expect_output "$expected_output" "$actual_output" "$label"
+    .cache/expect output "$expected_output" "$actual_output" "$label"
 }
 
 expect_parser_failure() {
