@@ -2,8 +2,7 @@
 set -eu
 
 musl_cc=\
-'.vendor/musl-cc/x86_64-linux-musl-native/'\
-'x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc'
+'.bin/seed/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc'
 
 "$musl_cc" \
     -std=c11 \

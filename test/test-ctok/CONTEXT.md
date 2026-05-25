@@ -33,10 +33,9 @@
 
 ## Working Rules
 
-- Do not add to the top-level `check` preflight `sh -n` list unless explicitly
-  changing how that dynamic check works.
-- Do not write random files to `.bin/` or `.vendor/`; use `$test_tmp`,
-  `TMPDIR`, or `/tmp`.
+- Do not reintroduce the old top-level `check` preflight `sh -n` list unless
+  explicitly changing how the ShellCheck bootstrap/lint path works.
+- Do not write random files to `.bin/`; use `$test_tmp`, `TMPDIR`, or `/tmp`.
 - Avoid `shellcheck disable`.
 - Keep logical coverage allowlist entries stable unless intentionally changing
   them. If line numbers drift, update line numbers only and preserve snippets
@@ -80,8 +79,8 @@
   consistency.
 - Ported the shared `expect_output`, `expect_status`, and `expect_error`
   helpers from `test/expect.sh` to the compiled `src/expect.c` utility.
-- Split generated outputs so built repo executables live in `.bin/` and
-  unpacked vendored archives live in `.vendor/`.
+- Generated project outputs live in `.bin/`; seed-owned generated state lives
+  under `.bin/seed/`.
 
 ## Turn Log Rules
 

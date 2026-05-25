@@ -6,125 +6,51 @@ if [ "$#" -ne 0 ]; then
     exit 2
 fi
 
-# `sh -n` on scripts before we have a working shellcheck
-#
-# NOTE we purposly check a number of fixed scripts
-# by hand first: those called downstream of ./bin/for-each-sh-script itself
-#
-# BUG maintainging this list by hand is gross, 
-# but is the right thing to do, I think
+shellcheck_archive=vendor/shellcheck-v0.11.0.linux.x86_64.tar.xz
+shellcheck_sha256=8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198
+shellcheck_dir=.bin/shellcheck-v0.11.0.linux.x86_64
+shellcheck=$shellcheck_dir/shellcheck-v0.11.0/shellcheck
+shellcheck_tmp=
+check_tmp=
 
-sh -n ./bin/for-each-sh-script
-sh -n ./bin/has-sh-shebang
-sh -n ./bin/run-script-for-path-in-find
-sh -n ./bin/run-script-foreach
-sh -n ./bin/sh-n
-./bin/for-each-sh-script sh ./bin/sh-n
-
-# bootstrap musl-cc
-
-musl_cc_source_fetch=vendor/musl-cc/source.fetch
-musl_cc_artifact_expected=vendor/musl-cc/x86_64-linux-musl-native.tgz
-musl_cc_vendor_dir=.vendor/musl-cc/x86_64-linux-musl-native
-musl_cc_vendor_tmp=
-
-cleanup_musl_cc_vendor_tmp() {
-    if [ -n "$musl_cc_vendor_tmp" ]; then
-        rm -rf "$musl_cc_vendor_tmp"
+cleanup_tmp() {
+    if [ -n "$shellcheck_tmp" ]; then
+        rm -rf "$shellcheck_tmp"
+    fi
+    if [ -n "$check_tmp" ]; then
+        rm -rf "$check_tmp"
     fi
 }
 
-trap cleanup_musl_cc_vendor_tmp EXIT HUP INT TERM
+trap cleanup_tmp EXIT HUP INT TERM
 
-if [ ! -f "$musl_cc_source_fetch" ]; then
-    printf '%s\n' "source.fetch is not a regular file: $musl_cc_source_fetch" >&2
-    exit 2
+printf '%s  %s\n' "$shellcheck_sha256" "$shellcheck_archive" | sha256sum -c -
+
+if [ ! -x "$shellcheck" ]; then
+    mkdir -p .bin
+    shellcheck_tmp=$(mktemp -d .bin/shellcheck.XXXXXX)
+    tar -xJf "$shellcheck_archive" -C "$shellcheck_tmp"
+    rm -rf "$shellcheck_dir"
+    mv "$shellcheck_tmp" "$shellcheck_dir"
+    shellcheck_tmp=
 fi
 
-if [ ! -r "$musl_cc_source_fetch" ]; then
-    printf '%s\n' "source.fetch is not readable: $musl_cc_source_fetch" >&2
-    exit 2
-fi
+"$shellcheck" -x -s sh -- ./bin/shellcheck-all
 
-musl_cc_source_fetch_fields=$(wc -w <"$musl_cc_source_fetch")
-if [ "$musl_cc_source_fetch_fields" -ne 3 ]; then
-    printf '%s\n' \
-        "source.fetch must contain exactly three fields: $musl_cc_source_fetch" \
-        >&2
-    exit 2
-fi
+# lint shell
 
-musl_cc_url=
-musl_cc_artifact=
-musl_cc_sha256=
-musl_cc_extra=
-IFS=' 	' read -r \
-    musl_cc_url \
-    musl_cc_artifact \
-    musl_cc_sha256 \
-    musl_cc_extra \
-    <"$musl_cc_source_fetch" \
-    || true
+./bin/shellcheck-all
 
-if [ -z "$musl_cc_url" ] \
-    || [ -z "$musl_cc_artifact" ] \
-    || [ -z "$musl_cc_sha256" ] \
-    || [ -n "$musl_cc_extra" ]
-then
-    printf '%s\n' \
-        "source.fetch must contain exactly three fields: $musl_cc_source_fetch" \
-        >&2
-    exit 2
-fi
+# bootstrap seed toolchain
 
-if [ "$musl_cc_artifact" != "$musl_cc_artifact_expected" ]; then
-    printf '%s\n' \
-        "unexpected musl-cc artifact path: $musl_cc_artifact" \
-        >&2
-    exit 2
-fi
-
-if [ ! -e "$musl_cc_artifact" ]; then
-    mkdir -p "$(dirname "$musl_cc_artifact")"
-    curl -fL "$musl_cc_url" -o "$musl_cc_artifact"
-fi
-
-printf '%s  %s\n' "$musl_cc_sha256" "$musl_cc_artifact" | sha256sum -c -
-
-if [ -e "$musl_cc_vendor_dir" ] && [ ! -d "$musl_cc_vendor_dir" ]; then
-    printf '%s\n' \
-        "vendor destination exists but is not a directory: $musl_cc_vendor_dir" \
-        >&2
-    exit 1
-fi
-
-if [ ! -d "$musl_cc_vendor_dir" ]; then
-    mkdir -p "$(dirname "$musl_cc_vendor_dir")"
-    musl_cc_vendor_tmp=$(mktemp -d "$(dirname "$musl_cc_vendor_dir")/.musl-cc.XXXXXX")
-    tar -xzf "$musl_cc_artifact" -C "$musl_cc_vendor_tmp"
-
-    if [ -e "$musl_cc_vendor_dir" ]; then
-        printf '%s\n' \
-            "vendor destination appeared during extraction: $musl_cc_vendor_dir" \
-            >&2
-        exit 1
-    fi
-
-    mv "$musl_cc_vendor_tmp" "$musl_cc_vendor_dir"
-    musl_cc_vendor_tmp=
+musl_cc=.bin/seed/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc
+if [ ! -x "$musl_cc" ]; then
+    ./seed/bootstrap
 fi
 
 # musl-cc smoke test
 
 ./test/test-musl-cc
-
-# unpack the goodies
-
-./bin/cache-vendored
-
-# lint shell
-
-./bin/shellcheck-all
 
 # ensure build output dir
 
@@ -157,12 +83,6 @@ mkdir -p .bin
 # dud-sh smoke tests
 
 check_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-check.XXXXXX")
-
-cleanup_check_tmp() {
-    rm -rf "$check_tmp"
-}
-
-trap cleanup_check_tmp EXIT HUP INT TERM
 
 .bin/expect error 2 '???' .bin/dud-sh
 .bin/expect error 2 '???' .bin/dud-sh --to-lexer-symbols

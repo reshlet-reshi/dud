@@ -11,7 +11,7 @@ if [ "$#" -ne 2 ]; then
 fi
 
 ./bin/run-script-for-path-in-find "$1" "$2" \
-    \( -path './.git' -o -path './.bin' -o -path './.vendor' \) -prune -o \
+    \( -path './.git' -o -path './.bin' \) -prune -o \
     -type f \
     \( \
         -name '*.sh' \

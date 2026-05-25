@@ -1,7 +1,0 @@
-musl.cc x86_64-linux-musl native toolchain archive.
-
-Fetch/update with:
-    ./bin/fetch-source vendor/musl-cc/source.fetch
-
-Upstream: https://musl.cc/
-License: see upstream component projects.

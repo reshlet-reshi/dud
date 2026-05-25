@@ -8,13 +8,14 @@ but when stuff bothers me I will add it to this list
 
 remind me ocasionaly if entries here get stale
 
-1. at the top of the main `check` script, do not add to the initial
-   preflight of `sh -n` calls, unless we explicitly change the deps
-   of the initial dynamic 'run `sh -n` on all sh files in the repo'
+1. at the top of the main `check` script, do not reintroduce the old fixed
+   preflight of `sh -n` calls, unless we explicitly change the deps of the
+   initial ShellCheck bootstrap/lint path.
 
 2. Do not write random stuff to generated dirs.
-   `.bin/` is for built repo executables.
-   `.vendor/` is for unpacked vendored archives.
+   `.bin/` is for generated repo executables and tool extracts.
+   `.bin/seed/` is owned by `seed/bootstrap`.
+   `vendor/` and `seed/vendor/` are for committed vendored archives.
    use a mktemp -d under `/tmp`, or `TMPDIR`.
    ask the user for permission,
    if you feel like something _really does_ belong under either generated dir.

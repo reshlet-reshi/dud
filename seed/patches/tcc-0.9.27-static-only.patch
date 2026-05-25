@@ -1,0 +1,78 @@
+--- tcc.c
++++ tcc.c
+@@ -185,7 +185,7 @@
+     printf("libtcc1:\n  %s/"TCC_LIBTCC1"\n", s->tcc_lib_path);
+ #ifndef TCC_TARGET_PE
+     print_dirs("crt", s->crt_paths, s->nb_crt_paths);
+-    printf("elfinterp:\n  %s\n",  DEFAULT_ELFINTERP(s));
++    printf("elfinterp:\n  -\n");
+ #endif
+ }
+ 
+@@ -307,6 +307,10 @@
+     set_environment(s);
+     if (s->output_type == 0)
+         s->output_type = TCC_OUTPUT_EXE;
++    if (s->output_type == TCC_OUTPUT_DLL)
++        tcc_error("this bootstrap tcc does not support -shared output");
++    if (s->output_type == TCC_OUTPUT_EXE && !s->static_link)
++        tcc_error("this bootstrap tcc only supports -static executable output");
+     tcc_set_output_type(s, s->output_type);
+     s->ppfp = ppfp;
+ 
+--- tccelf.c
++++ tccelf.c
+@@ -2076,47 +2076,14 @@
+     textrel = 0;
+ 
+     if (file_type != TCC_OUTPUT_OBJ) {
++        if (file_type == TCC_OUTPUT_DLL)
++            tcc_error("this bootstrap tcc does not support -shared output");
++        if (!s1->static_link)
++            tcc_error("this bootstrap tcc only supports -static executable output");
++
+         /* if linking, also link in runtime libraries (libc, libgcc, etc.) */
+         tcc_add_runtime(s1);
+ 	resolve_common_syms(s1);
+ 
+-        if (!s1->static_link) {
+-            if (file_type == TCC_OUTPUT_EXE) {
+-                char *ptr;
+-                /* allow override the dynamic loader */
+-                const char *elfint = getenv("LD_SO");
+-                if (elfint == NULL)
+-                    elfint = DEFAULT_ELFINTERP(s1);
+-                /* add interpreter section only if executable */
+-                interp = new_section(s1, ".interp", SHT_PROGBITS, SHF_ALLOC);
+-                interp->sh_addralign = 1;
+-                ptr = section_ptr_add(interp, 1 + strlen(elfint));
+-                strcpy(ptr, elfint);
+-            }
+-
+-            /* add dynamic symbol table */
+-            s1->dynsym = new_symtab(s1, ".dynsym", SHT_DYNSYM, SHF_ALLOC,
+-                                    ".dynstr",
+-                                    ".hash", SHF_ALLOC);
+-            dynstr = s1->dynsym->link;
+-
+-            /* add dynamic section */
+-            dynamic = new_section(s1, ".dynamic", SHT_DYNAMIC,
+-                                  SHF_ALLOC | SHF_WRITE);
+-            dynamic->link = dynstr;
+-            dynamic->sh_entsize = sizeof(ElfW(Dyn));
+-
+-            build_got(s1);
+-
+-            if (file_type == TCC_OUTPUT_EXE) {
+-                bind_exe_dynsyms(s1);
+-                if (s1->nb_errors)
+-                    goto the_end;
+-                bind_libs_dynsyms(s1);
+-            } else {
+-                /* shared library case: simply export all global symbols */
+-                export_global_syms(s1);
+-            }
+-        }
+         build_got_entries(s1);
+     }
+ 

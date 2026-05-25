@@ -1,0 +1,43 @@
+--- tcc.c
++++ tcc.c
+@@ -243,6 +243,31 @@
+ #endif
+ }
+ 
++static void tcc_set_self_lib_path(TCCState *s, const char *argv0)
++{
++    char path[4096];
++    char *slash;
++    ssize_t len;
++
++    len = readlink("/proc/self/exe", path, sizeof(path) - 1);
++    if (len > 0) {
++        path[len] = 0;
++    } else {
++        if (!argv0 || !strchr(argv0, 47))
++            return;
++        snprintf(path, sizeof(path), "%s", argv0);
++    }
++
++    slash = strrchr(path, 47);
++    if (!slash)
++        return;
++    if (slash == path)
++        slash[1] = 0;
++    else
++        *slash = 0;
++    tcc_set_lib_path(s, path);
++}
++
+ int main(int argc0, char **argv0)
+ {
+     TCCState *s;
+@@ -255,6 +280,8 @@
+ redo:
+     argc = argc0, argv = argv0;
+     s = tcc_new();
++    if (!strcmp(CONFIG_TCCDIR, "{B}"))
++        tcc_set_self_lib_path(s, argv0[0]);
+     opt = tcc_parse_args(s, &argc, &argv, 1);
+ 
+     if ((n | t) == 0) {

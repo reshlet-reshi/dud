@@ -1,0 +1,494 @@
+#!/bin/sh
+set -eu
+
+# clean seed dir
+
+mkdir -p .bin
+rm -rf .bin/seed
+mkdir .bin/seed
+
+# unpack bootstrap compiler
+
+tar -xzf seed/vendor/x86_64-linux-musl-native.tgz -C .bin/seed
+bootstrap_musl_cc=$PWD/.bin/seed/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc
+
+# bootstrap dir
+
+boostrap=.bin/seed/bootstrap
+mkdir "$boostrap"
+
+# unpack tcc src
+
+tar -xjf seed/vendor/tcc-0.9.27.tar.bz2 -C "$boostrap"
+tcc_src=$boostrap/tcc-0.9.27
+
+# empty config.h
+
+: > "$tcc_src/config.h"
+
+# patch tcc src
+
+# SEE seed/patches/tcc-0.9.27-tccelf.patch.md
+patch -s -d "$tcc_src" -p0 < seed/patches/tcc-0.9.27-tccelf.patch
+
+# SEE seed/patches/tcc-0.9.27-self-lib-path.patch.md
+patch -s -d "$tcc_src" -p0 < seed/patches/tcc-0.9.27-self-lib-path.patch
+
+# SEE seed/patches/tcc-0.9.27-static-only.patch.md
+patch -s -d "$tcc_src" -p0 < seed/patches/tcc-0.9.27-static-only.patch
+
+# build dir
+
+build=$PWD/$boostrap/build
+mkdir -p "$build"
+
+# tcc0
+
+tcc0=$build/tcc0
+(
+    cd "$tcc_src"
+    "$bootstrap_musl_cc" -g3 -O0 -w \
+        -static \
+        -I . \
+        -o "$tcc0" \
+        -DTCC_TARGET_X86_64=1 \
+        -DCONFIG_TCCBOOT=1 \
+        '-DCONFIG_TCCDIR=""' \
+        '-DCONFIG_TCC_CRTPREFIX=""' \
+        '-DCONFIG_TCC_LIBPATHS=""' \
+        '-DCONFIG_TCC_SYSINCLUDEPATHS=""' \
+        -DCONFIG_TCC_STATIC=1 \
+        '-DTCC_VERSION="0.9.27"' \
+        -DONE_SOURCE=1 \
+        tcc.c
+)
+
+# smoke test tcc0
+
+"$tcc0" -static -nostdlib \
+    seed/test/tcc0-start.c \
+    -o "$boostrap/start"
+"$boostrap/start"
+
+"$tcc0" -static -nostdlib \
+    seed/test/tcc0-func-start.c \
+    seed/test/tcc0-func-foo.c \
+    -o "$boostrap/tcc0-func"
+"$boostrap/tcc0-func"
+
+"$tcc0" \
+    -static \
+    -nostdlib \
+    seed/test/tcc0-data-start.c \
+    seed/test/tcc0-data-data.c \
+    -o "$boostrap/tcc0-data"
+"$boostrap/tcc0-data"
+
+# libtcc1.a
+
+(
+    cd "$tcc_src"
+    "$tcc0" -c lib/libtcc1.c -o "$build/libtcc1.o"
+    "$tcc0" -c lib/alloca86_64.S -o "$build/alloca86_64.o"
+    "$tcc0" -c lib/alloca86_64-bt.S -o "$build/alloca86_64-bt.o"
+    "$tcc0" -c lib/va_list.c -o "$build/va_list.o"
+)
+
+"$tcc0" -ar rcs "$build/libtcc1.a" \
+    "$build/libtcc1.o" \
+    "$build/alloca86_64.o" \
+    "$build/alloca86_64-bt.o" \
+    "$build/va_list.o"
+
+rm "$build/libtcc1.o"
+rm "$build/alloca86_64.o"
+rm "$build/alloca86_64-bt.o"
+rm "$build/va_list.o"
+
+# ...
+
+tar -xzf seed/vendor/musl-1.2.6.tar.gz -C "$boostrap"
+musl_src=$PWD/$boostrap/musl-1.2.6
+musl_obj=$build/musl-obj
+musl_lib=$build/lib
+
+for tcc_compat_file in \
+    "$musl_src/src/internal/syscall.h" \
+    "$musl_src/src/network/lookup.h" \
+    "$musl_src/src/network/lookup_ipliteral.c" \
+    "$musl_src/src/network/lookup_name.c" \
+    "$musl_src/src/network/lookup_serv.c"
+do
+    sed 's/\[static /[/g' "$tcc_compat_file" >"$tcc_compat_file.tmp"
+    mv "$tcc_compat_file.tmp" "$tcc_compat_file"
+done
+
+find "$musl_src" \
+    -type f \
+    \( -name '*.s' -o -name '*.S' \) \
+    | while IFS= read -r tcc_compat_file; do
+        sed 's/@PLT//g' "$tcc_compat_file" >"$tcc_compat_file.tmp"
+        mv "$tcc_compat_file.tmp" "$tcc_compat_file"
+    done
+
+cp seed/src/stdarg.h "$musl_src/include/stdarg.h"
+
+cat >"$musl_src/arch/x86_64/syscall_arch.h" <<'EOF'
+#define __SYSCALL_LL_E(x) (x)
+#define __SYSCALL_LL_O(x) (x)
+
+hidden long __syscall0(long);
+hidden long __syscall1(long, long);
+hidden long __syscall2(long, long, long);
+hidden long __syscall3(long, long, long, long);
+hidden long __syscall4(long, long, long, long, long);
+hidden long __syscall5(long, long, long, long, long, long);
+hidden long __syscall6(long, long, long, long, long, long, long);
+
+#define VDSO_USEFUL
+#define VDSO_CGT_SYM "__vdso_clock_gettime"
+#define VDSO_CGT_VER "LINUX_2.6"
+#define VDSO_GETCPU_SYM "__vdso_getcpu"
+#define VDSO_GETCPU_VER "LINUX_2.6"
+
+#define IPC_64 0
+EOF
+
+# musl headers
+
+mkdir -p \
+    "$build/include/bits" \
+    "$musl_obj/include/bits" \
+    "$musl_obj/src/internal"
+
+sed \
+    -f "$musl_src/tools/mkalltypes.sed" \
+    "$musl_src/arch/x86_64/bits/alltypes.h.in" \
+    "$musl_src/include/alltypes.h.in" \
+    >"$musl_obj/include/bits/alltypes.h"
+awk '
+    /typedef __builtin_va_list va_list;/ {
+        print "#ifndef __DEFINED___va_list_struct"
+        print "typedef struct {"
+        print "    unsigned int gp_offset;"
+        print "    unsigned int fp_offset;"
+        print "    union {"
+        print "        unsigned int overflow_offset;"
+        print "        char *overflow_arg_area;"
+        print "    };"
+        print "    char *reg_save_area;"
+        print "} __va_list_struct;"
+        print "#define __DEFINED___va_list_struct"
+        print "#endif"
+        print "typedef __va_list_struct va_list[1];"
+        next
+    }
+    /typedef __builtin_va_list __isoc_va_list;/ {
+        print "#ifndef __DEFINED___va_list_struct"
+        print "typedef struct {"
+        print "    unsigned int gp_offset;"
+        print "    unsigned int fp_offset;"
+        print "    union {"
+        print "        unsigned int overflow_offset;"
+        print "        char *overflow_arg_area;"
+        print "    };"
+        print "    char *reg_save_area;"
+        print "} __va_list_struct;"
+        print "#define __DEFINED___va_list_struct"
+        print "#endif"
+        print "typedef __va_list_struct __isoc_va_list[1];"
+        next
+    }
+    { print }
+' "$musl_obj/include/bits/alltypes.h" \
+    >"$musl_obj/include/bits/alltypes.h.tmp"
+mv "$musl_obj/include/bits/alltypes.h.tmp" "$musl_obj/include/bits/alltypes.h"
+
+cp "$musl_src/arch/x86_64/bits/syscall.h.in" \
+    "$musl_obj/include/bits/syscall.h"
+sed -n -e 's/__NR_/SYS_/p' \
+    <"$musl_src/arch/x86_64/bits/syscall.h.in" \
+    >>"$musl_obj/include/bits/syscall.h"
+
+printf '#define VERSION "%s"\n' \
+    "$(cd "$musl_src"; sh tools/version.sh)" \
+    >"$musl_obj/src/internal/version.h"
+
+(
+    cd "$musl_src/include"
+    find . -type f | sort | while IFS= read -r header; do
+        mkdir -p "$build/include/$(dirname "$header")"
+        cp "$header" "$build/include/$header"
+    done
+)
+
+cp "$musl_src"/arch/generic/bits/*.h "$build/include/bits"
+cp "$musl_src"/arch/x86_64/bits/*.h "$build/include/bits"
+cp "$musl_obj/include/bits/alltypes.h" "$build/include/bits/alltypes.h"
+cp "$musl_obj/include/bits/syscall.h" "$build/include/bits/syscall.h"
+rm "$build/include/alltypes.h.in"
+
+# musl libc.a
+
+musl_cc() {
+    "$tcc0" \
+        -std=c99 \
+        -ffreestanding \
+        -nostdinc \
+        -D_XOPEN_SOURCE=700 \
+        -I "$musl_src/arch/x86_64" \
+        -I "$musl_src/arch/generic" \
+        -I "$musl_obj/src/internal" \
+        -I "$musl_src/src/include" \
+        -I "$musl_src/src/internal" \
+        -I "$musl_obj/include" \
+        -I "$musl_src/include" \
+        -Os \
+        -pipe \
+        "$@"
+}
+
+musl_base_srcs=$boostrap/musl-base-srcs
+musl_arch_srcs=$boostrap/musl-arch-srcs
+musl_replaced_objs=$boostrap/musl-replaced-objs
+musl_libc_srcs=$boostrap/musl-libc-srcs
+musl_libc_objs=$boostrap/musl-libc-objs
+
+find "$musl_src/src" \
+    -mindepth 2 \
+    -maxdepth 2 \
+    -type f \
+    -name '*.c' \
+    ! -path "$musl_src/src/complex/*" \
+    >"$musl_base_srcs"
+find "$musl_src/src/malloc/mallocng" \
+    -maxdepth 1 \
+    -type f \
+    -name '*.c' \
+    >>"$musl_base_srcs"
+sort "$musl_base_srcs" >"$musl_base_srcs.sorted"
+mv "$musl_base_srcs.sorted" "$musl_base_srcs"
+
+find "$musl_src/src" \
+    -path "$musl_src/src/*/x86_64/*" \
+    -type f \
+    \( -name '*.c' -o -name '*.s' -o -name '*.S' \) \
+    ! -path "$musl_src/src/fenv/x86_64/fenv.s" \
+    ! -path "$musl_src/src/math/x86_64/*" \
+    ! -path "$musl_src/src/string/x86_64/*" \
+    >"$musl_arch_srcs"
+sort "$musl_arch_srcs" >"$musl_arch_srcs.sorted"
+mv "$musl_arch_srcs.sorted" "$musl_arch_srcs"
+
+sed \
+    -e "s#^$musl_src/##" \
+    -e 's#\.[csS]$#.o#' \
+    -e 's#/x86_64/#/#' \
+    -e 's#^#obj/#' \
+    "$musl_arch_srcs" \
+    | sort \
+    >"$musl_replaced_objs"
+
+: > "$musl_libc_srcs"
+while IFS= read -r src_file; do
+    rel=${src_file#"$musl_src"/}
+    obj=obj/${rel%.*}.o
+    if ! grep -F -x "$obj" "$musl_replaced_objs" >/dev/null 2>&1; then
+        printf '%s\n' "$rel" >>"$musl_libc_srcs"
+    fi
+done <"$musl_base_srcs"
+sed "s#^$musl_src/##" "$musl_arch_srcs" >>"$musl_libc_srcs"
+sort "$musl_libc_srcs" >"$musl_libc_srcs.sorted"
+mv "$musl_libc_srcs.sorted" "$musl_libc_srcs"
+
+: > "$musl_libc_objs"
+while IFS= read -r rel; do
+    obj=$musl_obj/${rel%.*}.o
+    mkdir -p "$(dirname "$obj")"
+    (cd "$musl_src"; musl_cc -c "$rel" -o "$obj")
+    printf '%s\n' "$obj" >>"$musl_libc_objs"
+done <"$musl_libc_srcs"
+
+mkdir -p "$musl_obj/src/internal"
+cat >"$musl_obj/src/internal/tcc-syscall-x86_64.s" <<'EOF'
+.global __syscall0
+.hidden __syscall0
+__syscall0:
+    mov %rdi,%rax
+    syscall
+    ret
+
+.global __syscall1
+.hidden __syscall1
+__syscall1:
+    mov %rdi,%rax
+    mov %rsi,%rdi
+    syscall
+    ret
+
+.global __syscall2
+.hidden __syscall2
+__syscall2:
+    mov %rdi,%rax
+    mov %rsi,%rdi
+    mov %rdx,%rsi
+    syscall
+    ret
+
+.global __syscall3
+.hidden __syscall3
+__syscall3:
+    mov %rdi,%rax
+    mov %rsi,%rdi
+    mov %rdx,%rsi
+    mov %rcx,%rdx
+    syscall
+    ret
+
+.global __syscall4
+.hidden __syscall4
+__syscall4:
+    mov %rdi,%rax
+    mov %rsi,%rdi
+    mov %rdx,%rsi
+    mov %rcx,%rdx
+    mov %r8,%r10
+    syscall
+    ret
+
+.global __syscall5
+.hidden __syscall5
+__syscall5:
+    mov %rdi,%rax
+    mov %rsi,%rdi
+    mov %rdx,%rsi
+    mov %rcx,%rdx
+    mov %r8,%r10
+    mov %r9,%r8
+    syscall
+    ret
+
+.global __syscall6
+.hidden __syscall6
+__syscall6:
+    mov %rdi,%rax
+    mov %rsi,%rdi
+    mov %rdx,%rsi
+    mov %rcx,%rdx
+    mov %r8,%r10
+    mov %r9,%r8
+    mov 8(%rsp),%r9
+    syscall
+    ret
+EOF
+(
+    cd "$musl_obj/src/internal"
+    "$tcc0" -c tcc-syscall-x86_64.s -o tcc-syscall-x86_64.o
+)
+printf '%s\n' "$musl_obj/src/internal/tcc-syscall-x86_64.o" \
+    >>"$musl_libc_objs"
+
+mkdir -p "$musl_lib"
+(
+    set --
+    while IFS= read -r obj; do
+        set -- "$@" "$obj"
+    done <"$musl_libc_objs"
+    "$tcc0" -ar rcs "$musl_lib/libc.a" "$@"
+)
+ar_first_name=$(dd if="$musl_lib/libc.a" bs=1 skip=8 count=16 2>/dev/null)
+ar_first_name=$(printf '%s\n' "$ar_first_name" | tr -d ' ')
+if [ "$ar_first_name" = "/" ]; then
+    ar_index_size=$(dd if="$musl_lib/libc.a" bs=1 skip=56 count=10 2>/dev/null)
+    ar_index_size=$(printf '%s\n' "$ar_index_size" | tr -cd '0-9')
+    ar_index_skip=$((8 + 60 + ar_index_size + ar_index_size % 2))
+    printf '%s\n' '!<arch>' >"$musl_lib/libc.a.noindex"
+    dd \
+        if="$musl_lib/libc.a" \
+        bs=1 \
+        skip="$ar_index_skip" \
+        >>"$musl_lib/libc.a.noindex" \
+        2>/dev/null
+    mv "$musl_lib/libc.a.noindex" "$musl_lib/libc.a"
+fi
+
+# musl crt objects
+
+mkdir -p "$musl_obj/crt/x86_64"
+(
+    cd "$musl_src"
+    musl_cc -DCRT -c crt/crt1.c -o "$musl_obj/crt/crt1.o"
+    musl_cc -DCRT -c crt/x86_64/crti.s \
+        -o "$musl_obj/crt/x86_64/crti.o"
+    musl_cc -DCRT -c crt/x86_64/crtn.s \
+        -o "$musl_obj/crt/x86_64/crtn.o"
+)
+
+cp "$musl_obj/crt/crt1.o" "$musl_lib/crt1.o"
+cp "$musl_obj/crt/x86_64/crti.o" "$musl_lib/crti.o"
+cp "$musl_obj/crt/x86_64/crtn.o" "$musl_lib/crtn.o"
+rm -rf "$musl_obj"
+
+for lib in m rt pthread crypt util xnet resolv dl; do
+    printf '%s\n' '!<arch>' >"$musl_lib/lib$lib.a"
+done
+
+# tcc1
+
+tcc1=$build/tcc1
+(
+    cd "$tcc_src"
+    "$tcc0" \
+        -static \
+        -nostdlib \
+        -I . \
+        -I "$build/include" \
+        -o "$tcc1" \
+        -DTCC_TARGET_X86_64=1 \
+        -DTCC_MUSL=1 \
+        '-DCONFIG_TCCDIR="{B}"' \
+        '-DCONFIG_TCC_CRTPREFIX="{B}/lib"' \
+        '-DCONFIG_TCC_LIBPATHS="{B}/lib:{B}"' \
+        '-DCONFIG_TCC_SYSINCLUDEPATHS="{B}/include"' \
+        -DCONFIG_TCC_STATIC=1 \
+        '-DTCC_VERSION="0.9.27"' \
+        -DONE_SOURCE=1 \
+        "$musl_lib/crt1.o" \
+        "$musl_lib/crti.o" \
+        tcc.c \
+        "$musl_lib/libc.a" \
+        "$build/libtcc1.a" \
+        "$musl_lib/crtn.o"
+)
+
+# smoke test tcc1
+
+cat >"$boostrap/tcc1-smoke.c" <<'EOF'
+#include <stdio.h>
+
+int main(void) {
+    puts("ok");
+    return 0;
+}
+EOF
+"$tcc1" -static "$boostrap/tcc1-smoke.c" -o "$boostrap/tcc1-smoke"
+"$boostrap/tcc1-smoke" >/dev/null
+
+# remove old tcc0
+
+rm "$tcc0"
+
+# 'install' tcc1 into the project, by just copying it
+
+install_dir=.bin/seed/tcc
+install_tmp=.bin/seed/tcc.tmp.$$
+rm -rf "$install_tmp"
+mkdir -p "$install_tmp"
+cp -R "$build"/. "$install_tmp"
+rm -rf "$install_dir"
+mv "$install_tmp" "$install_dir"
+
+# smoke test isntalled tcc1
+
+"$install_dir/tcc1" -static "$boostrap/tcc1-smoke.c" -o "$boostrap/tcc1-smoke"
+"$boostrap/tcc1-smoke" >/dev/null

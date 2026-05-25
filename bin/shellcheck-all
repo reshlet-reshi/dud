@@ -15,10 +15,8 @@ if [ "$#" -ne 0 ]; then
     exit 2
 fi
 
-./bin/cache-vendored
-
 shellcheck=\
-'.vendor/shellcheck/shellcheck-v0.11.0.linux.x86_64/'\
+'.bin/shellcheck-v0.11.0.linux.x86_64/'\
 'shellcheck-v0.11.0/shellcheck'
 
 ./bin/for-each-sh-script ./bin/run-shellcheck "$shellcheck"

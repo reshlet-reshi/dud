@@ -1,0 +1,3 @@
+long foo(long x) {
+    return x + 1;
+}

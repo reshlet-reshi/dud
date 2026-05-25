@@ -1,0 +1,33 @@
+--- tccelf.c
++++ tccelf.c
+@@ -1080,7 +1080,9 @@
+ 
+ #ifdef TCC_TARGET_X86_64
+             if ((type == R_X86_64_PLT32 || type == R_X86_64_PC32) &&
+-                (ELFW(ST_VISIBILITY)(sym->st_other) != STV_DEFAULT ||
++                ((s1->static_link && type == R_X86_64_PLT32 &&
++		  sym->st_shndx != SHN_ABS && sym->st_shndx != SHN_UNDEF) ||
++                ELFW(ST_VISIBILITY)(sym->st_other) != STV_DEFAULT ||
+ 		 ELFW(ST_BIND)(sym->st_info) == STB_LOCAL)) {
+                 rel->r_info = ELFW(R_INFO)(sym_index, R_X86_64_PC32);
+                 continue;
+@@ -2212,13 +2214,16 @@
+         ret = final_sections_reloc(s1);
+         if (ret)
+             goto the_end;
++        /* Static executable GOT slots are filled from relocation sections,
++           so do this before tidy_section_headers removes unnamed relocs. */
++        if (file_type == TCC_OUTPUT_EXE && s1->static_link)
++            fill_got(s1);
++
+ 	tidy_section_headers(s1, sec_order);
+ 
+         /* Perform relocation to GOT or PLT entries */
+-        if (file_type == TCC_OUTPUT_EXE && s1->static_link)
+-            fill_got(s1);
+-        else if (s1->got)
++        if (s1->got && !(file_type == TCC_OUTPUT_EXE && s1->static_link))
+             fill_local_got_entries(s1);
+     }
+ 
+     /* Create the ELF file with name 'filename' */
