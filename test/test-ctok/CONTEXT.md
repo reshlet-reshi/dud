@@ -130,7 +130,7 @@
   `test/test-ctok/coverage-report-test`, and this context doc.
 - Tests run: `sh -n` for all three scripts,
   `./test/test-ctok/coverage-report-test`, `./test/test-ctok/main`, and
-  `./check --no-clear`.
+  `./check`.
 - Remaining concern: the reporter is still shell/awk-heavy; future parser edits
   should start with focused fixtures.
 
@@ -143,8 +143,8 @@
 - Files touched: `src/expect.c`, `check`, `test/test-ctok/main`,
   `test/test-ctok/coverage-report-test`, `test/test-to-lexer-symbols`,
   `test/expect.sh`, and this context doc.
-- Tests run: focused `.bin/expect` checks, `sh -n` for changed shell
-  scripts, and `./check --no-clear`.
+- Tests run: focused `.bin/expect` checks, `sh -n` for changed shell scripts,
+  and `./check`.
 
 ### Turn 8
 
