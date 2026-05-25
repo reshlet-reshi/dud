@@ -32,7 +32,7 @@ expect_status_output() {
         exit 1
     fi
 
-    .cache/expect output "$expected_output" "$actual_output" "$label"
+    .bin/expect output "$expected_output" "$actual_output" "$label"
 }
 
 case_i=0
@@ -607,7 +607,7 @@ build_coverage_ctok() {
 }
 
 run_coverage_report_self_tests
-run_ctok_suite "$repo_dir/.cache/ctok" 'ctok'
+run_ctok_suite "$repo_dir/.bin/ctok" 'ctok'
 
 coverage_ctok=$(build_coverage_ctok)
 run_ctok_suite "$coverage_ctok" 'coverage ctok'

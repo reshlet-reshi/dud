@@ -2,7 +2,7 @@
 set -eu
 
 test_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-test-to-lexer-symbols.XXXXXX")
-dud_sh=$PWD/.cache/dud-sh
+dud_sh=$PWD/.bin/dud-sh
 
 cleanup_test_tmp() {
     rm -rf "$test_tmp"
@@ -10,23 +10,23 @@ cleanup_test_tmp() {
 
 trap cleanup_test_tmp EXIT HUP INT TERM
 
-.cache/expect output '.# ..' "$(.cache/dud-sh --to-lexer-symbols -c 'a# b~')" \
+.bin/expect output '.# ..' "$(.bin/dud-sh --to-lexer-symbols -c 'a# b~')" \
     'argument source lexer symbols'
-.cache/expect output '' "$(.cache/dud-sh --to-lexer-symbols -c '')" \
+.bin/expect output '' "$(.bin/dud-sh --to-lexer-symbols -c '')" \
     'empty argument source lexer symbols'
 
 stdin_expected=$(
     printf '.\n\n# .\n.'
 )
 stdin_actual=$(
-    printf 'A\n\t# ~\200Z' | .cache/dud-sh --to-lexer-symbols -
+    printf 'A\n\t# ~\200Z' | .bin/dud-sh --to-lexer-symbols -
 )
-.cache/expect output "$stdin_expected" "$stdin_actual" 'stdin lexer symbols'
+.bin/expect output "$stdin_expected" "$stdin_actual" 'stdin lexer symbols'
 
 normal_file="$test_tmp/to-lexer-symbols-normal"
 printf 'x y#z' >"$normal_file"
-.cache/expect output '. .#.' \
-    "$(.cache/dud-sh --to-lexer-symbols "$normal_file")" \
+.bin/expect output '. .#.' \
+    "$(.bin/dud-sh --to-lexer-symbols "$normal_file")" \
     'file lexer symbols'
 
 dash_file="$test_tmp/-to-lexer-symbols-dash"
@@ -35,4 +35,4 @@ dash_output=$(
     cd "$test_tmp"
     "$dud_sh" --to-lexer-symbols -- -to-lexer-symbols-dash
 )
-.cache/expect output '....# ....' "$dash_output" 'dash-leading file lexer symbols'
+.bin/expect output '....# ....' "$dash_output" 'dash-leading file lexer symbols'

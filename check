@@ -46,17 +46,17 @@ sh -n ./bin/sh-n
 
 ./test/test-musl-cc
 
-# ensure cache dir
+# ensure build output dir
 
-mkdir -p .cache
+mkdir -p .bin
 
 # build expect
 
-./bin/musl-cc -Wfatal-errors src/expect.c -o .cache/expect
+./bin/musl-cc -Wfatal-errors src/expect.c -o .bin/expect
 
 # build ctok
 
-./bin/musl-cc -Wfatal-errors src/ctok.c -o .cache/ctok
+./bin/musl-cc -Wfatal-errors src/ctok.c -o .bin/ctok
 
 # ctok tests
 
@@ -72,7 +72,7 @@ mkdir -p .cache
     src/clib/exit.c \
     src/dud-sh/fopen_argv.c \
     src/dud-sh/lex.c \
-    -o .cache/dud-sh
+    -o .bin/dud-sh
 
 # dud-sh smoke tests
 
@@ -84,9 +84,9 @@ cleanup_check_tmp() {
 
 trap cleanup_check_tmp EXIT HUP INT TERM
 
-.cache/expect error 2 '???' .cache/dud-sh
-.cache/expect error 2 '???' .cache/dud-sh --to-lexer-symbols
-.cache/expect error 2 '???' .cache/dud-sh -c ':'
-.cache/expect error 1 '!!!' .cache/dud-sh --to-lexer-symbols "$check_tmp/no-such-file"
+.bin/expect error 2 '???' .bin/dud-sh
+.bin/expect error 2 '???' .bin/dud-sh --to-lexer-symbols
+.bin/expect error 2 '???' .bin/dud-sh -c ':'
+.bin/expect error 1 '!!!' .bin/dud-sh --to-lexer-symbols "$check_tmp/no-such-file"
 
 ./test/test-to-lexer-symbols

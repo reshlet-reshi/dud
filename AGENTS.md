@@ -12,9 +12,11 @@ remind me ocasionaly if entries here get stale
    preflight of `sh -n` calls, unless we explicitly change the deps
    of the initial dynamic 'run `sh -n` on all sh files in the repo'
 
-2. Do not write random stuff to `.cache/`. 
-   use a mktmp -d under `/tmp`, or `TMPDIR`.
-   ask the user for permission, 
-   if you feel like something _really does_ belong under `.cache/`.
+2. Do not write random stuff to generated dirs.
+   `.bin/` is for built repo executables.
+   `.vendor/` is for unpacked vendored archives.
+   use a mktemp -d under `/tmp`, or `TMPDIR`.
+   ask the user for permission,
+   if you feel like something _really does_ belong under either generated dir.
 
 3. avoid using `shellcheck disable`

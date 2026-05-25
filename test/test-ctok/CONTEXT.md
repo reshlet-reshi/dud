@@ -17,7 +17,7 @@
 
 - `test/test-ctok/main` is the moved former `test/test-ctok` script.
 - The top-level `check` script calls `./test/test-ctok/main`.
-- Shared exact-output assertions use `.cache/expect`, built from
+- Shared exact-output assertions use `.bin/expect`, built from
   `src/expect.c`, instead of sourcing `test/expect.sh`.
 - `main` now orchestrates ctok behavior cases, coverage build/run, the adjusted
   line coverage gate, reporter fixture tests, and the coverage reporter call.
@@ -35,7 +35,8 @@
 
 - Do not add to the top-level `check` preflight `sh -n` list unless explicitly
   changing how that dynamic check works.
-- Do not write random files to `.cache/`; use `$test_tmp`, `TMPDIR`, or `/tmp`.
+- Do not write random files to `.bin/` or `.vendor/`; use `$test_tmp`,
+  `TMPDIR`, or `/tmp`.
 - Avoid `shellcheck disable`.
 - Keep logical coverage allowlist entries stable unless intentionally changing
   them. If line numbers drift, update line numbers only and preserve snippets
@@ -79,6 +80,8 @@
   consistency.
 - Ported the shared `expect_output`, `expect_status`, and `expect_error`
   helpers from `test/expect.sh` to the compiled `src/expect.c` utility.
+- Split generated outputs so built repo executables live in `.bin/` and
+  unpacked vendored archives live in `.vendor/`.
 
 ## Turn Log Rules
 
@@ -136,9 +139,18 @@
 - User asked to port `test/expect.sh` to `src/expect.c` with `output`,
   `status`, and `error` subcommands.
 - Migrated `test/test-ctok/main` and `coverage-report-test` to call
-  `.cache/expect output`.
+  `.bin/expect output`.
 - Files touched: `src/expect.c`, `check`, `test/test-ctok/main`,
   `test/test-ctok/coverage-report-test`, `test/test-to-lexer-symbols`,
   `test/expect.sh`, and this context doc.
-- Tests run: focused `.cache/expect` checks, `sh -n` for changed shell
+- Tests run: focused `.bin/expect` checks, `sh -n` for changed shell
   scripts, and `./check --no-clear`.
+
+### Turn 8
+
+- User asked to split generated outputs into `.bin/` for built executables and
+  `.vendor/` for unpacked vendor archives.
+- Updated `test/test-ctok/main` and `coverage-report-test` to use
+  `.bin/expect` and `.bin/ctok`.
+- Files touched include generated-path plumbing, test callers, ignore/policy
+  docs, and this context doc.

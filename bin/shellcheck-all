@@ -18,7 +18,7 @@ fi
 ./bin/cache-vendored
 
 shellcheck=\
-'.cache/vendor/shellcheck/shellcheck-v0.11.0.linux.x86_64/'\
+'.vendor/shellcheck/shellcheck-v0.11.0.linux.x86_64/'\
 'shellcheck-v0.11.0/shellcheck'
 
 ./bin/for-each-sh-script ./bin/run-shellcheck "$shellcheck"
