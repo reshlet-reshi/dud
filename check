@@ -37,47 +37,56 @@ smoke_cc() {
     "$return_0"
 }
 
-# musl_cc
-musl_cc_dir=.bin/x86_64-linux-musl-native
-musl_cc=$musl_cc_dir/bin/x86_64-linux-musl-gcc
-if [ ! -x "$musl_cc" ]; then
-    mkdir "$tmp_dir/musl-cc"
-    tar -xzf vendor/x86_64-linux-musl-native.tgz -C "$tmp_dir/musl-cc"
-    rm -rf "$musl_cc_dir"
-    mv "$tmp_dir/musl-cc/x86_64-linux-musl-native" "$musl_cc_dir"
+# musl-cc
+musl_dir=.bin/x86_64-linux-musl-native
+musl_cc=.bin/musl-cc
+if [ ! -x "$musl_dir/bin/x86_64-linux-musl-gcc" ]; then
+    mkdir "$tmp_dir/musl-exe"
+    tar -xzf vendor/x86_64-linux-musl-native.tgz -C "$tmp_dir/musl-exe"
+    rm -rf "$musl_dir"
+    mv "$tmp_dir/musl-exe/x86_64-linux-musl-native" "$musl_dir"
 fi
-musl_cc() {
-    "$musl_cc" \
-        -std=c11 \
-        -Wall \
-        -Wextra \
-        -Wpedantic \
-        -Werror \
-        -Wfatal-errors \
-        -Wmissing-prototypes \
-        -Wstrict-prototypes \
-        -Wold-style-definition \
-        -static \
-        "$@"
-}
-smoke_cc musl_cc
+cat > "$tmp_dir/musl-cc" <<'EOF'
+#!/bin/sh
+set -eu
+exec .bin/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc \
+    -std=c11 \
+    -Wall \
+    -Wextra \
+    -Wpedantic \
+    -Werror \
+    -Wfatal-errors \
+    -Wmissing-prototypes \
+    -Wstrict-prototypes \
+    -Wold-style-definition \
+    -static \
+    "$@"
+EOF
+chmod +x "$tmp_dir/musl-cc"
+mv "$tmp_dir/musl-cc" "$musl_cc"
+smoke_cc "$musl_cc"
 
-# tcc1
-tcc1=.bin/dud-tcc/tcc1
-if [ ! -x "$tcc1" ]; then
+# dud-tcc
+dud_tcc_dir=.bin/dud-tcc
+dud_tcc_stamp=src/dud-tcc/.stamp
+tcc1=$dud_tcc_dir/tcc1
+if [ ! -d "$dud_tcc_dir" ] ||
+    [ ! -x "$tcc1" ] ||
+    [ "$dud_tcc_stamp" -nt "$dud_tcc_dir" ]
+then
     ./src/dud-tcc/build
 fi
 smoke_cc "$tcc1"
 
 # build + test
 
-musl_cc src/expect/main.c -o .bin/expect
+"$musl_cc" src/expect/main.c -o .bin/expect
 ./test/expect/main
 
-musl_cc src/ctok/main.c -o .bin/ctok
+"$musl_cc" src/ctok/main.c -o .bin/ctok
 ./test/ctok/main
 
-musl_cc \
+"$musl_cc" \
     src/dud-sh/main.c \
     src/dud-sh/action.c \
     src/clib/io.c \

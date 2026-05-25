@@ -58,21 +58,21 @@ tcc0=$build/tcc0
 # smoke test tcc0
 
 "$tcc0" -static -nostdlib \
-    test/dud-tcc/tcc0-start.c \
+    src/dud-tcc/test/tcc0-start.c \
     -o "$work_dir/start"
 "$work_dir/start"
 
 "$tcc0" -static -nostdlib \
-    test/dud-tcc/tcc0-func-start.c \
-    test/dud-tcc/tcc0-func-foo.c \
+    src/dud-tcc/test/tcc0-func-start.c \
+    src/dud-tcc/test/tcc0-func-foo.c \
     -o "$work_dir/tcc0-func"
 "$work_dir/tcc0-func"
 
 "$tcc0" \
     -static \
     -nostdlib \
-    test/dud-tcc/tcc0-data-start.c \
-    test/dud-tcc/tcc0-data-data.c \
+    src/dud-tcc/test/tcc0-data-start.c \
+    src/dud-tcc/test/tcc0-data-data.c \
     -o "$work_dir/tcc0-data"
 "$work_dir/tcc0-data"
 
