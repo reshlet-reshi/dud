@@ -118,16 +118,8 @@ musl_src=$PWD/$work_dir/musl-1.2.6
 musl_obj=$build/musl-obj
 musl_lib=$build/lib
 
-for tcc_compat_file in \
-    "$musl_src/src/internal/syscall.h" \
-    "$musl_src/src/network/lookup.h" \
-    "$musl_src/src/network/lookup_ipliteral.c" \
-    "$musl_src/src/network/lookup_name.c" \
-    "$musl_src/src/network/lookup_serv.c"
-do
-    sed 's/\[static /[/g' "$tcc_compat_file" >"$tcc_compat_file.tmp"
-    mv "$tcc_compat_file.tmp" "$tcc_compat_file"
-done
+# SEE src/dud-tcc/patches/musl-1.2.6-tcc-array-static.patch.md
+patch -s -d "$musl_src" -p0 < src/dud-tcc/patches/musl-1.2.6-tcc-array-static.patch
 
 find "$musl_src" \
     -type f \
