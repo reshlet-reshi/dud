@@ -7,7 +7,7 @@ export LC_ALL
 
 usage() {
     printf '%s\n' \
-        'usage: ./src/dud-tcc/build-from-seed SEED_CC OUT_DIR WORK_DIR' >&2
+        'usage: ./03-musl-tcc/build-from-seed SEED_CC OUT_DIR WORK_DIR' >&2
 }
 
 if [ "$#" -ne 3 ]; then
@@ -31,20 +31,20 @@ tcc_src=$work_dir/tcc-0.9.27
 # empty config.h
 : > "$tcc_src/config.h"
 
-# SEE src/dud-tcc/patches/tcc-0.9.27-tccelf.patch.md
-patch -s -d "$tcc_src" -p0 < src/dud-tcc/patches/tcc-0.9.27-tccelf.patch
+# SEE 03-musl-tcc/patches/tcc-0.9.27-tccelf.patch.md
+patch -s -d "$tcc_src" -p0 < 03-musl-tcc/patches/tcc-0.9.27-tccelf.patch
 
-# SEE src/dud-tcc/patches/tcc-0.9.27-self-lib-path.patch.md
-patch -s -d "$tcc_src" -p0 < src/dud-tcc/patches/tcc-0.9.27-self-lib-path.patch
+# SEE 03-musl-tcc/patches/tcc-0.9.27-self-lib-path.patch.md
+patch -s -d "$tcc_src" -p0 < 03-musl-tcc/patches/tcc-0.9.27-self-lib-path.patch
 
-# SEE src/dud-tcc/patches/tcc-0.9.27-static-only.patch.md
-patch -s -d "$tcc_src" -p0 < src/dud-tcc/patches/tcc-0.9.27-static-only.patch
+# SEE 03-musl-tcc/patches/tcc-0.9.27-static-only.patch.md
+patch -s -d "$tcc_src" -p0 < 03-musl-tcc/patches/tcc-0.9.27-static-only.patch
 
-# SEE src/dud-tcc/patches/tcc-0.9.27-no-complex.patch.md
-patch -s -d "$tcc_src" -p0 < src/dud-tcc/patches/tcc-0.9.27-no-complex.patch
+# SEE 03-musl-tcc/patches/tcc-0.9.27-no-complex.patch.md
+patch -s -d "$tcc_src" -p0 < 03-musl-tcc/patches/tcc-0.9.27-no-complex.patch
 
-# SEE src/dud-tcc/patches/tcc-0.9.27-hex-long-double.patch.md
-patch -s -d "$tcc_src" -p0 < src/dud-tcc/patches/tcc-0.9.27-hex-long-double.patch
+# SEE 03-musl-tcc/patches/tcc-0.9.27-hex-long-double.patch.md
+patch -s -d "$tcc_src" -p0 < 03-musl-tcc/patches/tcc-0.9.27-hex-long-double.patch
 
 # tcc0
 tcc0=$build/tcc0
@@ -68,19 +68,19 @@ tcc0=$build/tcc0
 
 # smoke test tcc0
 "$tcc0" -static -nostdlib \
-    src/dud-tcc/test/tcc0-start.c \
+    03-musl-tcc/test/tcc0-start.c \
     -o "$work_dir/start"
 "$work_dir/start"
 "$tcc0" -static -nostdlib \
-    src/dud-tcc/test/tcc0-func-start.c \
-    src/dud-tcc/test/tcc0-func-foo.c \
+    03-musl-tcc/test/tcc0-func-start.c \
+    03-musl-tcc/test/tcc0-func-foo.c \
     -o "$work_dir/tcc0-func"
 "$work_dir/tcc0-func"
 "$tcc0" \
     -static \
     -nostdlib \
-    src/dud-tcc/test/tcc0-data-start.c \
-    src/dud-tcc/test/tcc0-data-data.c \
+    03-musl-tcc/test/tcc0-data-start.c \
+    03-musl-tcc/test/tcc0-data-data.c \
     -o "$work_dir/tcc0-data"
 "$work_dir/tcc0-data"
 
@@ -108,20 +108,20 @@ musl_src=$work_dir/musl-1.2.6
 musl_obj=$build/musl-obj
 musl_lib=$build/lib
 
-# SEE src/dud-tcc/patches/musl-1.2.6-tcc-array-static.patch.md
-patch -s -d "$musl_src" -p0 < src/dud-tcc/patches/musl-1.2.6-tcc-array-static.patch
+# SEE 03-musl-tcc/patches/musl-1.2.6-tcc-array-static.patch.md
+patch -s -d "$musl_src" -p0 < 03-musl-tcc/patches/musl-1.2.6-tcc-array-static.patch
 
-# SEE src/dud-tcc/patches/musl-1.2.6-tcc-no-plt.patch.md
-patch -s -d "$musl_src" -p0 < src/dud-tcc/patches/musl-1.2.6-tcc-no-plt.patch
+# SEE 03-musl-tcc/patches/musl-1.2.6-tcc-no-plt.patch.md
+patch -s -d "$musl_src" -p0 < 03-musl-tcc/patches/musl-1.2.6-tcc-no-plt.patch
 
-# SEE src/dud-tcc/patches/musl-1.2.6-tcc-va-list.patch.md
-patch -s -d "$musl_src" -p0 < src/dud-tcc/patches/musl-1.2.6-tcc-va-list.patch
+# SEE 03-musl-tcc/patches/musl-1.2.6-tcc-va-list.patch.md
+patch -s -d "$musl_src" -p0 < 03-musl-tcc/patches/musl-1.2.6-tcc-va-list.patch
 
-# SEE src/dud-tcc/stdarg.h.md
-cp src/dud-tcc/stdarg.h "$musl_src/include/stdarg.h"
+# SEE 03-musl-tcc/stdarg.h.md
+cp 03-musl-tcc/stdarg.h "$musl_src/include/stdarg.h"
 
-# SEE src/dud-tcc/syscall_arch.h.md
-cp src/dud-tcc/syscall_arch.h "$musl_src/arch/x86_64/syscall_arch.h"
+# SEE 03-musl-tcc/syscall_arch.h.md
+cp 03-musl-tcc/syscall_arch.h "$musl_src/arch/x86_64/syscall_arch.h"
 
 # Create destinations for installed headers and generated musl internals.
 mkdir -p \
@@ -182,14 +182,14 @@ tcc0_musl_cc() {
         "$@"
 }
 
-# SEE src/dud-tcc/musl_source_pipeline.md
+# SEE 03-musl-tcc/musl_source_pipeline.md
 musl_base_srcs=$work_dir/musl-base-srcs
 musl_arch_srcs=$work_dir/musl-arch-srcs
 musl_replaced_objs=$work_dir/musl-replaced-objs
 musl_libc_srcs=$work_dir/musl-libc-srcs
 musl_libc_objs=$work_dir/musl-libc-objs
 
-# SEE src/dud-tcc/musl_base_srcs.md
+# SEE 03-musl-tcc/musl_base_srcs.md
 find "$musl_src/src" \
     -mindepth 2 \
     -maxdepth 2 \
@@ -205,7 +205,7 @@ find "$musl_src/src/malloc/mallocng" \
 sort "$musl_base_srcs" >"$musl_base_srcs.sorted"
 mv "$musl_base_srcs.sorted" "$musl_base_srcs"
 
-# SEE src/dud-tcc/musl_arch_srcs.md
+# SEE 03-musl-tcc/musl_arch_srcs.md
 find "$musl_src/src" \
     -path "$musl_src/src/*/x86_64/*" \
     -type f \
@@ -217,7 +217,7 @@ find "$musl_src/src" \
 sort "$musl_arch_srcs" >"$musl_arch_srcs.sorted"
 mv "$musl_arch_srcs.sorted" "$musl_arch_srcs"
 
-# SEE src/dud-tcc/musl_replaced_objs.md
+# SEE 03-musl-tcc/musl_replaced_objs.md
 sed \
     -e "s#^$musl_src/##" \
     -e 's#\.[csS]$#.o#' \
@@ -227,7 +227,7 @@ sed \
     | sort \
     >"$musl_replaced_objs"
 
-# SEE src/dud-tcc/musl_libc_srcs.md
+# SEE 03-musl-tcc/musl_libc_srcs.md
 : > "$musl_libc_srcs"
 while IFS= read -r src_file; do
     rel=${src_file#"$musl_src"/}
@@ -240,7 +240,7 @@ sed "s#^$musl_src/##" "$musl_arch_srcs" >>"$musl_libc_srcs"
 sort "$musl_libc_srcs" >"$musl_libc_srcs.sorted"
 mv "$musl_libc_srcs.sorted" "$musl_libc_srcs"
 
-# SEE src/dud-tcc/musl_libc_objs.md
+# SEE 03-musl-tcc/musl_libc_objs.md
 : > "$musl_libc_objs"
 while IFS= read -r rel; do
     obj=$musl_obj/${rel%.*}.o
@@ -252,8 +252,8 @@ done <"$musl_libc_srcs"
 # Add generated syscall helper object beside musl internal objects.
 mkdir -p "$musl_obj/src/internal"
 
-# SEE src/dud-tcc/tcc-syscall-x86_64.s.md
-cp src/dud-tcc/tcc-syscall-x86_64.s \
+# SEE 03-musl-tcc/tcc-syscall-x86_64.s.md
+cp 03-musl-tcc/tcc-syscall-x86_64.s \
     "$musl_obj/src/internal/tcc-syscall-x86_64.s"
 (
     cd "$musl_obj/src/internal"
@@ -262,7 +262,7 @@ cp src/dud-tcc/tcc-syscall-x86_64.s \
 printf '%s\n' "$musl_obj/src/internal/tcc-syscall-x86_64.o" \
     >>"$musl_libc_objs"
 
-# SEE src/dud-tcc/musl_libc_a.md
+# SEE 03-musl-tcc/musl_libc_a.md
 mkdir -p "$musl_lib"
 (
     set --
@@ -272,7 +272,7 @@ mkdir -p "$musl_lib"
     "$tcc0" -ar rcs "$musl_lib/libc.a" "$@"
 )
 
-# SEE src/dud-tcc/musl_libc_a_noindex.md
+# SEE 03-musl-tcc/musl_libc_a_noindex.md
 ar_first_name=$(dd if="$musl_lib/libc.a" bs=1 skip=8 count=16 2>/dev/null)
 ar_first_name=$(printf '%s\n' "$ar_first_name" | tr -d ' ')
 if [ "$ar_first_name" = "/" ]; then
@@ -289,7 +289,7 @@ if [ "$ar_first_name" = "/" ]; then
     mv "$musl_lib/libc.a.noindex" "$musl_lib/libc.a"
 fi
 
-# SEE src/dud-tcc/musl_crt_objs.md
+# SEE 03-musl-tcc/musl_crt_objs.md
 mkdir -p "$musl_obj/crt/x86_64"
 (
     cd "$musl_src"
@@ -350,9 +350,9 @@ tcc1=$build/tcc1
 build_musl_tcc "$tcc0" "$tcc1"
 
 # smoke test tcc1
-"$tcc1" -static src/dud-tcc/test/tcc1-smoke.c -o "$work_dir/tcc1-smoke"
+"$tcc1" -static 03-musl-tcc/test/tcc1-smoke.c -o "$work_dir/tcc1-smoke"
 "$work_dir/tcc1-smoke" >/dev/null
-"$tcc1" -static src/dud-tcc/test/tcc1-ldbl-min.c \
+"$tcc1" -static 03-musl-tcc/test/tcc1-ldbl-min.c \
     -o "$work_dir/tcc1-ldbl-min"
 "$work_dir/tcc1-ldbl-min" >/dev/null
 

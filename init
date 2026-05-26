@@ -23,7 +23,7 @@ mkdir -p .init
 ./01-smoke-cc/init
 ./02-musl-cc/init
 
-./src/dud-tcc/init
+./03-musl-tcc/init
 
 ./src/expect/init
 ./src/ctok/init

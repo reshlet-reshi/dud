@@ -1,12 +1,12 @@
-# src/dud-tcc/patches/tcc-0.9.27-no-complex.patch
+# 03-musl-tcc/patches/tcc-0.9.27-no-complex.patch
 
-This note is the evidence trail for `src/dud-tcc/patches/tcc-0.9.27-no-complex.patch`.
+This note is the evidence trail for `03-musl-tcc/patches/tcc-0.9.27-no-complex.patch`.
 
 The patch makes the bootstrap TCC predefine `__STDC_NO_COMPLEX__`.
 
 ## Why It Is Needed
 
-This dud-tcc bootstrap does not build musl's `src/complex/*` implementations,
+This musl-tcc bootstrap does not build musl's `src/complex/*` implementations,
 and TCC 0.9.27 does not support the C `_Complex` type syntax used by musl's
 `include/complex.h`.
 

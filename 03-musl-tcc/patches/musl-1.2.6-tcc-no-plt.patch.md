@@ -1,6 +1,6 @@
-# src/dud-tcc/patches/musl-1.2.6-tcc-no-plt.patch
+# 03-musl-tcc/patches/musl-1.2.6-tcc-no-plt.patch
 
-This note is the evidence trail for `src/dud-tcc/patches/musl-1.2.6-tcc-no-plt.patch`.
+This note is the evidence trail for `03-musl-tcc/patches/musl-1.2.6-tcc-no-plt.patch`.
 
 The patch removes `@PLT` symbol suffixes from musl 1.2.6 assembly sources.
 

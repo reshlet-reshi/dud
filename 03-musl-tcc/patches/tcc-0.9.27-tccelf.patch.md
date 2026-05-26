@@ -1,6 +1,6 @@
-# src/dud-tcc/patches/tcc-0.9.27-tccelf.patch
+# 03-musl-tcc/patches/tcc-0.9.27-tccelf.patch
 
-This note is the evidence trail for `src/dud-tcc/patches/tcc-0.9.27-tccelf.patch`.
+This note is the evidence trail for `03-musl-tcc/patches/tcc-0.9.27-tccelf.patch`.
 
 The short version: unpatched TCC 0.9.27 can emit static x86_64
 `-nostdlib` executables that still route default-visibility cross-object
@@ -35,7 +35,7 @@ Hashes observed in the local investigation:
 ```text
 eb1db6f0f3c2bdbdbfb993d7ef7e2eeef82ac1259f6a6e1757c33a97dbcef3ad  02-musl-cc/x86_64-linux-musl-native.tgz
 de23af78fca90ce32dff2dd45b3432b2334740bb9bb7b05bf60fdbfc396ceb9c  vendor/tcc-0.9.27.tar.bz2
-5fc861bb9761f097fea129cde479c876a6e31acdffbc428a3038a0c1cc6294d4  src/dud-tcc/patches/tcc-0.9.27-tccelf.patch
+5fc861bb9761f097fea129cde479c876a6e31acdffbc428a3038a0c1cc6294d4  03-musl-tcc/patches/tcc-0.9.27-tccelf.patch
 ```
 
 Tool versions used to regenerate the traces below:

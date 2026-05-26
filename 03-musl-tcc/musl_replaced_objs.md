@@ -1,7 +1,7 @@
-# src/dud-tcc/init musl_replaced_objs
+# 03-musl-tcc/init musl_replaced_objs
 
 This note is the evidence trail for `musl_replaced_objs` in
-`src/dud-tcc/init`.
+`03-musl-tcc/init`.
 
 The transform mirrors musl 1.2.6's Makefile model:
 

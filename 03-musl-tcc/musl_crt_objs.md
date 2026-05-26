@@ -1,7 +1,7 @@
-# src/dud-tcc/init musl CRT objects
+# 03-musl-tcc/init musl CRT objects
 
 This note is the evidence trail for the musl CRT object build in
-`src/dud-tcc/init`.
+`03-musl-tcc/init`.
 
 These objects are not part of `libc.a`. They are standalone startup/finalizer
 objects installed beside `libc.a` and used by TCC when linking static programs.
@@ -66,7 +66,7 @@ and `ret` instructions.
 
 ## Install Shape
 
-After building these objects under `$musl_obj`, `src/dud-tcc/init` copies them
+After building these objects under `$musl_obj`, `03-musl-tcc/init` copies them
 to `$musl_lib`:
 
 ```sh

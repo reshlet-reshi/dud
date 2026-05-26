@@ -1,8 +1,8 @@
-# src/dud-tcc/stdarg.h
+# 03-musl-tcc/stdarg.h
 
-This note is the evidence trail for `src/dud-tcc/stdarg.h`.
+This note is the evidence trail for `03-musl-tcc/stdarg.h`.
 
-The file replaces musl 1.2.6's `include/stdarg.h` during the dud-tcc bootstrap.
+The file replaces musl 1.2.6's `include/stdarg.h` during the musl-tcc bootstrap.
 
 ## What It Does
 
@@ -31,7 +31,7 @@ passes TCC's type metadata, size, and alignment values to `__va_arg`.
 
 ## Bootstrap Scope
 
-This is a bootstrap header for the repo's x86_64 Linux dud-tcc init path. It is
+This is a bootstrap header for the repo's x86_64 Linux musl-tcc init path. It is
 not intended to be a general replacement for musl's upstream `stdarg.h`, and it
 depends on compiler/runtime support for:
 

@@ -6,13 +6,13 @@ LC_ALL=C
 export LC_ALL
 
 usage() {
-    printf '%s\n' 'usage: ./src/dud-tcc/init' >&2
+    printf '%s\n' 'usage: ./03-musl-tcc/init' >&2
 }
 
 init_dir=.init
 tcc_dir=$init_dir/musl-tcc
 work_dir=$init_dir/musl-tcc-build
-tcc_stamp=src/dud-tcc/.stamp
+tcc_stamp=03-musl-tcc/.stamp
 tcc=$tcc_dir/tcc
 smoke_cc=$init_dir/smoke-cc
 
@@ -64,10 +64,10 @@ bootstrap_musl_cc=$PWD/.init/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc
 first_build=$PWD/$work_dir/musl-tcc-seed
 second_build=$PWD/$work_dir/musl-tcc-reseed
 
-src/dud-tcc/build-from-seed "$bootstrap_musl_cc" \
+03-musl-tcc/build-from-seed "$bootstrap_musl_cc" \
     "$first_build" \
     "$work_dir/seed"
-src/dud-tcc/build-from-seed "$first_build/tcc" \
+03-musl-tcc/build-from-seed "$first_build/tcc" \
     "$second_build" \
     "$work_dir/reseed"
 
@@ -95,7 +95,7 @@ normalize_install_tree "$install_tmp"
 rm -rf "$tcc_dir"
 mv "$install_tmp" "$tcc_dir"
 
-"$tcc" -static src/dud-tcc/test/tcc1-smoke.c \
+"$tcc" -static 03-musl-tcc/test/tcc1-smoke.c \
     -o "$work_dir/tcc1-smoke"
 "$work_dir/tcc1-smoke" >/dev/null
 

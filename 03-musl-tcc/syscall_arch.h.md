@@ -1,8 +1,8 @@
-# src/dud-tcc/syscall_arch.h
+# 03-musl-tcc/syscall_arch.h
 
-This note is the evidence trail for `src/dud-tcc/syscall_arch.h`.
+This note is the evidence trail for `03-musl-tcc/syscall_arch.h`.
 
-The file replaces musl 1.2.6's `arch/x86_64/syscall_arch.h` during the dud-tcc
+The file replaces musl 1.2.6's `arch/x86_64/syscall_arch.h` during the musl-tcc
 bootstrap.
 
 ## What It Does
@@ -28,7 +28,7 @@ The VDSO symbol macros and `IPC_64` value match upstream musl's x86_64 header.
 
 ## Bootstrap Scope
 
-This is a bootstrap header for the repo's x86_64 Linux dud-tcc init path. It is
+This is a bootstrap header for the repo's x86_64 Linux musl-tcc init path. It is
 not intended to be a general replacement for musl's upstream `syscall_arch.h`,
 and it depends on this bootstrap providing compatible implementations of
 `__syscall0` through `__syscall6`.

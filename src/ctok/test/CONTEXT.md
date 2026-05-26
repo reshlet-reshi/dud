@@ -138,5 +138,9 @@
 
 ### Turn 18
 
-- User asked to rename the dud-tcc install directory from `.init/bootstrap-tcc`
+- User asked to rename the musl-tcc install directory from `.init/bootstrap-tcc`
   to `.init/musl-tcc`.
+
+### Turn 19
+
+- User asked to move the musl-tcc bootstrap step into `03-musl-tcc`.

@@ -1,7 +1,7 @@
-# src/dud-tcc/patches/tcc-0.9.27-hex-long-double.patch
+# 03-musl-tcc/patches/tcc-0.9.27-hex-long-double.patch
 
 This note is the evidence trail for
-`src/dud-tcc/patches/tcc-0.9.27-hex-long-double.patch`.
+`03-musl-tcc/patches/tcc-0.9.27-hex-long-double.patch`.
 
 ## What The Patch Does
 

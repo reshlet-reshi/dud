@@ -1,6 +1,6 @@
-# src/dud-tcc/patches/tcc-0.9.27-self-lib-path.patch
+# 03-musl-tcc/patches/tcc-0.9.27-self-lib-path.patch
 
-This note is the evidence trail for `src/dud-tcc/patches/tcc-0.9.27-self-lib-path.patch`.
+This note is the evidence trail for `03-musl-tcc/patches/tcc-0.9.27-self-lib-path.patch`.
 
 The short version: the final bootstrap `tcc` is installed as a relocatable tree
 under `.init/musl-tcc`. TCC already has a `{B}` path substitution mechanism, but
@@ -39,7 +39,7 @@ So the value of `s->tcc_lib_path` is the source of truth for all configured
 
 ## Bootstrap Need
 
-`src/dud-tcc/init` builds the final compiler with:
+`03-musl-tcc/init` builds the final compiler with:
 
 ```text
 -DCONFIG_TCCDIR="{B}"

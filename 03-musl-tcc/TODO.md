@@ -1,8 +1,8 @@
-# src/dud-tcc/TODO.md
+# 03-musl-tcc/TODO.md
 
 ## Bootstrap Distribution Audit Followups
 
-`src/dud-tcc/audit-bootstrap-tcc` currently passes with warnings only. These
+`03-musl-tcc/audit-bootstrap-tcc` currently passes with warnings only. These
 are the followups worth considering.
 
 ## Easy / Worth Doing

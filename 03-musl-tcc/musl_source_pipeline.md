@@ -1,7 +1,7 @@
-# src/dud-tcc/init musl source pipeline
+# 03-musl-tcc/init musl source pipeline
 
 This note is the evidence trail for the musl libc source/object list pipeline
-in `src/dud-tcc/init`.
+in `03-musl-tcc/init`.
 
 The logic mirrors musl 1.2.6's Makefile model:
 
