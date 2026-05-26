@@ -26,12 +26,11 @@ if [ "$#" -ne 0 ]; then
     exit 2
 fi
 
-needs_build=0
-if [ ! -d "$tcc_dir" ] ||
-    [ ! -x "$tcc" ] ||
-    [ "$tcc_stamp" -nt "$tcc_dir" ]
+if [ -d "$tcc_dir" ] &&
+    [ -x "$tcc" ] &&
+    [ ! "$tcc_stamp" -nt "$tcc_dir" ]
 then
-    needs_build=1
+    exit 0
 fi
 
 canonical_tar() {
@@ -62,50 +61,47 @@ normalize_install_tree() {
     unset normalize_install_tree_dir
 }
 
-if [ "$needs_build" -eq 1 ]; then
-    rm -rf "$work_dir"
-    mkdir -p "$work_dir"
+rm -rf "$work_dir"
+mkdir -p "$work_dir"
 
-    expected_canonical_sha256=9bce8e8d61d4df02587f479e053111e9e6b888eb744f9007324a908ad8ab7d32
-    bootstrap_musl_cc=$PWD/.init/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc
-    first_build=$PWD/$work_dir/musl-tcc-seed
-    second_build=$PWD/$work_dir/musl-tcc-reseed
+expected_canonical_sha256=9bce8e8d61d4df02587f479e053111e9e6b888eb744f9007324a908ad8ab7d32
+bootstrap_musl_cc=$PWD/.init/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc
+first_build=$PWD/$work_dir/musl-tcc-seed
+second_build=$PWD/$work_dir/musl-tcc-reseed
 
-    src/dud-tcc/build-from-seed "$bootstrap_musl_cc" \
-        "$first_build" \
-        "$work_dir/seed"
-    src/dud-tcc/build-from-seed "$first_build/tcc" \
-        "$second_build" \
-        "$work_dir/reseed"
+src/dud-tcc/build-from-seed "$bootstrap_musl_cc" \
+    "$first_build" \
+    "$work_dir/seed"
+src/dud-tcc/build-from-seed "$first_build/tcc" \
+    "$second_build" \
+    "$work_dir/reseed"
 
-    normalize_install_tree "$first_build"
-    normalize_install_tree "$second_build"
+normalize_install_tree "$first_build"
+normalize_install_tree "$second_build"
 
-    canonical_tar "$first_build" "$work_dir/seed.tar"
-    canonical_tar "$second_build" "$work_dir/reseed.tar"
-    cmp "$work_dir/seed.tar" "$work_dir/reseed.tar"
-    canonical_sha256=$(sha256sum "$work_dir/seed.tar")
-    canonical_sha256=${canonical_sha256%% *}
-    if [ "$canonical_sha256" != "$expected_canonical_sha256" ]; then
-        printf '%s\n' 'canonical tar sha256 mismatch' >&2
-        printf 'expected %s\n' "$expected_canonical_sha256" >&2
-        printf 'actual   %s\n' "$canonical_sha256" >&2
-        exit 1
-    fi
-
-    mkdir -p "$init_dir"
-    install_tmp=$tcc_dir.tmp.$$
-    rm -rf "$install_tmp"
-    mkdir -p "$install_tmp"
-    cp -R "$first_build"/. "$install_tmp"
-    normalize_install_tree "$install_tmp"
-    rm -rf "$tcc_dir"
-    mv "$install_tmp" "$tcc_dir"
-
-    "$tcc" -static src/dud-tcc/test/tcc1-smoke.c \
-        -o "$work_dir/tcc1-smoke"
-    "$work_dir/tcc1-smoke" >/dev/null
-
+canonical_tar "$first_build" "$work_dir/seed.tar"
+canonical_tar "$second_build" "$work_dir/reseed.tar"
+cmp "$work_dir/seed.tar" "$work_dir/reseed.tar"
+canonical_sha256=$(sha256sum "$work_dir/seed.tar")
+canonical_sha256=${canonical_sha256%% *}
+if [ "$canonical_sha256" != "$expected_canonical_sha256" ]; then
+    printf '%s\n' 'canonical tar sha256 mismatch' >&2
+    printf 'expected %s\n' "$expected_canonical_sha256" >&2
+    printf 'actual   %s\n' "$canonical_sha256" >&2
+    exit 1
 fi
+
+mkdir -p "$init_dir"
+install_tmp=$tcc_dir.tmp.$$
+rm -rf "$install_tmp"
+mkdir -p "$install_tmp"
+cp -R "$first_build"/. "$install_tmp"
+normalize_install_tree "$install_tmp"
+rm -rf "$tcc_dir"
+mv "$install_tmp" "$tcc_dir"
+
+"$tcc" -static src/dud-tcc/test/tcc1-smoke.c \
+    -o "$work_dir/tcc1-smoke"
+"$work_dir/tcc1-smoke" >/dev/null
 
 "$smoke_cc" "$tcc"
