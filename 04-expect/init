@@ -11,5 +11,10 @@ if [ "$#" -ne 0 ]; then
 fi
 
 mkdir -p .init
+
+# TODO this is busted for some reason
+#.init/musl-tcc/tcc -static 04-expect/main.c -o .init/expect
+#./04-expect/test/main
+
 .init/musl-cc -static -std=c11 -Wfatal-errors 04-expect/main.c -o .init/expect
 ./04-expect/test/main

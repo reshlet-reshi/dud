@@ -10,21 +10,17 @@ if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then
     exit 0
 fi
 
-# we expect no args
 if [ "$#" -ne 0 ]; then
     usage
     exit 2
 fi
 
-# ensure .init dir
 mkdir -p .init
 
 ./00-shellcheck/init
 ./01-smoke-cc/init
 ./02-musl-cc/init
-
 ./03-musl-tcc/init
-
 ./04-expect/init
 ./05-ctok/init
 ./06-dud-sh/init
