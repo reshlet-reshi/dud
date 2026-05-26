@@ -289,8 +289,7 @@ if [ "$ar_first_name" = "/" ]; then
     mv "$musl_lib/libc.a.noindex" "$musl_lib/libc.a"
 fi
 
-# musl crt objects
-
+# SEE src/dud-tcc/musl_crt_objs.md
 mkdir -p "$musl_obj/crt/x86_64"
 (
     cd "$musl_src"
@@ -300,63 +299,62 @@ mkdir -p "$musl_obj/crt/x86_64"
     tcc0_musl_cc -DCRT -c crt/x86_64/crtn.s \
         -o "$musl_obj/crt/x86_64/crtn.o"
 )
-
 cp "$musl_obj/crt/crt1.o" "$musl_lib/crt1.o"
 cp "$musl_obj/crt/x86_64/crti.o" "$musl_lib/crti.o"
 cp "$musl_obj/crt/x86_64/crtn.o" "$musl_lib/crtn.o"
+
+# hygiene
 rm -rf "$musl_obj"
 
+# Mirrors musl's EMPTY_LIBS: valid empty archives for compatibility -l flags.
 for lib in m rt pthread crypt util xnet resolv dl; do
     printf '%s\n' '!<arch>' >"$musl_lib/lib$lib.a"
 done
 
-# tcc1
+build_musl_tcc() {
+    build_musl_tcc_cc=$1
+    build_musl_tcc_out=$2
 
+    (
+        cd "$tcc_src"
+        "$build_musl_tcc_cc" \
+            -static \
+            -nostdlib \
+            -I . \
+            -I "$build/include" \
+            -o "$build_musl_tcc_out" \
+            '-DTCC_TARGET_X86_64=1' \
+            '-DTCC_MUSL=1' \
+            '-DCONFIG_TCCDIR="{B}"' \
+            '-DCONFIG_TCC_CRTPREFIX="{B}/lib"' \
+            '-DCONFIG_TCC_LIBPATHS="{B}/lib:{B}"' \
+            '-DCONFIG_TCC_SYSINCLUDEPATHS="{B}/include"' \
+            '-DCONFIG_TCC_STATIC=1' \
+            '-DTCC_VERSION="0.9.27"' \
+            '-DONE_SOURCE=1' \
+            "$musl_lib/crt1.o" \
+            "$musl_lib/crti.o" \
+            tcc.c \
+            "$musl_lib/libc.a" \
+            "$build/libtcc1.a" \
+            "$musl_lib/crtn.o"
+    )
+
+    unset build_musl_tcc_cc build_musl_tcc_out
+}
+
+# tcc1
 tcc1=$build/tcc1
-(
-    cd "$tcc_src"
-    "$tcc0" \
-        -static \
-        -nostdlib \
-        -I . \
-        -I "$build/include" \
-        -o "$tcc1" \
-        -DTCC_TARGET_X86_64=1 \
-        -DTCC_MUSL=1 \
-        '-DCONFIG_TCCDIR="{B}"' \
-        '-DCONFIG_TCC_CRTPREFIX="{B}/lib"' \
-        '-DCONFIG_TCC_LIBPATHS="{B}/lib:{B}"' \
-        '-DCONFIG_TCC_SYSINCLUDEPATHS="{B}/include"' \
-        -DCONFIG_TCC_STATIC=1 \
-        '-DTCC_VERSION="0.9.27"' \
-        -DONE_SOURCE=1 \
-        "$musl_lib/crt1.o" \
-        "$musl_lib/crti.o" \
-        tcc.c \
-        "$musl_lib/libc.a" \
-        "$build/libtcc1.a" \
-        "$musl_lib/crtn.o"
-)
+build_musl_tcc "$tcc0" "$tcc1"
 
 # smoke test tcc1
-
-cat >"$work_dir/tcc1-smoke.c" <<'EOF'
-#include <stdio.h>
-
-int main(void) {
-    puts("ok");
-    return 0;
-}
-EOF
-"$tcc1" -static "$work_dir/tcc1-smoke.c" -o "$work_dir/tcc1-smoke"
+"$tcc1" -static src/dud-tcc/test/tcc1-smoke.c -o "$work_dir/tcc1-smoke"
 "$work_dir/tcc1-smoke" >/dev/null
 
 # remove old tcc0
-
 rm "$tcc0"
 
 # 'install' tcc1 into the project, by just copying it
-
 mkdir -p .bin
 install_dir=.bin/bootstrap-tcc
 install_tmp=.bin/bootstrap-tcc.tmp.$$
@@ -367,6 +365,6 @@ rm -rf "$install_dir"
 mv "$install_tmp" "$install_dir"
 
 # smoke test isntalled tcc1
-
-"$install_dir/tcc1" -static "$work_dir/tcc1-smoke.c" -o "$work_dir/tcc1-smoke"
+"$install_dir/tcc1" -static src/dud-tcc/test/tcc1-smoke.c \
+    -o "$work_dir/tcc1-smoke"
 "$work_dir/tcc1-smoke" >/dev/null
