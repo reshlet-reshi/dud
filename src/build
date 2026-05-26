@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+
+./src/expect/build "$@"
+./src/ctok/build "$@"
+./src/dud-sh/build "$@"

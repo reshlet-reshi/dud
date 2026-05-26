@@ -112,6 +112,4 @@ fi
 smoke_cc ./bin/dud-tcc
 
 # build
-./src/expect/build ./bin/musl-cc
-./src/ctok/build ./bin/musl-cc
-./src/dud-sh/build ./bin/musl-cc
+./src/build ./bin/musl-cc
