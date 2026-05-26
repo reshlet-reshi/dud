@@ -11,8 +11,8 @@ usage() {
 
 init_dir=.init
 tcc_dir=$init_dir/bootstrap-tcc
-work_dir=$init_dir/.dud-tcc
-musl_tcc=$init_dir/dud-tcc
+work_dir=$init_dir/.musl-tcc
+musl_tcc=$init_dir/musl-tcc
 tcc_stamp=src/dud-tcc/.stamp
 tcc=$tcc_dir/tcc
 smoke_cc=$init_dir/smoke-cc
