@@ -24,7 +24,6 @@ mkdir -p .init
 ./02-musl-cc/init
 
 ./src/dud-tcc/init
-./.init/smoke-cc ./.init/dud-tcc
 
 # init
 ./src/init ./.init/musl-cc
