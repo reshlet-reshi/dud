@@ -1,6 +1,10 @@
 #!/bin/sh
 set -eu
 
+# Make tool ordering bytewise and independent of the caller's terminal locale.
+LC_ALL=C
+export LC_ALL
+
 usage() {
     printf '%s\n' 'usage: ./src/dud-tcc/build [--clean]' >&2
 }

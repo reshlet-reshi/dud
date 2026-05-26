@@ -1,6 +1,10 @@
 #!/bin/sh
 set -eu
 
+# Keep sort/archive input order independent of the caller's terminal locale.
+LC_ALL=C
+export LC_ALL
+
 usage() {
     printf '%s\n' \
         'usage: ./src/dud-tcc/build-from-seed SEED_CC OUT_DIR WORK_DIR' >&2
