@@ -16,11 +16,6 @@ if [ "$#" -ne 0 ]; then
     exit 2
 fi
 
-# make scratch dir
-tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/dud-init.XXXXXX")
-cleanup_tmp() { rm -rf "$tmp_dir"; }
-trap cleanup_tmp EXIT HUP INT TERM
-
 # ensure .init dir
 mkdir -p .init
 
@@ -28,17 +23,7 @@ mkdir -p .init
 ./01-smoke-cc/init
 ./02-musl-cc/init
 
-# bootstrap dud-tcc
-tcc_dir=.init/bootstrap-tcc
-tcc_stamp=src/dud-tcc/.stamp
-tcc=$tcc_dir/tcc
-if [ ! -d "$tcc_dir" ] ||
-    [ ! -x "$tcc" ] ||
-    [ ! -x .init/dud-tcc ] ||
-    [ "$tcc_stamp" -nt "$tcc_dir" ]
-then
-    ./src/dud-tcc/init
-fi
+./src/dud-tcc/init
 ./.init/smoke-cc ./.init/dud-tcc
 
 # init

@@ -20,6 +20,17 @@ if [ "$#" -ne 0 ]; then
     exit 2
 fi
 
+tcc_dir=.init/bootstrap-tcc
+tcc_stamp=src/dud-tcc/.stamp
+tcc=$tcc_dir/tcc
+if [ -d "$tcc_dir" ] &&
+    [ -x "$tcc" ] &&
+    [ -x .init/dud-tcc ] &&
+    [ ! "$tcc_stamp" -nt "$tcc_dir" ]
+then
+    exit 0
+fi
+
 canonical_tar() {
     canonical_tar_tree=$1
     canonical_tar_out=$2
@@ -80,7 +91,7 @@ if [ "$canonical_sha256" != "$expected_canonical_sha256" ]; then
 fi
 
 mkdir -p .init
-install_dir=.init/bootstrap-tcc
+install_dir=$tcc_dir
 install_tmp=.init/bootstrap-tcc.tmp.$$
 rm -rf "$install_tmp"
 mkdir -p "$install_tmp"
