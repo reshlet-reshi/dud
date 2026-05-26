@@ -27,14 +27,14 @@ The reproduction is rooted in these two tarballs:
 
 ```text
 MUSL_CC_TARBALL  02-musl-cc/x86_64-linux-musl-native.tgz
-TCC_TARBALL      vendor/tcc-0.9.27.tar.bz2
+TCC_TARBALL      03-musl-tcc/tcc-0.9.27.tar.bz2
 ```
 
 Hashes observed in the local investigation:
 
 ```text
 eb1db6f0f3c2bdbdbfb993d7ef7e2eeef82ac1259f6a6e1757c33a97dbcef3ad  02-musl-cc/x86_64-linux-musl-native.tgz
-de23af78fca90ce32dff2dd45b3432b2334740bb9bb7b05bf60fdbfc396ceb9c  vendor/tcc-0.9.27.tar.bz2
+de23af78fca90ce32dff2dd45b3432b2334740bb9bb7b05bf60fdbfc396ceb9c  03-musl-tcc/tcc-0.9.27.tar.bz2
 5fc861bb9761f097fea129cde479c876a6e31acdffbc428a3038a0c1cc6294d4  03-musl-tcc/patches/tcc-0.9.27-tccelf.patch
 ```
 
@@ -436,7 +436,7 @@ to vanish.
 ## Minimality Checks
 
 A follow-up run on 2026-05-25 tested variants under
-`/tmp/tccgot-plan.1pHU9u` from fresh `vendor/tcc-0.9.27.tar.bz2`
+`/tmp/tccgot-plan.1pHU9u` from fresh `03-musl-tcc/tcc-0.9.27.tar.bz2`
 extracts. The host
 `tcc0` binaries were built with the local system compiler:
 

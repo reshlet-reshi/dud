@@ -25,7 +25,7 @@ work_dir=$(cd "$work_dir"; pwd)
 build=$(cd "$build"; pwd)
 
 # unpack tcc src
-tar -xjf vendor/tcc-0.9.27.tar.bz2 -C "$work_dir"
+tar -xjf 03-musl-tcc/tcc-0.9.27.tar.bz2 -C "$work_dir"
 tcc_src=$work_dir/tcc-0.9.27
 
 # empty config.h
@@ -103,7 +103,7 @@ rm "$build/alloca86_64-bt.o"
 rm "$build/va_list.o"
 
 # unpack musl
-tar -xzf vendor/musl-1.2.6.tar.gz -C "$work_dir"
+tar -xzf 03-musl-tcc/musl-1.2.6.tar.gz -C "$work_dir"
 musl_src=$work_dir/musl-1.2.6
 musl_obj=$build/musl-obj
 musl_lib=$build/lib

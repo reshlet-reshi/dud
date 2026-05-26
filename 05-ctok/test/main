@@ -464,7 +464,7 @@ EOF
 }
 
 trim_source_line() {
-    sed -n "${1}p" "$repo_dir/src/ctok/main.c" |
+    sed -n "${1}p" "$repo_dir/05-ctok/main.c" |
         sed 's/^[	 ]*//; s/[	 ]*$//'
 }
 
@@ -498,7 +498,7 @@ validate_coverage() {
     (
         cd "$cov_tmp"
         gcov -o "$cov_tmp/ctok-main.gcno" \
-            "$repo_dir/src/ctok/main.c" \
+            "$repo_dir/05-ctok/main.c" \
             >/dev/null
     )
 
@@ -576,11 +576,11 @@ validate_coverage() {
 }
 
 run_coverage_report_self_tests() {
-    ./src/ctok/test/coverage-report-test
+    ./05-ctok/test/coverage-report-test
 }
 
 print_coverage_details() {
-    ./src/ctok/test/coverage-report report "$1" "$repo_dir" "$test_tmp"
+    ./05-ctok/test/coverage-report report "$1" "$repo_dir" "$test_tmp"
 }
 
 build_coverage_ctok() {
@@ -601,7 +601,7 @@ build_coverage_ctok() {
             -ftest-coverage \
             -fcondition-coverage \
             -fpath-coverage \
-            "$repo_dir/src/ctok/main.c" \
+            "$repo_dir/05-ctok/main.c" \
             -o "$cov_tmp/ctok"
     )
 

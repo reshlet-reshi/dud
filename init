@@ -25,6 +25,6 @@ mkdir -p .init
 
 ./03-musl-tcc/init
 
-./src/expect/init
-./src/ctok/init
-./src/dud-sh/init
+./04-expect/init
+./05-ctok/init
+./06-dud-sh/init
