@@ -36,6 +36,7 @@ work_dir=.bin/.dud-tcc
 rm -rf "$work_dir"
 mkdir -p "$work_dir"
 
+expected_canonical_sha256=3a610873ec160cbd6ab29381b542c0e17158da7a19a68a72304f24490e8e02e7
 bootstrap_musl_cc=$PWD/.bin/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc
 first_build=$PWD/$work_dir/dud-tcc-seed
 second_build=$PWD/$work_dir/dud-tcc-reseed
@@ -43,13 +44,21 @@ second_build=$PWD/$work_dir/dud-tcc-reseed
 src/dud-tcc/build-from-seed "$bootstrap_musl_cc" \
     "$first_build" \
     "$work_dir/seed"
-src/dud-tcc/build-from-seed "$first_build/tcc1" \
+src/dud-tcc/build-from-seed "$first_build/tcc" \
     "$second_build" \
     "$work_dir/reseed"
 
 canonical_tar "$first_build" "$work_dir/seed.tar"
 canonical_tar "$second_build" "$work_dir/reseed.tar"
 cmp "$work_dir/seed.tar" "$work_dir/reseed.tar"
+canonical_sha256=$(sha256sum "$work_dir/seed.tar")
+canonical_sha256=${canonical_sha256%% *}
+if [ "$canonical_sha256" != "$expected_canonical_sha256" ]; then
+    printf '%s\n' 'canonical tar sha256 mismatch' >&2
+    printf 'expected %s\n' "$expected_canonical_sha256" >&2
+    printf 'actual   %s\n' "$canonical_sha256" >&2
+    exit 1
+fi
 
 mkdir -p .bin
 install_dir=.bin/bootstrap-tcc
@@ -60,6 +69,6 @@ cp -R "$first_build"/. "$install_tmp"
 rm -rf "$install_dir"
 mv "$install_tmp" "$install_dir"
 
-"$install_dir/tcc1" -static src/dud-tcc/test/tcc1-smoke.c \
+"$install_dir/tcc" -static src/dud-tcc/test/tcc1-smoke.c \
     -o "$work_dir/tcc1-smoke"
 "$work_dir/tcc1-smoke" >/dev/null

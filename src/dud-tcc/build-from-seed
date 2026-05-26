@@ -357,5 +357,8 @@ tcc2=$work_dir/tcc2
 build_musl_tcc "$tcc1" "$tcc2"
 cmp "$tcc1" "$tcc2"
 
+# Install the fixed-point compiler under its final user-facing name.
+mv "$tcc1" "$build/tcc"
+
 # remove old tcc0
 rm "$tcc0"
