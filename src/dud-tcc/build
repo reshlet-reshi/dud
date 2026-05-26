@@ -311,6 +311,8 @@ for lib in m rt pthread crypt util xnet resolv dl; do
     printf '%s\n' '!<arch>' >"$musl_lib/lib$lib.a"
 done
 
+# Build TCC with a supplied compiler and output path from inside TCC's source
+# tree, keeping source basenames out of the final binary strings.
 build_musl_tcc() {
     build_musl_tcc_cc=$1
     build_musl_tcc_out=$2
@@ -350,6 +352,11 @@ build_musl_tcc "$tcc0" "$tcc1"
 # smoke test tcc1
 "$tcc1" -static src/dud-tcc/test/tcc1-smoke.c -o "$work_dir/tcc1-smoke"
 "$work_dir/tcc1-smoke" >/dev/null
+
+# Rebuild with tcc1 and require a byte-identical fixed point.
+tcc2=$PWD/$work_dir/tcc2
+build_musl_tcc "$tcc1" "$tcc2"
+cmp "$tcc1" "$tcc2"
 
 # remove old tcc0
 rm "$tcc0"
