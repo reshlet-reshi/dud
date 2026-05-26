@@ -84,7 +84,7 @@
   helpers from the old expect shell helper to the compiled
   `src/expect/main.c` utility.
 - Generated project outputs live in `.init/`; the generated TCC install lives
-  under `.init/bootstrap-tcc/`.
+  under `.init/musl-tcc/`.
 - Source-local init scripts no longer accept a compiler argument; they compile
   with `.init/musl-cc` directly.
 - The old `src/init` wrapper has been removed; use the source-local init scripts
@@ -135,3 +135,8 @@
 - User asked to inline `./src/init`.
 - Top-level `init` now calls the source-local init scripts directly, and the
   `src/init` wrapper was removed.
+
+### Turn 18
+
+- User asked to rename the dud-tcc install directory from `.init/bootstrap-tcc`
+  to `.init/musl-tcc`.
