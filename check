@@ -33,7 +33,7 @@ smoke_cc() {
     cc=$1
     return_0=$tmp_dir/return-0
 
-    "$cc" -static test/c/return-0.c -o "$return_0"
+    "$cc" -static src/return-0/main.c -o "$return_0"
     "$return_0"
 }
 
@@ -87,19 +87,6 @@ smoke_cc .bin/dud-tcc
 
 # build + test
 
-.bin/musl-cc src/expect/main.c -o .bin/expect
-./test/expect/main
-
-.bin/musl-cc src/ctok/main.c -o .bin/ctok
-./test/ctok/main
-
-.bin/musl-cc \
-    src/dud-sh/main.c \
-    src/dud-sh/action.c \
-    src/clib/io.c \
-    src/clib/str.c \
-    src/clib/exit.c \
-    src/dud-sh/fopen_argv.c \
-    src/dud-sh/lex.c \
-    -o .bin/dud-sh
-./test/dud-sh/main
+./src/expect/build .bin/musl-cc
+./src/ctok/build .bin/musl-cc
+./src/dud-sh/build .bin/musl-cc

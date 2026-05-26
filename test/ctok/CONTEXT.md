@@ -16,8 +16,9 @@
 ## Current State
 
 - `test/ctok/main` orchestrates ctok behavior cases and coverage checks.
-- The top-level `check` script calls `./test/ctok/main`.
-- The ctok source is `src/ctok/main.c`; `check` builds it into `.bin/ctok`.
+- The top-level `check` script calls `./src/ctok/build .bin/musl-cc`.
+- `src/ctok/build` builds `src/ctok/main.c` into `.bin/ctok` and then runs
+  `./test/ctok/main`.
 - Shared exact-output assertions use `.bin/expect`, built from
   `src/expect/main.c`, instead of sourcing `test/expect.sh`.
 - `main` now orchestrates ctok behavior cases, coverage build/run, the adjusted
@@ -171,3 +172,10 @@
 
 - User asked to move `src/expect.c` to `src/expect/main.c`.
 - Updated `check` and this context doc to use the new source path.
+
+### Turn 12
+
+- User asked to move top-level project build/test commands into source-local
+  build scripts.
+- `src/ctok/build` now owns building `.bin/ctok` and running
+  `./test/ctok/main`; `check` preserves the expect-before-ctok order.

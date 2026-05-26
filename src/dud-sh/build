@@ -1,0 +1,21 @@
+#!/bin/sh
+set -eu
+
+if [ "$#" -ne 1 ]; then
+    printf '%s\n' 'usage: ./src/dud-sh/build CC' >&2
+    exit 2
+fi
+
+cc=$1
+
+mkdir -p .bin
+"$cc" \
+    src/dud-sh/main.c \
+    src/dud-sh/action.c \
+    src/clib/io.c \
+    src/clib/str.c \
+    src/clib/exit.c \
+    src/dud-sh/fopen_argv.c \
+    src/dud-sh/lex.c \
+    -o .bin/dud-sh
+./test/dud-sh/main

@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+
+if [ "$#" -ne 1 ]; then
+    printf '%s\n' 'usage: ./src/expect/build CC' >&2
+    exit 2
+fi
+
+cc=$1
+
+mkdir -p .bin
+"$cc" src/expect/main.c -o .bin/expect
+./test/expect/main
