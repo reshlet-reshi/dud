@@ -15,7 +15,7 @@ trap cleanup_tmp EXIT HUP INT TERM
 # ensure .bin dir
 mkdir -p .bin
 
-# shell lint
+# unpack shellcheck
 shellcheck_dir=.bin/shellcheck-v0.11.0.linux.x86_64
 shellcheck=$shellcheck_dir/shellcheck-v0.11.0/shellcheck
 if [ ! -x "$shellcheck" ]; then
@@ -26,39 +26,8 @@ if [ ! -x "$shellcheck" ]; then
     mv "$tmp_dir/shellcheck" "$shellcheck_dir"
 fi
 
-script_list=$tmp_dir/shell-scripts
-newline='
-'
-
-has_sh_shebang() {
-    path=$1
-    prefix=$(dd if="$path" bs=18 count=1 2>/dev/null || true)
-
-    case "$prefix" in
-        '#!/bin/sh' | "#!/bin/sh$newline"* | \
-        '#!/usr/bin/env sh' | "#!/usr/bin/env sh$newline"*) return 0 ;;
-    esac
-
-    return 1
-}
-
-is_shell_script() {
-    path=$1
-    name=${path##*/}
-
-    case "$name" in
-        *.sh) return 0 ;;
-        *.*) return 1 ;;
-    esac
-
-    has_sh_shebang "$path"
-}
-
-run_shellcheck() {
-    path=$1
-    "$shellcheck" -x -s sh -- "$path"
-}
-
+# get list of all files in repo
+file_list=$tmp_dir/files
 find . \
     \( \
         -path './.git' -o \
@@ -66,21 +35,44 @@ find . \
         -path './src/dud-tcc/.build' \
     \) -prune -o \
     -type f \
-    -print >"$script_list"
+    -print >"$file_list"
 
+# run shellcheck on shell files
 status=0
-
+newline='
+'
+has_sh_shebang() {
+    path=$1
+    prefix=$(dd if="$path" bs=18 count=1 2>/dev/null || true)
+    case "$prefix" in
+        '#!/bin/sh' | "#!/bin/sh$newline"* | \
+        '#!/usr/bin/env sh' | "#!/usr/bin/env sh$newline"*) return 0 ;;
+    esac
+    return 1
+}
+is_shell_script() {
+    path=$1
+    name=${path##*/}
+    case "$name" in
+        *.sh) return 0 ;;
+        *.*) return 1 ;;
+    esac
+    has_sh_shebang "$path"
+}
+run_shellcheck() {
+    path=$1
+    "$shellcheck" -x -s sh -- "$path"
+}
 while IFS= read -r path; do
     if is_shell_script "$path"; then
         run_shellcheck "$path" || status=1
     fi
-done <"$script_list"
-
+done <"$file_list"
 if [ "$status" -ne 0 ]; then
     exit "$status"
 fi
 
-# smoke test a c compiler
+# helper to smoke test a c compiler
 smoke_cc() {
     cc=$1
     return_0=$tmp_dir/return-0
@@ -89,7 +81,7 @@ smoke_cc() {
     "$return_0"
 }
 
-# musl-cc
+# .bin/musl-cc
 musl_dir=.bin/x86_64-linux-musl-native
 if [ ! -x "$musl_dir/bin/x86_64-linux-musl-gcc" ]; then
     mkdir "$tmp_dir/musl-exe"
@@ -117,7 +109,7 @@ chmod +x "$tmp_dir/musl-cc"
 mv "$tmp_dir/musl-cc" .bin/musl-cc
 smoke_cc .bin/musl-cc
 
-# dud-tcc
+# .bin/dud-tcc
 tcc_dir=.bin/bootstrap-tcc
 tcc_stamp=src/dud-tcc/.stamp
 tcc1=$tcc_dir/tcc1
@@ -137,8 +129,7 @@ rm -rf .bin/dud-tcc
 mv "$tmp_dir/dud-tcc" .bin/dud-tcc
 smoke_cc .bin/dud-tcc
 
-# build + test
-
+# build
 ./src/expect/build .bin/musl-cc
 ./src/ctok/build .bin/musl-cc
 ./src/dud-sh/build .bin/musl-cc
