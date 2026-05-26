@@ -16,8 +16,8 @@
 ## Current State
 
 - `src/ctok/test/main` orchestrates ctok behavior cases and coverage checks.
-- The top-level `init` script calls `./src/init ./bin/musl-cc`; `src/init`
-  calls `./src/ctok/init ./bin/musl-cc` after expect.
+- The top-level `init` script calls `./src/init ./.init/musl-cc`; `src/init`
+  calls `./src/ctok/init ./.init/musl-cc` after expect.
 - `src/ctok/init` builds `src/ctok/main.c` into `.init/ctok` and then runs
   `./src/ctok/test/main`.
 - Shared exact-output assertions use `.init/expect`, built from

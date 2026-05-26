@@ -10,7 +10,8 @@ usage() {
 }
 
 if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then
-    rm -rf .init/bootstrap-tcc .init/.dud-tcc .init/bootstrap-tcc.tmp.*
+    rm -rf .init/bootstrap-tcc .init/.dud-tcc .init/dud-tcc \
+        .init/bootstrap-tcc.tmp.*
     exit 0
 fi
 
@@ -91,3 +92,6 @@ mv "$install_tmp" "$install_dir"
 "$install_dir/tcc" -static src/dud-tcc/test/tcc1-smoke.c \
     -o "$work_dir/tcc1-smoke"
 "$work_dir/tcc1-smoke" >/dev/null
+
+cp src/dud-tcc/shim.sh .init/dud-tcc
+chmod 755 .init/dud-tcc
