@@ -70,8 +70,8 @@ if [ "$needs_build" -eq 1 ]; then
 
     expected_canonical_sha256=9bce8e8d61d4df02587f479e053111e9e6b888eb744f9007324a908ad8ab7d32
     bootstrap_musl_cc=$PWD/.init/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc
-    first_build=$PWD/$work_dir/dud-tcc-seed
-    second_build=$PWD/$work_dir/dud-tcc-reseed
+    first_build=$PWD/$work_dir/musl-tcc-seed
+    second_build=$PWD/$work_dir/musl-tcc-reseed
 
     src/dud-tcc/build-from-seed "$bootstrap_musl_cc" \
         "$first_build" \
