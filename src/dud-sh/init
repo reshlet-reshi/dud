@@ -14,9 +14,9 @@ mkdir -p .init
 .init/musl-cc \
     src/dud-sh/main.c \
     src/dud-sh/action.c \
-    src/clib/io.c \
-    src/clib/str.c \
-    src/clib/exit.c \
+    src/dud-sh/clib/io.c \
+    src/dud-sh/clib/str.c \
+    src/dud-sh/clib/exit.c \
     src/dud-sh/fopen_argv.c \
     src/dud-sh/lex.c \
     -o .init/dud-sh

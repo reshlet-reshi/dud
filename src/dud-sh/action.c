@@ -1,7 +1,7 @@
 
 #include "action.h"
 
-#include "../clib/str.h"
+#include "clib/str.h"
 #include "lex.h"
 
 

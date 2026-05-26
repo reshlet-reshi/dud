@@ -1,7 +1,7 @@
 
 #include "action.h"
-#include "../clib/exit.h"
-#include "../clib/io.h"
+#include "clib/exit.h"
+#include "clib/io.h"
 #include "fopen_argv.h"
 
 
