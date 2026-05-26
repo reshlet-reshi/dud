@@ -1,0 +1,37 @@
+#!/bin/sh
+set -eu
+
+usage() {
+    printf '%s\n' \
+        'usage: ./02-musl-cc/init' \
+        'usage: ./02-musl-cc/init --clean' >&2
+}
+
+musl_dir=.init/x86_64-linux-musl-native
+
+if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then
+    rm -rf "$musl_dir" .init/musl-cc
+    exit 0
+fi
+
+if [ "$#" -ne 0 ]; then
+    usage
+    exit 2
+fi
+
+tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/dud-musl-cc.XXXXXX")
+cleanup_tmp() { rm -rf "$tmp_dir"; }
+trap cleanup_tmp EXIT HUP INT TERM
+
+mkdir -p .init
+
+if [ ! -x "$musl_dir/bin/x86_64-linux-musl-gcc" ]; then
+    mkdir "$tmp_dir/musl-exe"
+    tar -xzf 02-musl-cc/x86_64-linux-musl-native.tgz -C "$tmp_dir/musl-exe"
+    rm -rf "$musl_dir"
+    mv "$tmp_dir/musl-exe/x86_64-linux-musl-native" "$musl_dir"
+fi
+
+cp musl-cc-shim.sh .init/musl-cc
+chmod 755 .init/musl-cc
+./.init/smoke-cc ./.init/musl-cc

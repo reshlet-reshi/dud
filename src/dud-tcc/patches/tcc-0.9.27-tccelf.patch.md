@@ -26,14 +26,14 @@ The patch has two hunks:
 The reproduction is rooted in these two tarballs:
 
 ```text
-MUSL_CC_TARBALL  01-musl-cc/x86_64-linux-musl-native.tgz
+MUSL_CC_TARBALL  02-musl-cc/x86_64-linux-musl-native.tgz
 TCC_TARBALL      vendor/tcc-0.9.27.tar.bz2
 ```
 
 Hashes observed in the local investigation:
 
 ```text
-eb1db6f0f3c2bdbdbfb993d7ef7e2eeef82ac1259f6a6e1757c33a97dbcef3ad  01-musl-cc/x86_64-linux-musl-native.tgz
+eb1db6f0f3c2bdbdbfb993d7ef7e2eeef82ac1259f6a6e1757c33a97dbcef3ad  02-musl-cc/x86_64-linux-musl-native.tgz
 de23af78fca90ce32dff2dd45b3432b2334740bb9bb7b05bf60fdbfc396ceb9c  vendor/tcc-0.9.27.tar.bz2
 5fc861bb9761f097fea129cde479c876a6e31acdffbc428a3038a0c1cc6294d4  src/dud-tcc/patches/tcc-0.9.27-tccelf.patch
 ```
@@ -70,7 +70,7 @@ project-neutral: provide the two tarball paths and it writes only under
 set -eu
 
 : "${TCC_TARBALL:?set TCC_TARBALL=/path/to/tcc-0.9.27.tar.bz2}"
-: "${MUSL_CC_TARBALL:?set MUSL_CC_TARBALL=/path/to/01-musl-cc/x86_64-linux-musl-native.tgz}"
+: "${MUSL_CC_TARBALL:?set MUSL_CC_TARBALL=/path/to/02-musl-cc/x86_64-linux-musl-native.tgz}"
 
 work=$(mktemp -d "${TMPDIR:-/tmp}/tccelf-repro.XXXXXX")
 printf 'work=%s\n' "$work"

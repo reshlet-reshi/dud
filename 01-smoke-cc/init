@@ -1,0 +1,22 @@
+#!/bin/sh
+set -eu
+
+usage() {
+    printf '%s\n' \
+        'usage: ./01-smoke-cc/init' \
+        'usage: ./01-smoke-cc/init --clean' >&2
+}
+
+if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then
+    rm -f .init/smoke-cc
+    exit 0
+fi
+
+if [ "$#" -ne 0 ]; then
+    usage
+    exit 2
+fi
+
+mkdir -p .init
+cp 01-smoke-cc/shim.sh .init/smoke-cc
+chmod 755 .init/smoke-cc
