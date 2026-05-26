@@ -31,8 +31,7 @@ file_list=$tmp_dir/files
 find . \
     \( \
         -path './.git' -o \
-        -path './.bin' -o \
-        -path './src/dud-tcc/.build' \
+        -path './.bin' \
     \) -prune -o \
     -type f \
     -print >"$file_list"
@@ -81,7 +80,7 @@ smoke_cc() {
     "$return_0"
 }
 
-# .bin/musl-cc
+# bootstrap musl-cc
 musl_dir=.bin/x86_64-linux-musl-native
 if [ ! -x "$musl_dir/bin/x86_64-linux-musl-gcc" ]; then
     mkdir "$tmp_dir/musl-exe"
@@ -89,27 +88,9 @@ if [ ! -x "$musl_dir/bin/x86_64-linux-musl-gcc" ]; then
     rm -rf "$musl_dir"
     mv "$tmp_dir/musl-exe/x86_64-linux-musl-native" "$musl_dir"
 fi
-cat > "$tmp_dir/musl-cc" <<'EOF'
-#!/bin/sh
-set -eu
-exec .bin/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc \
-    -std=c11 \
-    -Wall \
-    -Wextra \
-    -Wpedantic \
-    -Werror \
-    -Wfatal-errors \
-    -Wmissing-prototypes \
-    -Wstrict-prototypes \
-    -Wold-style-definition \
-    -static \
-    "$@"
-EOF
-chmod +x "$tmp_dir/musl-cc"
-mv "$tmp_dir/musl-cc" .bin/musl-cc
-smoke_cc .bin/musl-cc
+smoke_cc ./bin/musl-cc
 
-# .bin/dud-tcc
+# bootstrap dud-tcc
 tcc_dir=.bin/bootstrap-tcc
 tcc_stamp=src/dud-tcc/.stamp
 tcc1=$tcc_dir/tcc1
@@ -119,17 +100,9 @@ if [ ! -d "$tcc_dir" ] ||
 then
     ./src/dud-tcc/build
 fi
-cat > "$tmp_dir/dud-tcc" <<'EOF'
-#!/bin/sh
-set -eu
-exec .bin/bootstrap-tcc/tcc1 -static "$@"
-EOF
-chmod +x "$tmp_dir/dud-tcc"
-rm -rf .bin/dud-tcc
-mv "$tmp_dir/dud-tcc" .bin/dud-tcc
-smoke_cc .bin/dud-tcc
+smoke_cc ./bin/dud-tcc
 
 # build
-./src/expect/build .bin/musl-cc
-./src/ctok/build .bin/musl-cc
-./src/dud-sh/build .bin/musl-cc
+./src/expect/build ./bin/musl-cc
+./src/ctok/build ./bin/musl-cc
+./src/dud-sh/build ./bin/musl-cc

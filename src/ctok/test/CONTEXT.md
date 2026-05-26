@@ -16,7 +16,7 @@
 ## Current State
 
 - `src/ctok/test/main` orchestrates ctok behavior cases and coverage checks.
-- The top-level `build` script calls `./src/ctok/build .bin/musl-cc`.
+- The top-level `build` script calls `./src/ctok/build ./bin/musl-cc`.
 - `src/ctok/build` builds `src/ctok/main.c` into `.bin/ctok` and then runs
   `./src/ctok/test/main`.
 - Shared exact-output assertions use `.bin/expect`, built from

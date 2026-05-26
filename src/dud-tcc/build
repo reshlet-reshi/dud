@@ -3,7 +3,7 @@ set -eu
 
 # clean build dir
 
-work_dir=src/dud-tcc/.build
+work_dir=.bin/.dud-tcc
 rm -rf "$work_dir"
 mkdir -p "$work_dir"
 
