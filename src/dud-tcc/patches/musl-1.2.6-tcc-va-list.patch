@@ -1,0 +1,45 @@
+--- include/alltypes.h.in
++++ include/alltypes.h.in
+@@ -66,8 +66,40 @@
+ STRUCT _IO_FILE { char __x; };
+ TYPEDEF struct _IO_FILE FILE;
+ 
+-TYPEDEF __builtin_va_list va_list;
+-TYPEDEF __builtin_va_list __isoc_va_list;
++#if defined(__NEED_va_list) && !defined(__DEFINED_va_list)
++#ifndef __DEFINED___va_list_struct
++typedef struct {
++    unsigned int gp_offset;
++    unsigned int fp_offset;
++    union {
++        unsigned int overflow_offset;
++        char *overflow_arg_area;
++    };
++    char *reg_save_area;
++} __va_list_struct;
++#define __DEFINED___va_list_struct
++#endif
++typedef __va_list_struct va_list[1];
++#define __DEFINED_va_list
++#endif
++
++#if defined(__NEED___isoc_va_list) && !defined(__DEFINED___isoc_va_list)
++#ifndef __DEFINED___va_list_struct
++typedef struct {
++    unsigned int gp_offset;
++    unsigned int fp_offset;
++    union {
++        unsigned int overflow_offset;
++        char *overflow_arg_area;
++    };
++    char *reg_save_area;
++} __va_list_struct;
++#define __DEFINED___va_list_struct
++#endif
++typedef __va_list_struct __isoc_va_list[1];
++#define __DEFINED___isoc_va_list
++#endif
++
+ 
+ TYPEDEF struct __mbstate_t { unsigned __opaque1, __opaque2; } mbstate_t;
+ 

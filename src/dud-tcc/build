@@ -16,23 +16,19 @@ if [ "$#" -ne 0 ]; then
 fi
 
 # clean build dir
-
 work_dir=.bin/.dud-tcc
 rm -rf "$work_dir"
 mkdir -p "$work_dir"
 
+# bootstrap off of musl_cc
 bootstrap_musl_cc=$PWD/.bin/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc
 
 # unpack tcc src
-
 tar -xjf vendor/tcc-0.9.27.tar.bz2 -C "$work_dir"
 tcc_src=$work_dir/tcc-0.9.27
 
 # empty config.h
-
 : > "$tcc_src/config.h"
-
-# patch tcc src
 
 # SEE src/dud-tcc/patches/tcc-0.9.27-tccelf.patch.md
 patch -s -d "$tcc_src" -p0 < src/dud-tcc/patches/tcc-0.9.27-tccelf.patch
@@ -43,13 +39,14 @@ patch -s -d "$tcc_src" -p0 < src/dud-tcc/patches/tcc-0.9.27-self-lib-path.patch
 # SEE src/dud-tcc/patches/tcc-0.9.27-static-only.patch.md
 patch -s -d "$tcc_src" -p0 < src/dud-tcc/patches/tcc-0.9.27-static-only.patch
 
-# build dir
+# SEE src/dud-tcc/patches/tcc-0.9.27-no-complex.patch.md
+patch -s -d "$tcc_src" -p0 < src/dud-tcc/patches/tcc-0.9.27-no-complex.patch
 
+# build dir
 build=$PWD/$work_dir/dud-tcc
 mkdir -p "$build"
 
 # tcc0
-
 tcc0=$build/tcc0
 (
     cd "$tcc_src"
@@ -70,18 +67,15 @@ tcc0=$build/tcc0
 )
 
 # smoke test tcc0
-
 "$tcc0" -static -nostdlib \
     src/dud-tcc/test/tcc0-start.c \
     -o "$work_dir/start"
 "$work_dir/start"
-
 "$tcc0" -static -nostdlib \
     src/dud-tcc/test/tcc0-func-start.c \
     src/dud-tcc/test/tcc0-func-foo.c \
     -o "$work_dir/tcc0-func"
 "$work_dir/tcc0-func"
-
 "$tcc0" \
     -static \
     -nostdlib \
@@ -91,7 +85,6 @@ tcc0=$build/tcc0
 "$work_dir/tcc0-data"
 
 # libtcc1.a
-
 (
     cd "$tcc_src"
     "$tcc0" -c lib/libtcc1.c -o "$build/libtcc1.o"
@@ -99,20 +92,17 @@ tcc0=$build/tcc0
     "$tcc0" -c lib/alloca86_64-bt.S -o "$build/alloca86_64-bt.o"
     "$tcc0" -c lib/va_list.c -o "$build/va_list.o"
 )
-
 "$tcc0" -ar rcs "$build/libtcc1.a" \
     "$build/libtcc1.o" \
     "$build/alloca86_64.o" \
     "$build/alloca86_64-bt.o" \
     "$build/va_list.o"
-
 rm "$build/libtcc1.o"
 rm "$build/alloca86_64.o"
 rm "$build/alloca86_64-bt.o"
 rm "$build/va_list.o"
 
-# ...
-
+# unpack musl
 tar -xzf vendor/musl-1.2.6.tar.gz -C "$work_dir"
 musl_src=$PWD/$work_dir/musl-1.2.6
 musl_obj=$build/musl-obj
@@ -124,72 +114,40 @@ patch -s -d "$musl_src" -p0 < src/dud-tcc/patches/musl-1.2.6-tcc-array-static.pa
 # SEE src/dud-tcc/patches/musl-1.2.6-tcc-no-plt.patch.md
 patch -s -d "$musl_src" -p0 < src/dud-tcc/patches/musl-1.2.6-tcc-no-plt.patch
 
+# SEE src/dud-tcc/patches/musl-1.2.6-tcc-va-list.patch.md
+patch -s -d "$musl_src" -p0 < src/dud-tcc/patches/musl-1.2.6-tcc-va-list.patch
+
 # SEE src/dud-tcc/stdarg.h.md
 cp src/dud-tcc/stdarg.h "$musl_src/include/stdarg.h"
 
 # SEE src/dud-tcc/syscall_arch.h.md
 cp src/dud-tcc/syscall_arch.h "$musl_src/arch/x86_64/syscall_arch.h"
 
-# musl headers
-
+# Create destinations for installed headers and generated musl internals.
 mkdir -p \
     "$build/include/bits" \
     "$musl_obj/include/bits" \
     "$musl_obj/src/internal"
 
+# From musl's Makefile rule for obj/include/bits/alltypes.h.
 sed \
     -f "$musl_src/tools/mkalltypes.sed" \
     "$musl_src/arch/x86_64/bits/alltypes.h.in" \
     "$musl_src/include/alltypes.h.in" \
     >"$musl_obj/include/bits/alltypes.h"
-awk '
-    /typedef __builtin_va_list va_list;/ {
-        print "#ifndef __DEFINED___va_list_struct"
-        print "typedef struct {"
-        print "    unsigned int gp_offset;"
-        print "    unsigned int fp_offset;"
-        print "    union {"
-        print "        unsigned int overflow_offset;"
-        print "        char *overflow_arg_area;"
-        print "    };"
-        print "    char *reg_save_area;"
-        print "} __va_list_struct;"
-        print "#define __DEFINED___va_list_struct"
-        print "#endif"
-        print "typedef __va_list_struct va_list[1];"
-        next
-    }
-    /typedef __builtin_va_list __isoc_va_list;/ {
-        print "#ifndef __DEFINED___va_list_struct"
-        print "typedef struct {"
-        print "    unsigned int gp_offset;"
-        print "    unsigned int fp_offset;"
-        print "    union {"
-        print "        unsigned int overflow_offset;"
-        print "        char *overflow_arg_area;"
-        print "    };"
-        print "    char *reg_save_area;"
-        print "} __va_list_struct;"
-        print "#define __DEFINED___va_list_struct"
-        print "#endif"
-        print "typedef __va_list_struct __isoc_va_list[1];"
-        next
-    }
-    { print }
-' "$musl_obj/include/bits/alltypes.h" \
-    >"$musl_obj/include/bits/alltypes.h.tmp"
-mv "$musl_obj/include/bits/alltypes.h.tmp" "$musl_obj/include/bits/alltypes.h"
 
+# From musl's Makefile rule for obj/include/bits/syscall.h.
 cp "$musl_src/arch/x86_64/bits/syscall.h.in" \
     "$musl_obj/include/bits/syscall.h"
 sed -n -e 's/__NR_/SYS_/p' \
     <"$musl_src/arch/x86_64/bits/syscall.h.in" \
     >>"$musl_obj/include/bits/syscall.h"
 
-printf '#define VERSION "%s"\n' \
-    "$(cd "$musl_src"; sh tools/version.sh)" \
+# This build uses the vendored musl-1.2.6 tarball, not a git checkout.
+printf '%s\n' '#define VERSION "1.2.6"' \
     >"$musl_obj/src/internal/version.h"
 
+# Install musl headers: generic include tree, arch bits, and generated bits.
 (
     cd "$musl_src/include"
     find . -type f | sort | while IFS= read -r header; do
@@ -197,16 +155,16 @@ printf '#define VERSION "%s"\n' \
         cp "$header" "$build/include/$header"
     done
 )
-
 cp "$musl_src"/arch/generic/bits/*.h "$build/include/bits"
 cp "$musl_src"/arch/x86_64/bits/*.h "$build/include/bits"
 cp "$musl_obj/include/bits/alltypes.h" "$build/include/bits/alltypes.h"
 cp "$musl_obj/include/bits/syscall.h" "$build/include/bits/syscall.h"
+
+# hygiene
 rm "$build/include/alltypes.h.in"
 
-# musl libc.a
-
-musl_cc() {
+# Compile musl sources with tcc0 using musl's Makefile CFLAGS_ALL shape.
+tcc0_musl_cc() {
     "$tcc0" \
         -std=c99 \
         -ffreestanding \
@@ -224,12 +182,14 @@ musl_cc() {
         "$@"
 }
 
+# SEE src/dud-tcc/musl-libc-srcs.md
 musl_base_srcs=$work_dir/musl-base-srcs
 musl_arch_srcs=$work_dir/musl-arch-srcs
 musl_replaced_objs=$work_dir/musl-replaced-objs
 musl_libc_srcs=$work_dir/musl-libc-srcs
 musl_libc_objs=$work_dir/musl-libc-objs
 
+# SEE src/dud-tcc/musl_base_srcs.md
 find "$musl_src/src" \
     -mindepth 2 \
     -maxdepth 2 \
@@ -245,6 +205,7 @@ find "$musl_src/src/malloc/mallocng" \
 sort "$musl_base_srcs" >"$musl_base_srcs.sorted"
 mv "$musl_base_srcs.sorted" "$musl_base_srcs"
 
+# SEE src/dud-tcc/musl_arch_srcs.md
 find "$musl_src/src" \
     -path "$musl_src/src/*/x86_64/*" \
     -type f \
@@ -281,7 +242,7 @@ mv "$musl_libc_srcs.sorted" "$musl_libc_srcs"
 while IFS= read -r rel; do
     obj=$musl_obj/${rel%.*}.o
     mkdir -p "$(dirname "$obj")"
-    (cd "$musl_src"; musl_cc -c "$rel" -o "$obj")
+    (cd "$musl_src"; tcc0_musl_cc -c "$rel" -o "$obj")
     printf '%s\n' "$obj" >>"$musl_libc_objs"
 done <"$musl_libc_srcs"
 
@@ -393,10 +354,10 @@ fi
 mkdir -p "$musl_obj/crt/x86_64"
 (
     cd "$musl_src"
-    musl_cc -DCRT -c crt/crt1.c -o "$musl_obj/crt/crt1.o"
-    musl_cc -DCRT -c crt/x86_64/crti.s \
+    tcc0_musl_cc -DCRT -c crt/crt1.c -o "$musl_obj/crt/crt1.o"
+    tcc0_musl_cc -DCRT -c crt/x86_64/crti.s \
         -o "$musl_obj/crt/x86_64/crti.o"
-    musl_cc -DCRT -c crt/x86_64/crtn.s \
+    tcc0_musl_cc -DCRT -c crt/x86_64/crtn.s \
         -o "$musl_obj/crt/x86_64/crtn.o"
 )
 

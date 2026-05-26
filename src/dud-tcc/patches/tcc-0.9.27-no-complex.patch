@@ -1,0 +1,10 @@
+--- libtcc.c
++++ libtcc.c
+@@ -775,6 +775,7 @@
+     tcc_define_symbol(s, "__STDC__", NULL);
+     tcc_define_symbol(s, "__STDC_VERSION__", "199901L");
+     tcc_define_symbol(s, "__STDC_HOSTED__", NULL);
++    tcc_define_symbol(s, "__STDC_NO_COMPLEX__", NULL);
+ 
+     /* target defines */
+ #if defined(TCC_TARGET_I386)
