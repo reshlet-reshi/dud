@@ -21,5 +21,5 @@ cleanup_tmp() { rm -rf "$tmp_dir"; }
 trap cleanup_tmp EXIT HUP INT TERM
 
 smoke_exe=$tmp_dir/return-0
-"$cc" -static "$repo_dir/src/return-0/main.c" -o "$smoke_exe"
+"$cc" -static "$repo_dir/01-smoke-cc/return-0.c" -o "$smoke_exe"
 "$smoke_exe"
