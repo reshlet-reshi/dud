@@ -9,9 +9,16 @@ usage() {
     printf '%s\n' 'usage: ./src/dud-tcc/init [--clean]' >&2
 }
 
+init_dir=.init
+tcc_dir=$init_dir/bootstrap-tcc
+work_dir=$init_dir/.dud-tcc
+dud_tcc=$init_dir/dud-tcc
+tcc_stamp=src/dud-tcc/.stamp
+tcc=$tcc_dir/tcc
+smoke_cc=$init_dir/smoke-cc
+
 if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then
-    rm -rf .init/bootstrap-tcc .init/.dud-tcc .init/dud-tcc \
-        .init/bootstrap-tcc.tmp.*
+    rm -rf "$tcc_dir" "$work_dir" "$dud_tcc" "$tcc_dir".tmp.*
     exit 0
 fi
 
@@ -20,13 +27,10 @@ if [ "$#" -ne 0 ]; then
     exit 2
 fi
 
-tcc_dir=.init/bootstrap-tcc
-tcc_stamp=src/dud-tcc/.stamp
-tcc=$tcc_dir/tcc
 needs_build=0
 if [ ! -d "$tcc_dir" ] ||
     [ ! -x "$tcc" ] ||
-    [ ! -x .init/dud-tcc ] ||
+    [ ! -x "$dud_tcc" ] ||
     [ "$tcc_stamp" -nt "$tcc_dir" ]
 then
     needs_build=1
@@ -61,7 +65,6 @@ normalize_install_tree() {
 }
 
 if [ "$needs_build" -eq 1 ]; then
-    work_dir=.init/.dud-tcc
     rm -rf "$work_dir"
     mkdir -p "$work_dir"
 
@@ -92,22 +95,21 @@ if [ "$needs_build" -eq 1 ]; then
         exit 1
     fi
 
-    mkdir -p .init
-    install_dir=$tcc_dir
-    install_tmp=.init/bootstrap-tcc.tmp.$$
+    mkdir -p "$init_dir"
+    install_tmp=$tcc_dir.tmp.$$
     rm -rf "$install_tmp"
     mkdir -p "$install_tmp"
     cp -R "$first_build"/. "$install_tmp"
     normalize_install_tree "$install_tmp"
-    rm -rf "$install_dir"
-    mv "$install_tmp" "$install_dir"
+    rm -rf "$tcc_dir"
+    mv "$install_tmp" "$tcc_dir"
 
-    "$install_dir/tcc" -static src/dud-tcc/test/tcc1-smoke.c \
+    "$tcc" -static src/dud-tcc/test/tcc1-smoke.c \
         -o "$work_dir/tcc1-smoke"
     "$work_dir/tcc1-smoke" >/dev/null
 
-    cp src/dud-tcc/shim.sh .init/dud-tcc
-    chmod 755 .init/dud-tcc
+    cp src/dud-tcc/shim.sh "$dud_tcc"
+    chmod 755 "$dud_tcc"
 fi
 
-./.init/smoke-cc ./.init/dud-tcc
+"$smoke_cc" "$dud_tcc"
