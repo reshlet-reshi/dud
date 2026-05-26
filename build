@@ -102,9 +102,9 @@ smoke_cc ./bin/musl-cc
 # bootstrap dud-tcc
 tcc_dir=.bin/bootstrap-tcc
 tcc_stamp=src/dud-tcc/.stamp
-tcc1=$tcc_dir/tcc1
+tcc=$tcc_dir/tcc
 if [ ! -d "$tcc_dir" ] ||
-    [ ! -x "$tcc1" ] ||
+    [ ! -x "$tcc" ] ||
     [ "$tcc_stamp" -nt "$tcc_dir" ]
 then
     ./src/dud-tcc/build

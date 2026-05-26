@@ -2,11 +2,11 @@
 
 This note is the evidence trail for `src/dud-tcc/patches/tcc-0.9.27-self-lib-path.patch`.
 
-The short version: final bootstrap `tcc1` is installed as a relocatable tree
+The short version: the final bootstrap `tcc` is installed as a relocatable tree
 under `.bin/bootstrap-tcc`. TCC already has a `{B}` path substitution mechanism, but
 upstream initializes `{B}` from `CONFIG_TCCDIR`. If `CONFIG_TCCDIR` itself is
 the literal string `{B}`, then `{B}/include`, `{B}/lib`, and `{B}/libtcc1.a`
-stay literal instead of becoming paths beside the running `tcc1` executable.
+stay literal instead of becoming paths beside the running `tcc` executable.
 
 The patch makes that sentinel useful for the command-line compiler:
 
@@ -51,7 +51,7 @@ So the value of `s->tcc_lib_path` is the source of truth for all configured
 The install layout is:
 
 ```text
-.bin/bootstrap-tcc/tcc1
+.bin/bootstrap-tcc/tcc
 .bin/bootstrap-tcc/include
 .bin/bootstrap-tcc/lib
 .bin/bootstrap-tcc/libtcc1.a
@@ -80,7 +80,7 @@ elfinterp:
   -
 ```
 
-Those are the intended sibling paths for the installed `tcc1`.
+Those are the intended sibling paths for the installed `tcc`.
 
 ## Skeptical Notes
 
@@ -89,7 +89,7 @@ This is a bootstrap patch, not a general upstream-quality install-path design.
 - `/proc/self/exe` is Linux-specific.
 - The path buffer is fixed at 4096 bytes. That is practical here, but not a
   perfect general solution.
-- Moving only `.bin/bootstrap-tcc/tcc1` without its sibling `include/`, `lib/`, and
+- Moving only `.bin/bootstrap-tcc/tcc` without its sibling `include/`, `lib/`, and
   `libtcc1.a` still breaks the install.
 - The patch is in `tcc.c`, so it affects the command-line compiler, not libtcc
   API users.

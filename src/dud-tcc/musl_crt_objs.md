@@ -75,7 +75,8 @@ cp "$musl_obj/crt/x86_64/crti.o" "$musl_lib/crti.o"
 cp "$musl_obj/crt/x86_64/crtn.o" "$musl_lib/crtn.o"
 ```
 
-The final `tcc1` bootstrap link also uses them explicitly around `tcc.c`,
-`libc.a`, and `libtcc1.a`. Once `tcc1` is installed, its configured CRT prefix
-points at this same library directory so later static links can find the CRT
-objects by their conventional names.
+The intermediate `tcc1` bootstrap link also uses them explicitly around
+`tcc.c`, `libc.a`, and `libtcc1.a`. Once that fixed-point compiler is installed
+as the user-facing `tcc`, its configured CRT prefix points at this same library
+directory so later static links can find the CRT objects by their conventional
+names.

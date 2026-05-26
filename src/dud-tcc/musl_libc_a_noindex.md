@@ -98,7 +98,8 @@ Step by step:
 - The second `dd` copies the rest of the original archive, beginning just after
   the leading index member, into the replacement archive.
 - `mv "$musl_lib/libc.a.noindex" "$musl_lib/libc.a"` atomically swaps the
-  normalized archive into the path used by the final `tcc1` link.
+  normalized archive into the path used by the intermediate `tcc1` link. That
+  fixed-point compiler is installed as the user-facing `tcc`.
 
 The resulting archive still contains the same object members in the same order.
 Only the leading symbol-index member is removed.
