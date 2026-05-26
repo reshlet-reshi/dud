@@ -182,7 +182,7 @@ tcc0_musl_cc() {
         "$@"
 }
 
-# SEE src/dud-tcc/musl-libc-srcs.md
+# SEE src/dud-tcc/musl_source_pipeline.md
 musl_base_srcs=$work_dir/musl-base-srcs
 musl_arch_srcs=$work_dir/musl-arch-srcs
 musl_replaced_objs=$work_dir/musl-replaced-objs
@@ -217,6 +217,7 @@ find "$musl_src/src" \
 sort "$musl_arch_srcs" >"$musl_arch_srcs.sorted"
 mv "$musl_arch_srcs.sorted" "$musl_arch_srcs"
 
+# SEE src/dud-tcc/musl_replaced_objs.md
 sed \
     -e "s#^$musl_src/##" \
     -e 's#\.[csS]$#.o#' \
@@ -226,6 +227,7 @@ sed \
     | sort \
     >"$musl_replaced_objs"
 
+# SEE src/dud-tcc/musl_libc_srcs.md
 : > "$musl_libc_srcs"
 while IFS= read -r src_file; do
     rel=${src_file#"$musl_src"/}
@@ -238,6 +240,7 @@ sed "s#^$musl_src/##" "$musl_arch_srcs" >>"$musl_libc_srcs"
 sort "$musl_libc_srcs" >"$musl_libc_srcs.sorted"
 mv "$musl_libc_srcs.sorted" "$musl_libc_srcs"
 
+# SEE src/dud-tcc/musl_libc_objs.md
 : > "$musl_libc_objs"
 while IFS= read -r rel; do
     obj=$musl_obj/${rel%.*}.o
@@ -246,78 +249,12 @@ while IFS= read -r rel; do
     printf '%s\n' "$obj" >>"$musl_libc_objs"
 done <"$musl_libc_srcs"
 
+# Add generated syscall helper object beside musl internal objects.
 mkdir -p "$musl_obj/src/internal"
-cat >"$musl_obj/src/internal/tcc-syscall-x86_64.s" <<'EOF'
-.global __syscall0
-.hidden __syscall0
-__syscall0:
-    mov %rdi,%rax
-    syscall
-    ret
 
-.global __syscall1
-.hidden __syscall1
-__syscall1:
-    mov %rdi,%rax
-    mov %rsi,%rdi
-    syscall
-    ret
-
-.global __syscall2
-.hidden __syscall2
-__syscall2:
-    mov %rdi,%rax
-    mov %rsi,%rdi
-    mov %rdx,%rsi
-    syscall
-    ret
-
-.global __syscall3
-.hidden __syscall3
-__syscall3:
-    mov %rdi,%rax
-    mov %rsi,%rdi
-    mov %rdx,%rsi
-    mov %rcx,%rdx
-    syscall
-    ret
-
-.global __syscall4
-.hidden __syscall4
-__syscall4:
-    mov %rdi,%rax
-    mov %rsi,%rdi
-    mov %rdx,%rsi
-    mov %rcx,%rdx
-    mov %r8,%r10
-    syscall
-    ret
-
-.global __syscall5
-.hidden __syscall5
-__syscall5:
-    mov %rdi,%rax
-    mov %rsi,%rdi
-    mov %rdx,%rsi
-    mov %rcx,%rdx
-    mov %r8,%r10
-    mov %r9,%r8
-    syscall
-    ret
-
-.global __syscall6
-.hidden __syscall6
-__syscall6:
-    mov %rdi,%rax
-    mov %rsi,%rdi
-    mov %rdx,%rsi
-    mov %rcx,%rdx
-    mov %r8,%r10
-    mov %r9,%r8
-    mov 8(%rsp),%r9
-    syscall
-    ret
-EOF
+# SEE src/dud-tcc/tcc-syscall-x86_64.s.md
+cp src/dud-tcc/tcc-syscall-x86_64.s \
+    "$musl_obj/src/internal/tcc-syscall-x86_64.s"
 (
     cd "$musl_obj/src/internal"
     "$tcc0" -c tcc-syscall-x86_64.s -o tcc-syscall-x86_64.o
@@ -325,6 +262,7 @@ EOF
 printf '%s\n' "$musl_obj/src/internal/tcc-syscall-x86_64.o" \
     >>"$musl_libc_objs"
 
+# SEE src/dud-tcc/musl_libc_a.md
 mkdir -p "$musl_lib"
 (
     set --
@@ -333,6 +271,8 @@ mkdir -p "$musl_lib"
     done <"$musl_libc_objs"
     "$tcc0" -ar rcs "$musl_lib/libc.a" "$@"
 )
+
+# SEE src/dud-tcc/musl_libc_a_noindex.md
 ar_first_name=$(dd if="$musl_lib/libc.a" bs=1 skip=8 count=16 2>/dev/null)
 ar_first_name=$(printf '%s\n' "$ar_first_name" | tr -d ' ')
 if [ "$ar_first_name" = "/" ]; then

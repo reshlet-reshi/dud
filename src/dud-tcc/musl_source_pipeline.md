@@ -1,4 +1,4 @@
-# src/dud-tcc/build musl libc source lists
+# src/dud-tcc/build musl source pipeline
 
 This note is the evidence trail for the musl libc source/object list pipeline
 in `src/dud-tcc/build`.
