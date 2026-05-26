@@ -2,15 +2,8 @@
 set -eu
 
 usage() {
-    printf '%s\n' \
-        'usage: ./01-smoke-cc/init' \
-        'usage: ./01-smoke-cc/init --clean' >&2
+    printf '%s\n' 'usage: ./01-smoke-cc/init' >&2
 }
-
-if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then
-    rm -f .init/smoke-cc
-    exit 0
-fi
 
 if [ "$#" -ne 0 ]; then
     usage

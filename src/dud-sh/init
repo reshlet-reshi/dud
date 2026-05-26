@@ -2,15 +2,8 @@
 set -eu
 
 usage() {
-    printf '%s\n' \
-        'usage: ./src/dud-sh/init CC' \
-        'usage: ./src/dud-sh/init --clean' >&2
+    printf '%s\n' 'usage: ./src/dud-sh/init CC' >&2
 }
-
-if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then
-    rm -f .init/dud-sh
-    exit 0
-fi
 
 if [ "$#" -ne 1 ]; then
     usage

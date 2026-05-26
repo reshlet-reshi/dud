@@ -2,17 +2,10 @@
 set -eu
 
 usage() {
-    printf '%s\n' \
-        'usage: ./00-shellcheck/init' \
-        'usage: ./00-shellcheck/init --clean' >&2
+    printf '%s\n' 'usage: ./00-shellcheck/init' >&2
 }
 
 shellcheck_dir=.init/shellcheck-v0.11.0.linux.x86_64
-
-if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then
-    rm -rf "$shellcheck_dir"
-    exit 0
-fi
 
 if [ "$#" -ne 0 ]; then
     usage

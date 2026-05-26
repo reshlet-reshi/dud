@@ -6,7 +6,7 @@ LC_ALL=C
 export LC_ALL
 
 usage() {
-    printf '%s\n' 'usage: ./src/dud-tcc/init [--clean]' >&2
+    printf '%s\n' 'usage: ./src/dud-tcc/init' >&2
 }
 
 init_dir=.init
@@ -15,11 +15,6 @@ work_dir=$init_dir/.musl-tcc
 tcc_stamp=src/dud-tcc/.stamp
 tcc=$tcc_dir/tcc
 smoke_cc=$init_dir/smoke-cc
-
-if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then
-    rm -rf "$tcc_dir" "$work_dir" "$tcc_dir".tmp.*
-    exit 0
-fi
 
 if [ "$#" -ne 0 ]; then
     usage
