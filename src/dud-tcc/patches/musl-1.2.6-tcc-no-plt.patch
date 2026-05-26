@@ -1,0 +1,93 @@
+--- src/unistd/sh/pipe.s
++++ src/unistd/sh/pipe.s
+@@ -24,4 +24,4 @@
+ 	 mov   #0, r0
+ 
+ .align 2
+-L1:	.long __syscall_ret@PLT-(1b-.)
++L1:	.long __syscall_ret-(1b-.)
+--- src/signal/x86_64/sigsetjmp.s
++++ src/signal/x86_64/sigsetjmp.s
+@@ -11,7 +11,7 @@
+ 	mov %rbx,72+8(%rdi)
+ 	mov %rdi,%rbx
+ 
+-	call setjmp@PLT
++	call setjmp
+ 
+ 	pushq 64(%rbx)
+ 	mov %rbx,%rdi
+@@ -21,4 +21,4 @@
+ .hidden __sigsetjmp_tail
+ 	jmp __sigsetjmp_tail
+ 
+-1:	jmp setjmp@PLT
++1:	jmp setjmp
+--- src/signal/x32/sigsetjmp.s
++++ src/signal/x32/sigsetjmp.s
+@@ -11,7 +11,7 @@
+ 	mov %rbx,72+8(%rdi)
+ 	mov %rdi,%rbx
+ 
+-	call setjmp@PLT
++	call setjmp
+ 
+ 	pushq 64(%rbx)
+ 	movl $0, 4(%rsp)
+@@ -22,4 +22,4 @@
+ .hidden __sigsetjmp_tail
+ 	jmp __sigsetjmp_tail
+ 
+-1:	jmp setjmp@PLT
++1:	jmp setjmp
+--- src/signal/sh/sigsetjmp.s
++++ src/signal/sh/sigsetjmp.s
+@@ -35,7 +35,7 @@
+ 
+ .align 2
+ .hidden ___setjmp
+-1:	.long ___setjmp@PLT-(2b+4-.)
++1:	.long ___setjmp-(2b+4-.)
+ .hidden __sigsetjmp_tail
+-3:	.long __sigsetjmp_tail@PLT-(4b+4-.)
+-5:	.long ___setjmp@PLT-(6b+4-.)
++3:	.long __sigsetjmp_tail-(4b+4-.)
++5:	.long ___setjmp-(6b+4-.)
+--- src/process/sh/vfork.s
++++ src/process/sh/vfork.s
+@@ -17,4 +17,4 @@
+ 	 nop
+ 	.align 2
+ 	.hidden __syscall_ret
+-1:	.long __syscall_ret@PLT-(2b+4-.)
++1:	.long __syscall_ret-(2b+4-.)
+--- src/math/x86_64/expl.s
++++ src/math/x86_64/expl.s
+@@ -37,7 +37,7 @@
+ 	fstpt (%rsp)
+ 	fstpt 16(%rsp)
+ 	fstpt 32(%rsp)
+-	call exp2l@PLT
++	call exp2l
+ 		# if 2^hi == inf return 2^hi
+ 	fld %st(0)
+ 	fstpt (%rsp)
+--- src/math/x32/expl.s
++++ src/math/x32/expl.s
+@@ -37,7 +37,7 @@
+ 	fstpt (%esp)
+ 	fstpt 16(%esp)
+ 	fstpt 32(%esp)
+-	call exp2l@PLT
++	call exp2l
+ 		# if 2^hi == inf return 2^hi
+ 	fld %st(0)
+ 	fstpt (%esp)
+--- src/ldso/sh/dlsym.s
++++ src/ldso/sh/dlsym.s
+@@ -8,4 +8,4 @@
+ 	 sts pr, r6
+ 
+ .align 2
+-L1:	.long __dlsym@PLT-(1b+4-.)
++L1:	.long __dlsym-(1b+4-.)
