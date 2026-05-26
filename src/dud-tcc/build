@@ -32,11 +32,22 @@ canonical_tar() {
     unset canonical_tar_tree canonical_tar_out
 }
 
+# Keep the canonical tar and installed tree independent of the caller's umask.
+normalize_install_tree() {
+    normalize_install_tree_dir=$1
+
+    find "$normalize_install_tree_dir" -type d -exec chmod 755 {} +
+    find "$normalize_install_tree_dir" -type f -exec chmod 644 {} +
+    chmod 755 "$normalize_install_tree_dir/tcc"
+
+    unset normalize_install_tree_dir
+}
+
 work_dir=.bin/.dud-tcc
 rm -rf "$work_dir"
 mkdir -p "$work_dir"
 
-expected_canonical_sha256=3a610873ec160cbd6ab29381b542c0e17158da7a19a68a72304f24490e8e02e7
+expected_canonical_sha256=9bce8e8d61d4df02587f479e053111e9e6b888eb744f9007324a908ad8ab7d32
 bootstrap_musl_cc=$PWD/.bin/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc
 first_build=$PWD/$work_dir/dud-tcc-seed
 second_build=$PWD/$work_dir/dud-tcc-reseed
@@ -47,6 +58,9 @@ src/dud-tcc/build-from-seed "$bootstrap_musl_cc" \
 src/dud-tcc/build-from-seed "$first_build/tcc" \
     "$second_build" \
     "$work_dir/reseed"
+
+normalize_install_tree "$first_build"
+normalize_install_tree "$second_build"
 
 canonical_tar "$first_build" "$work_dir/seed.tar"
 canonical_tar "$second_build" "$work_dir/reseed.tar"
@@ -66,6 +80,7 @@ install_tmp=.bin/bootstrap-tcc.tmp.$$
 rm -rf "$install_tmp"
 mkdir -p "$install_tmp"
 cp -R "$first_build"/. "$install_tmp"
+normalize_install_tree "$install_tmp"
 rm -rf "$install_dir"
 mv "$install_tmp" "$install_dir"
 

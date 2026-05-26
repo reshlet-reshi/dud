@@ -7,13 +7,6 @@ are the followups worth considering.
 
 ## Easy / Worth Doing
 
-- Normalize installed tree modes before canonical tar hashing:
-  - directories: `755`
-  - `tcc`: `755`
-  - headers, objects, archives: `644`
-  This will change the canonical hash once, then should make future tarball
-  metadata cleaner.
-
 - Fix archive member mode metadata. Check whether normalizing object modes
   before `tcc0 -ar` is enough to stop archive members from recording
   world-writable modes.
