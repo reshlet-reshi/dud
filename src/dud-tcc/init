@@ -12,13 +12,12 @@ usage() {
 init_dir=.init
 tcc_dir=$init_dir/bootstrap-tcc
 work_dir=$init_dir/.musl-tcc
-musl_tcc=$init_dir/musl-tcc
 tcc_stamp=src/dud-tcc/.stamp
 tcc=$tcc_dir/tcc
 smoke_cc=$init_dir/smoke-cc
 
 if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then
-    rm -rf "$tcc_dir" "$work_dir" "$musl_tcc" "$tcc_dir".tmp.*
+    rm -rf "$tcc_dir" "$work_dir" "$tcc_dir".tmp.*
     exit 0
 fi
 
@@ -30,7 +29,6 @@ fi
 needs_build=0
 if [ ! -d "$tcc_dir" ] ||
     [ ! -x "$tcc" ] ||
-    [ ! -x "$musl_tcc" ] ||
     [ "$tcc_stamp" -nt "$tcc_dir" ]
 then
     needs_build=1
@@ -108,8 +106,6 @@ if [ "$needs_build" -eq 1 ]; then
         -o "$work_dir/tcc1-smoke"
     "$work_dir/tcc1-smoke" >/dev/null
 
-    cp src/dud-tcc/shim.sh "$musl_tcc"
-    chmod 755 "$musl_tcc"
 fi
 
-"$smoke_cc" "$musl_tcc"
+"$smoke_cc" "$tcc"
