@@ -2,16 +2,14 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: ./src/ctok/init CC' >&2
+    printf '%s\n' 'usage: ./src/ctok/init' >&2
 }
 
-if [ "$#" -ne 1 ]; then
+if [ "$#" -ne 0 ]; then
     usage
     exit 2
 fi
 
-cc=$1
-
 mkdir -p .init
-"$cc" src/ctok/main.c -o .init/ctok
+.init/musl-cc src/ctok/main.c -o .init/ctok
 ./src/ctok/test/main

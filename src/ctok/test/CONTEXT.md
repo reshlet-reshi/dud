@@ -16,8 +16,8 @@
 ## Current State
 
 - `src/ctok/test/main` orchestrates ctok behavior cases and coverage checks.
-- The top-level `init` script calls `./src/init ./.init/musl-cc`; `src/init`
-  calls `./src/ctok/init ./.init/musl-cc` after expect.
+- The top-level `init` script calls `./src/init`; source-local init scripts
+  compile with `.init/musl-cc` directly.
 - `src/ctok/init` builds `src/ctok/main.c` into `.init/ctok` and then runs
   `./src/ctok/test/main`.
 - Shared exact-output assertions use `.init/expect`, built from
@@ -85,6 +85,8 @@
   `src/expect/main.c` utility.
 - Generated project outputs live in `.init/`; the generated TCC install lives
   under `.init/bootstrap-tcc/`.
+- Source-local init scripts no longer accept a compiler argument; they compile
+  with `.init/musl-cc` directly.
 
 ## Turn Log Rules
 
@@ -119,3 +121,9 @@
 - Tests run: planned `sh -n` sweep, `./init --clean`, absence checks for both
   generated roots, fresh `./init`, generated-output checks, and stale-reference
   scan.
+
+### Turn 16
+
+- User asked to remove the compiler argument from source init paths.
+- Top-level and source-local init scripts now hardcode `.init/musl-cc` for
+  source builds.

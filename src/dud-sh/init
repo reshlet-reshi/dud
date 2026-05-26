@@ -2,18 +2,16 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: ./src/dud-sh/init CC' >&2
+    printf '%s\n' 'usage: ./src/dud-sh/init' >&2
 }
 
-if [ "$#" -ne 1 ]; then
+if [ "$#" -ne 0 ]; then
     usage
     exit 2
 fi
 
-cc=$1
-
 mkdir -p .init
-"$cc" \
+.init/musl-cc \
     src/dud-sh/main.c \
     src/dud-sh/action.c \
     src/clib/io.c \

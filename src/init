@@ -1,6 +1,15 @@
 #!/bin/sh
 set -eu
 
-./src/expect/init "$@"
-./src/ctok/init "$@"
-./src/dud-sh/init "$@"
+usage() {
+    printf '%s\n' 'usage: ./src/init' >&2
+}
+
+if [ "$#" -ne 0 ]; then
+    usage
+    exit 2
+fi
+
+./src/expect/init
+./src/ctok/init
+./src/dud-sh/init

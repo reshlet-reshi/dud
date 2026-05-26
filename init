@@ -26,4 +26,4 @@ mkdir -p .init
 ./src/dud-tcc/init
 
 # init
-./src/init ./.init/musl-cc
+./src/init
