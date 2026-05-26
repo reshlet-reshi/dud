@@ -8,7 +8,7 @@ usage() {
 }
 
 if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then
-    rm -f .bin/dud-sh
+    rm -f .init/dud-sh
     exit 0
 fi
 
@@ -19,7 +19,7 @@ fi
 
 cc=$1
 
-mkdir -p .bin
+mkdir -p .init
 "$cc" \
     src/dud-sh/main.c \
     src/dud-sh/action.c \
@@ -28,5 +28,5 @@ mkdir -p .bin
     src/clib/exit.c \
     src/dud-sh/fopen_argv.c \
     src/dud-sh/lex.c \
-    -o .bin/dud-sh
+    -o .init/dud-sh
 ./src/dud-sh/test/main

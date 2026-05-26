@@ -8,7 +8,7 @@ usage() {
 }
 
 if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then
-    rm -f .bin/expect
+    rm -f .init/expect
     exit 0
 fi
 
@@ -19,6 +19,6 @@ fi
 
 cc=$1
 
-mkdir -p .bin
-"$cc" src/expect/main.c -o .bin/expect
+mkdir -p .init
+"$cc" src/expect/main.c -o .init/expect
 ./src/expect/test/main

@@ -10,7 +10,7 @@ usage() {
 }
 
 if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then
-    rm -rf .bin/bootstrap-tcc .bin/.dud-tcc .bin/bootstrap-tcc.tmp.*
+    rm -rf .init/bootstrap-tcc .init/.dud-tcc .init/bootstrap-tcc.tmp.*
     exit 0
 fi
 
@@ -47,12 +47,12 @@ normalize_install_tree() {
     unset normalize_install_tree_dir
 }
 
-work_dir=.bin/.dud-tcc
+work_dir=.init/.dud-tcc
 rm -rf "$work_dir"
 mkdir -p "$work_dir"
 
 expected_canonical_sha256=9bce8e8d61d4df02587f479e053111e9e6b888eb744f9007324a908ad8ab7d32
-bootstrap_musl_cc=$PWD/.bin/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc
+bootstrap_musl_cc=$PWD/.init/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc
 first_build=$PWD/$work_dir/dud-tcc-seed
 second_build=$PWD/$work_dir/dud-tcc-reseed
 
@@ -78,9 +78,9 @@ if [ "$canonical_sha256" != "$expected_canonical_sha256" ]; then
     exit 1
 fi
 
-mkdir -p .bin
-install_dir=.bin/bootstrap-tcc
-install_tmp=.bin/bootstrap-tcc.tmp.$$
+mkdir -p .init
+install_dir=.init/bootstrap-tcc
+install_tmp=.init/bootstrap-tcc.tmp.$$
 rm -rf "$install_tmp"
 mkdir -p "$install_tmp"
 cp -R "$first_build"/. "$install_tmp"

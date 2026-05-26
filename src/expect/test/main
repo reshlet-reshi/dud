@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-expect=.bin/expect
+expect=.init/expect
 test_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-test-expect.XXXXXX")
 stdout_file=$test_tmp/stdout
 stderr_file=$test_tmp/stderr

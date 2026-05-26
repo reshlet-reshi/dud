@@ -8,7 +8,7 @@ usage() {
 }
 
 if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then
-    rm -f .bin/ctok
+    rm -f .init/ctok
     exit 0
 fi
 
@@ -19,6 +19,6 @@ fi
 
 cc=$1
 
-mkdir -p .bin
-"$cc" src/ctok/main.c -o .bin/ctok
+mkdir -p .init
+"$cc" src/ctok/main.c -o .init/ctok
 ./src/ctok/test/main

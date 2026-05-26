@@ -7,4 +7,4 @@ repo_dir=$(
     pwd
 )
 
-exec "$repo_dir/.bin/bootstrap-tcc/tcc" -static "$@"
+exec "$repo_dir/.init/bootstrap-tcc/tcc" -static "$@"

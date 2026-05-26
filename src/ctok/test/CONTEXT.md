@@ -18,9 +18,9 @@
 - `src/ctok/test/main` orchestrates ctok behavior cases and coverage checks.
 - The top-level `init` script calls `./src/init ./bin/musl-cc`; `src/init`
   calls `./src/ctok/init ./bin/musl-cc` after expect.
-- `src/ctok/init` builds `src/ctok/main.c` into `.bin/ctok` and then runs
+- `src/ctok/init` builds `src/ctok/main.c` into `.init/ctok` and then runs
   `./src/ctok/test/main`.
-- Shared exact-output assertions use `.bin/expect`, built from
+- Shared exact-output assertions use `.init/expect`, built from
   `src/expect/main.c`, instead of sourcing the old expect shell helper.
 - `main` now orchestrates ctok behavior cases, coverage compile/run, the adjusted
   line coverage gate, reporter fixture tests, and the coverage reporter call.
@@ -38,7 +38,7 @@
 
 - Do not reintroduce the old top-level preflight `sh -n` list unless
   explicitly changing how the ShellCheck bootstrap/lint path works.
-- Do not write random files to `.bin/`; use `$test_tmp`, `TMPDIR`, or `/tmp`.
+- Do not write random files to `.init/`; use `$test_tmp`, `TMPDIR`, or `/tmp`.
 - Avoid `shellcheck disable`.
 - Keep logical coverage allowlist entries stable unless intentionally changing
   them. If line numbers drift, update line numbers only and preserve snippets
@@ -83,8 +83,8 @@
 - Ported the shared `expect_output`, `expect_status`, and `expect_error`
   helpers from the old expect shell helper to the compiled
   `src/expect/main.c` utility.
-- Generated project outputs live in `.bin/`; the generated TCC install lives
-  under `.bin/bootstrap-tcc/`.
+- Generated project outputs live in `.init/`; the generated TCC install lives
+  under `.init/bootstrap-tcc/`.
 
 ## Turn Log Rules
 
@@ -96,97 +96,13 @@
 
 ## Turns
 
-### Turn 1
+### Turns 1-13 compacted
 
-- Added the initial `Turns` section.
-
-### Turn 2
-
-- Expanded this into a working context doc with state, rules, terms, and TODO
-  acceptance criteria.
-
-### Turn 3
-
-- Added `Context policy` for reading, updating, pruning, and using this file as
-  working memory.
-
-### Turn 4
-
-- Normalized the doc for `AGENTS.md` use, added compaction guidance, clarified
-  `Done`, and noted the uncommitted path-split state.
-
-### Turn 5
-
-- Logged the process/architecture review as TODOs and planned the
-  split/normalized-model sweep.
-- Remaining concern was avoiding more piecemeal parser hardening in `main`.
-
-### Turn 6
-
-- User asked to perform the split/normalized-model sweep as the next substantive
-  `src/ctok/test/main` change.
-- Moved expanded coverage reporting into `coverage-report`; added
-  `coverage-report-test`; kept `main` as orchestration.
-- Validated the normalized model before printing reports, so parser-integrity
-  failures cannot follow a confident-looking report.
-- Files touched: `src/ctok/test/main`, `src/ctok/test/coverage-report`,
-  `src/ctok/test/coverage-report-test`, and this context doc.
-- Tests run: `sh -n` for all three scripts,
-  `./src/ctok/test/coverage-report-test`, `./src/ctok/test/main`, and
-  `./init`.
-- Remaining concern: the reporter is still shell/awk-heavy; future parser edits
-  should start with focused fixtures.
-
-### Turn 7
-
-- User asked to port the old expect shell helper to `src/expect/main.c` with `output`,
-  `status`, and `error` subcommands.
-- Migrated `src/ctok/test/main` and `coverage-report-test` to call
-  `.bin/expect output`.
-- Files touched: `src/expect/main.c`, `init`, `src/ctok/test/main`,
-  `src/ctok/test/coverage-report-test`, `src/dud-sh/test/to-lexer-symbols`,
-  the old expect shell helper, and this context doc.
-- Tests run: focused `.bin/expect` checks, `sh -n` for changed shell scripts,
-  and `./init`.
-
-### Turn 8
-
-- User asked to split generated outputs into `.bin/` for built executables and
-  the then-current unpacked vendor cache.
-- Updated `src/ctok/test/main` and `coverage-report-test` to use
-  `.bin/expect` and `.bin/ctok`.
-- Files touched include generated-path plumbing, test callers, ignore/policy
-  docs, and this context doc.
-
-### Turn 9
-
-- User asked to rename the ctok test directory to `src/ctok/test`.
-- Moved the directory and updated `init`, `main`, `coverage-report-test`, and
-  local context/policy docs to use the new path.
-
-### Turn 10
-
-- User asked to move `src/ctok.c` to `src/ctok/main.c`.
-- Updated init and coverage scripts to use the new source path, including
-  `gcov`'s `ctok-main.gcno` notes file and `main.c.gcov` report name.
-
-### Turn 11
-
-- User asked to move `src/expect.c` to `src/expect/main.c`.
-- Updated `init` and this context doc to use the new source path.
-
-### Turn 12
-
-- User asked to move top-level project init/test commands into source-local
-  init scripts.
-- `src/ctok/init` now owns building `.bin/ctok` and running
-  `./src/ctok/test/main`; `init` preserves the expect-before-ctok order.
-
-### Turn 13
-
-- User asked to move remaining top-level test folders into `src/foo/test`.
-- This context doc now lives under `src/ctok/test`; ctok test scripts and
-  source-local init scripts should use that path.
+- Established this context process, moved tests/sources under `src/foo/test`
+  and `src/foo/main.c`, split coverage reporting into `coverage-report` plus
+  fixtures, and ported exact-output helpers to `src/expect/main.c`.
+- Source-local init scripts own their built executables and test runs; the
+  current state above is the source of truth for paths and gates.
 
 ### Turn 14
 
@@ -194,3 +110,12 @@
   compatibility wrappers.
 - Top-level and source-local init scripts now preserve the previous behavior
   while using init paths and usage text.
+
+### Turn 15
+
+- User asked to rename the generated root to `.init/`.
+- Scripts, tests, wrappers, ignore rules, and docs now use `.init/`; top-level
+  `./init --clean` also removes the stale legacy root.
+- Tests run: planned `sh -n` sweep, `./init --clean`, absence checks for both
+  generated roots, fresh `./init`, generated-output checks, and stale-reference
+  scan.

@@ -9,9 +9,9 @@ cleanup_test_tmp() {
 
 trap cleanup_test_tmp EXIT HUP INT TERM
 
-.bin/expect error 2 '???' .bin/dud-sh
-.bin/expect error 2 '???' .bin/dud-sh --to-lexer-symbols
-.bin/expect error 2 '???' .bin/dud-sh -c ':'
-.bin/expect error 1 '!!!' .bin/dud-sh --to-lexer-symbols "$test_tmp/no-such-file"
+.init/expect error 2 '???' .init/dud-sh
+.init/expect error 2 '???' .init/dud-sh --to-lexer-symbols
+.init/expect error 2 '???' .init/dud-sh -c ':'
+.init/expect error 1 '!!!' .init/dud-sh --to-lexer-symbols "$test_tmp/no-such-file"
 
 ./src/dud-sh/test/to-lexer-symbols
