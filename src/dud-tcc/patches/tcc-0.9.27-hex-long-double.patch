@@ -1,0 +1,13 @@
+--- tccpp.c
++++ tccpp.c
+@@ -2266,0 +2267 @@
++    long double ld;
+@@ -2378,2 +2379,3 @@
+-            d = (double)bn[1] * 4294967296.0 + (double)bn[0];
+-            d = ldexp(d, exp_val - frac_bits);
++            ld = (long double)bn[1] * 4294967296.0L + (long double)bn[0];
++            ld = ldexpl(ld, exp_val - frac_bits);
++            d = (double)ld;
+@@ -2394 +2396 @@
+-                tokc.ld = (long double)d;
++                tokc.ld = ld;
