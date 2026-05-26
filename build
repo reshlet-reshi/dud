@@ -3,12 +3,12 @@ set -eu
 
 # we expect no args
 if [ "$#" -ne 0 ]; then
-    printf '%s\n' 'usage: ./check' >&2
+    printf '%s\n' 'usage: ./build' >&2
     exit 2
 fi
 
 # make scratch dir
-tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/dud-check.XXXXXX")
+tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/dud-build.XXXXXX")
 cleanup_tmp() { rm -rf "$tmp_dir"; }
 trap cleanup_tmp EXIT HUP INT TERM
 

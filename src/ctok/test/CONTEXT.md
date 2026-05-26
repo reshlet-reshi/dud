@@ -16,7 +16,7 @@
 ## Current State
 
 - `src/ctok/test/main` orchestrates ctok behavior cases and coverage checks.
-- The top-level `check` script calls `./src/ctok/build .bin/musl-cc`.
+- The top-level `build` script calls `./src/ctok/build .bin/musl-cc`.
 - `src/ctok/build` builds `src/ctok/main.c` into `.bin/ctok` and then runs
   `./src/ctok/test/main`.
 - Shared exact-output assertions use `.bin/expect`, built from
@@ -35,7 +35,7 @@
 
 ## Working Rules
 
-- Do not reintroduce the old top-level `check` preflight `sh -n` list unless
+- Do not reintroduce the old top-level `build` preflight `sh -n` list unless
   explicitly changing how the ShellCheck bootstrap/lint path works.
 - Do not write random files to `.bin/`; use `$test_tmp`, `TMPDIR`, or `/tmp`.
 - Avoid `shellcheck disable`.
@@ -132,7 +132,7 @@
   `src/ctok/test/coverage-report-test`, and this context doc.
 - Tests run: `sh -n` for all three scripts,
   `./src/ctok/test/coverage-report-test`, `./src/ctok/test/main`, and
-  `./check`.
+  `./build`.
 - Remaining concern: the reporter is still shell/awk-heavy; future parser edits
   should start with focused fixtures.
 
@@ -142,11 +142,11 @@
   `status`, and `error` subcommands.
 - Migrated `src/ctok/test/main` and `coverage-report-test` to call
   `.bin/expect output`.
-- Files touched: `src/expect/main.c`, `check`, `src/ctok/test/main`,
+- Files touched: `src/expect/main.c`, `build`, `src/ctok/test/main`,
   `src/ctok/test/coverage-report-test`, `src/dud-sh/test/to-lexer-symbols`,
   the old expect shell helper, and this context doc.
 - Tests run: focused `.bin/expect` checks, `sh -n` for changed shell scripts,
-  and `./check`.
+  and `./build`.
 
 ### Turn 8
 
@@ -160,7 +160,7 @@
 ### Turn 9
 
 - User asked to rename the ctok test directory to `src/ctok/test`.
-- Moved the directory and updated `check`, `main`, `coverage-report-test`, and
+- Moved the directory and updated `build`, `main`, `coverage-report-test`, and
   local context/policy docs to use the new path.
 
 ### Turn 10
@@ -172,14 +172,14 @@
 ### Turn 11
 
 - User asked to move `src/expect.c` to `src/expect/main.c`.
-- Updated `check` and this context doc to use the new source path.
+- Updated `build` and this context doc to use the new source path.
 
 ### Turn 12
 
 - User asked to move top-level project build/test commands into source-local
   build scripts.
 - `src/ctok/build` now owns building `.bin/ctok` and running
-  `./src/ctok/test/main`; `check` preserves the expect-before-ctok order.
+  `./src/ctok/test/main`; `build` preserves the expect-before-ctok order.
 
 ### Turn 13
 
