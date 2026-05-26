@@ -10,4 +10,4 @@ cc=$1
 
 mkdir -p .bin
 "$cc" src/expect/main.c -o .bin/expect
-./test/expect/main
+./src/expect/test/main

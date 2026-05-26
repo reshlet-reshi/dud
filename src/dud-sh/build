@@ -18,4 +18,4 @@ mkdir -p .bin
     src/dud-sh/fopen_argv.c \
     src/dud-sh/lex.c \
     -o .bin/dud-sh
-./test/dud-sh/main
+./src/dud-sh/test/main

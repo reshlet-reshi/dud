@@ -1,5 +1,0 @@
-# test/ctok instructions
-
-Before changing `test/ctok/main`, coverage reporting, or this directory layout, read `CONTEXT.md`.
-
-Keep `CONTEXT.md` current as work proceeds, following its Context policy.

@@ -1,8 +1,8 @@
-# test/ctok context doc
+# src/ctok/test context doc
 
 ## Context policy
 
-- Read this before changing `test/ctok/main`, coverage reporting, or this
+- Read this before changing `src/ctok/test/main`, coverage reporting, or this
   directory layout.
 - Treat this as working memory, not append-only history. Keep it current,
   compact, and useful for the next turn.
@@ -15,18 +15,18 @@
 
 ## Current State
 
-- `test/ctok/main` orchestrates ctok behavior cases and coverage checks.
+- `src/ctok/test/main` orchestrates ctok behavior cases and coverage checks.
 - The top-level `check` script calls `./src/ctok/build .bin/musl-cc`.
 - `src/ctok/build` builds `src/ctok/main.c` into `.bin/ctok` and then runs
-  `./test/ctok/main`.
+  `./src/ctok/test/main`.
 - Shared exact-output assertions use `.bin/expect`, built from
-  `src/expect/main.c`, instead of sourcing `test/expect.sh`.
+  `src/expect/main.c`, instead of sourcing the old expect shell helper.
 - `main` now orchestrates ctok behavior cases, coverage build/run, the adjusted
   line coverage gate, reporter fixture tests, and the coverage reporter call.
-- `test/ctok/coverage-report` owns gcov stdout parsing, `main.c.gcov`
+- `src/ctok/test/coverage-report` owns gcov stdout parsing, `main.c.gcov`
   parsing, normalized model validation, parser-integrity checks, and report
   formatting.
-- `test/ctok/coverage-report-test` owns fixture-driven reporter tests.
+- `src/ctok/test/coverage-report-test` owns fixture-driven reporter tests.
 - Coverage details are always printed; there is no `CTOK_COVERAGE_DETAIL` gate.
 - Adjusted line coverage remains the only coverage-quality gate.
 - Branch, call, condition, and prime-path coverage are report-only metrics.
@@ -69,8 +69,8 @@
 
 ## Done
 
-- Split coverage reporting out of `test/ctok/main` into
-  `test/ctok/coverage-report` and `test/ctok/coverage-report-test`.
+- Split coverage reporting out of `src/ctok/test/main` into
+  `src/ctok/test/coverage-report` and `src/ctok/test/coverage-report-test`.
 - Introduced a normalized gcov model and separated parsing, validation, and
   formatting.
 - Hardened condition attribution with per-source pending-miss accounting.
@@ -80,13 +80,14 @@
 - Clarified metric validation around exact totals versus rounded percentage
   consistency.
 - Ported the shared `expect_output`, `expect_status`, and `expect_error`
-  helpers from `test/expect.sh` to the compiled `src/expect/main.c` utility.
+  helpers from the old expect shell helper to the compiled
+  `src/expect/main.c` utility.
 - Generated project outputs live in `.bin/`; the generated TCC install lives
   under `.bin/bootstrap-tcc/`.
 
 ## Turn Log Rules
 
-- Add a new `### Turn N` whenever work resumes on `test/ctok/main`,
+- Add a new `### Turn N` whenever work resumes on `src/ctok/test/main`,
   coverage reporting, or this context doc.
 - Record user intent, decisions made, files touched, tests run, and remaining
   concerns.
@@ -122,28 +123,28 @@
 ### Turn 6
 
 - User asked to perform the split/normalized-model sweep as the next substantive
-  `test/ctok/main` change.
+  `src/ctok/test/main` change.
 - Moved expanded coverage reporting into `coverage-report`; added
   `coverage-report-test`; kept `main` as orchestration.
 - Validated the normalized model before printing reports, so parser-integrity
   failures cannot follow a confident-looking report.
-- Files touched: `test/ctok/main`, `test/ctok/coverage-report`,
-  `test/ctok/coverage-report-test`, and this context doc.
+- Files touched: `src/ctok/test/main`, `src/ctok/test/coverage-report`,
+  `src/ctok/test/coverage-report-test`, and this context doc.
 - Tests run: `sh -n` for all three scripts,
-  `./test/ctok/coverage-report-test`, `./test/ctok/main`, and
+  `./src/ctok/test/coverage-report-test`, `./src/ctok/test/main`, and
   `./check`.
 - Remaining concern: the reporter is still shell/awk-heavy; future parser edits
   should start with focused fixtures.
 
 ### Turn 7
 
-- User asked to port `test/expect.sh` to `src/expect/main.c` with `output`,
+- User asked to port the old expect shell helper to `src/expect/main.c` with `output`,
   `status`, and `error` subcommands.
-- Migrated `test/ctok/main` and `coverage-report-test` to call
+- Migrated `src/ctok/test/main` and `coverage-report-test` to call
   `.bin/expect output`.
-- Files touched: `src/expect/main.c`, `check`, `test/ctok/main`,
-  `test/ctok/coverage-report-test`, `test/dud-sh/to-lexer-symbols`,
-  `test/expect.sh`, and this context doc.
+- Files touched: `src/expect/main.c`, `check`, `src/ctok/test/main`,
+  `src/ctok/test/coverage-report-test`, `src/dud-sh/test/to-lexer-symbols`,
+  the old expect shell helper, and this context doc.
 - Tests run: focused `.bin/expect` checks, `sh -n` for changed shell scripts,
   and `./check`.
 
@@ -151,14 +152,14 @@
 
 - User asked to split generated outputs into `.bin/` for built executables and
   the then-current unpacked vendor cache.
-- Updated `test/ctok/main` and `coverage-report-test` to use
+- Updated `src/ctok/test/main` and `coverage-report-test` to use
   `.bin/expect` and `.bin/ctok`.
 - Files touched include generated-path plumbing, test callers, ignore/policy
   docs, and this context doc.
 
 ### Turn 9
 
-- User asked to rename the ctok test directory to `test/ctok`.
+- User asked to rename the ctok test directory to `src/ctok/test`.
 - Moved the directory and updated `check`, `main`, `coverage-report-test`, and
   local context/policy docs to use the new path.
 
@@ -178,4 +179,10 @@
 - User asked to move top-level project build/test commands into source-local
   build scripts.
 - `src/ctok/build` now owns building `.bin/ctok` and running
-  `./test/ctok/main`; `check` preserves the expect-before-ctok order.
+  `./src/ctok/test/main`; `check` preserves the expect-before-ctok order.
+
+### Turn 13
+
+- User asked to move remaining top-level test folders into `src/foo/test`.
+- This context doc now lives under `src/ctok/test`; ctok test scripts and
+  source-local build scripts should use that path.

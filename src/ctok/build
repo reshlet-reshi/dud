@@ -10,4 +10,4 @@ cc=$1
 
 mkdir -p .bin
 "$cc" src/ctok/main.c -o .bin/ctok
-./test/ctok/main
+./src/ctok/test/main

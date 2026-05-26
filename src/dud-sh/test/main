@@ -14,4 +14,4 @@ trap cleanup_test_tmp EXIT HUP INT TERM
 .bin/expect error 2 '???' .bin/dud-sh -c ':'
 .bin/expect error 1 '!!!' .bin/dud-sh --to-lexer-symbols "$test_tmp/no-such-file"
 
-./test/dud-sh/to-lexer-symbols
+./src/dud-sh/test/to-lexer-symbols

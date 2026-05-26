@@ -576,11 +576,11 @@ validate_coverage() {
 }
 
 run_coverage_report_self_tests() {
-    ./test/ctok/coverage-report-test
+    ./src/ctok/test/coverage-report-test
 }
 
 print_coverage_details() {
-    ./test/ctok/coverage-report report "$1" "$repo_dir" "$test_tmp"
+    ./src/ctok/test/coverage-report report "$1" "$repo_dir" "$test_tmp"
 }
 
 build_coverage_ctok() {
