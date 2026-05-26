@@ -11,5 +11,5 @@ if [ "$#" -ne 0 ]; then
 fi
 
 mkdir -p .init
-.init/musl-cc 04-expect/main.c -o .init/expect
+.init/musl-cc -static -std=c11 -Wfatal-errors 04-expect/main.c -o .init/expect
 ./04-expect/test/main

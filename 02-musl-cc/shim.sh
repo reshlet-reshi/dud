@@ -8,14 +8,11 @@ repo_dir=$(
 )
 
 exec "$repo_dir/.init/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc" \
-    -std=c11 \
     -Wall \
     -Wextra \
     -Wpedantic \
     -Werror \
-    -Wfatal-errors \
     -Wmissing-prototypes \
     -Wstrict-prototypes \
     -Wold-style-definition \
-    -static \
     "$@"

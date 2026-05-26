@@ -27,4 +27,4 @@ fi
 
 cp 02-musl-cc/shim.sh .init/musl-cc
 chmod 755 .init/musl-cc
-./.init/smoke-cc ./.init/musl-cc
+./.init/smoke-cc ./.init/musl-cc -static -std=c11 -Wfatal-errors

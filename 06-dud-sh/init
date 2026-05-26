@@ -12,6 +12,9 @@ fi
 
 mkdir -p .init
 .init/musl-cc \
+    -static \
+    -std=c11 \
+    -Wfatal-errors \
     06-dud-sh/main.c \
     06-dud-sh/action.c \
     06-dud-sh/clib/io.c \

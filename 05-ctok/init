@@ -11,5 +11,5 @@ if [ "$#" -ne 0 ]; then
 fi
 
 mkdir -p .init
-.init/musl-cc 05-ctok/main.c -o .init/ctok
+.init/musl-cc -static -std=c11 -Wfatal-errors 05-ctok/main.c -o .init/ctok
 ./05-ctok/test/main
