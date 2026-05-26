@@ -1,6 +1,20 @@
 #!/bin/sh
 set -eu
 
+usage() {
+    printf '%s\n' 'usage: ./src/dud-tcc/build [--clean]' >&2
+}
+
+if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then
+    rm -rf .bin/bootstrap-tcc .bin/.dud-tcc .bin/bootstrap-tcc.tmp.*
+    exit 0
+fi
+
+if [ "$#" -ne 0 ]; then
+    usage
+    exit 2
+fi
+
 # clean build dir
 
 work_dir=.bin/.dud-tcc

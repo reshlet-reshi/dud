@@ -1,8 +1,19 @@
 #!/bin/sh
 set -eu
 
+usage() {
+    printf '%s\n' \
+        'usage: ./src/dud-sh/build CC' \
+        'usage: ./src/dud-sh/build --clean' >&2
+}
+
+if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then
+    rm -f .bin/dud-sh
+    exit 0
+fi
+
 if [ "$#" -ne 1 ]; then
-    printf '%s\n' 'usage: ./src/dud-sh/build CC' >&2
+    usage
     exit 2
 fi
 

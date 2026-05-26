@@ -1,9 +1,18 @@
 #!/bin/sh
 set -eu
 
+usage() {
+    printf '%s\n' 'usage: ./build [--clean]' >&2
+}
+
+if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then
+    rm -rf .bin
+    exit 0
+fi
+
 # we expect no args
 if [ "$#" -ne 0 ]; then
-    printf '%s\n' 'usage: ./build' >&2
+    usage
     exit 2
 fi
 
