@@ -2,7 +2,7 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: ./build [--clean]' >&2
+    printf '%s\n' 'usage: ./init [--clean]' >&2
 }
 
 if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then
@@ -17,7 +17,7 @@ if [ "$#" -ne 0 ]; then
 fi
 
 # make scratch dir
-tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/dud-build.XXXXXX")
+tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/dud-init.XXXXXX")
 cleanup_tmp() { rm -rf "$tmp_dir"; }
 trap cleanup_tmp EXIT HUP INT TERM
 
@@ -107,9 +107,9 @@ if [ ! -d "$tcc_dir" ] ||
     [ ! -x "$tcc" ] ||
     [ "$tcc_stamp" -nt "$tcc_dir" ]
 then
-    ./src/dud-tcc/build
+    ./src/dud-tcc/init
 fi
 smoke_cc ./bin/dud-tcc
 
-# build
-./src/build ./bin/musl-cc
+# init
+./src/init ./bin/musl-cc

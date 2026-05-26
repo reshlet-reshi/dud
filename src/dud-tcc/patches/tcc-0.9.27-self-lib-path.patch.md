@@ -39,7 +39,7 @@ So the value of `s->tcc_lib_path` is the source of truth for all configured
 
 ## Bootstrap Need
 
-`src/dud-tcc/build` builds the final compiler with:
+`src/dud-tcc/init` builds the final compiler with:
 
 ```text
 -DCONFIG_TCCDIR="{B}"

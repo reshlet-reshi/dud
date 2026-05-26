@@ -1,6 +1,6 @@
-# src/dud-tcc/build musl_libc_srcs
+# src/dud-tcc/init musl_libc_srcs
 
-This note is the evidence trail for `musl_libc_srcs` in `src/dud-tcc/build`.
+This note is the evidence trail for `musl_libc_srcs` in `src/dud-tcc/init`.
 
 The final source list mirrors the libc portion of musl 1.2.6's Makefile object
 selection:

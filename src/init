@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+
+./src/expect/init "$@"
+./src/ctok/init "$@"
+./src/dud-sh/init "$@"

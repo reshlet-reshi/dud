@@ -3,8 +3,8 @@ set -eu
 
 usage() {
     printf '%s\n' \
-        'usage: ./src/dud-sh/build CC' \
-        'usage: ./src/dud-sh/build --clean' >&2
+        'usage: ./src/dud-sh/init CC' \
+        'usage: ./src/dud-sh/init --clean' >&2
 }
 
 if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then

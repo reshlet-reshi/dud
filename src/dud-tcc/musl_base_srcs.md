@@ -1,6 +1,6 @@
-# src/dud-tcc/build musl_base_srcs
+# src/dud-tcc/init musl_base_srcs
 
-This note is the evidence trail for `musl_base_srcs` in `src/dud-tcc/build`.
+This note is the evidence trail for `musl_base_srcs` in `src/dud-tcc/init`.
 
 The source-list shape is adapted from musl 1.2.6's Makefile:
 

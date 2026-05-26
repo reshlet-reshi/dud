@@ -1,6 +1,6 @@
-# src/dud-tcc/build musl_arch_srcs
+# src/dud-tcc/init musl_arch_srcs
 
-This note is the evidence trail for `musl_arch_srcs` in `src/dud-tcc/build`.
+This note is the evidence trail for `musl_arch_srcs` in `src/dud-tcc/init`.
 
 The source-list shape is adapted from musl 1.2.6's Makefile:
 
@@ -32,10 +32,10 @@ C and assembly sources under `src/*/x86_64/*`, then sorts the list.
 - `src/fenv/x86_64/fenv.s` is excluded because the x86_64 fenv assembly uses
   floating-point environment instructions and assembler forms outside this
   bootstrap path. The generic fenv C sources remain in the base list where this
-  build can compile them.
+  init path can compile them.
 - `src/math/x86_64/*` is excluded to avoid optimized x86_64 math and long-double
-  assembly helpers such as `expl.s`, `logl.s`, and `sqrtl.s`. This build uses
-  the generic math C sources instead.
+  assembly helpers such as `expl.s`, `logl.s`, and `sqrtl.s`. This init path
+  uses the generic math C sources instead.
 - `src/string/x86_64/*` is excluded to avoid optimized x86_64 assembly for
-  `memcpy`, `memmove`, and `memset`. This build uses the generic C sources
+  `memcpy`, `memmove`, and `memset`. This init path uses the generic C sources
   instead.

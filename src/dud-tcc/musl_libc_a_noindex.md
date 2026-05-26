@@ -1,7 +1,7 @@
-# src/dud-tcc/build musl libc.a no-index normalization
+# src/dud-tcc/init musl libc.a no-index normalization
 
 This note is the evidence trail for the `libc.a` archive-index stripping step
-in `src/dud-tcc/build`.
+in `src/dud-tcc/init`.
 
 The short version: `tcc0 -ar` writes a leading archive symbol index, but TCC
 0.9.27's archive indexer does not include weak definitions. Musl uses weak
@@ -15,8 +15,8 @@ lets the musl bootstrap link resolve the weak definitions.
 
 ## Failure Without This
 
-A local probe temporarily removed this block from `src/dud-tcc/build` and then
-reran the build. The final link failed with unresolved symbols:
+A local probe temporarily removed this block from `src/dud-tcc/init` and then
+reran init. The final link failed with unresolved symbols:
 
 ```text
 tcc: error: undefined symbol 'mprotect'

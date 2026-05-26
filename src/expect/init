@@ -3,8 +3,8 @@ set -eu
 
 usage() {
     printf '%s\n' \
-        'usage: ./src/expect/build CC' \
-        'usage: ./src/expect/build --clean' >&2
+        'usage: ./src/expect/init CC' \
+        'usage: ./src/expect/init --clean' >&2
 }
 
 if [ "$#" -eq 1 ] && [ "$1" = '--clean' ]; then

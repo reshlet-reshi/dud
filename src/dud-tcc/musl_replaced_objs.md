@@ -1,7 +1,7 @@
-# src/dud-tcc/build musl_replaced_objs
+# src/dud-tcc/init musl_replaced_objs
 
 This note is the evidence trail for `musl_replaced_objs` in
-`src/dud-tcc/build`.
+`src/dud-tcc/init`.
 
 The transform mirrors musl 1.2.6's Makefile model:
 
@@ -15,8 +15,8 @@ replace a generic source that would otherwise produce the same object name.
 
 ## Transformation
 
-For each x86_64 source path in `musl_arch_srcs`, this build computes the generic
-object slot it replaces.
+For each x86_64 source path in `musl_arch_srcs`, this init path computes the
+generic object slot it replaces.
 
 Example input:
 
@@ -62,7 +62,7 @@ obj/src/process/vfork.o       add the object root
 ```
 
 The final line, `obj/src/process/vfork.o`, is written to `musl_replaced_objs`.
-When the build later walks generic base sources, it skips any generic source
+When the init path later walks generic base sources, it skips any generic source
 whose object path appears in this list.
 
 That lets `src/process/x86_64/vfork.s` replace a generic

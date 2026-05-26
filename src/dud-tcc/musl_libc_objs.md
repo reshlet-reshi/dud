@@ -1,6 +1,6 @@
-# src/dud-tcc/build musl_libc_objs
+# src/dud-tcc/init musl_libc_objs
 
-This note is the evidence trail for `musl_libc_objs` in `src/dud-tcc/build`.
+This note is the evidence trail for `musl_libc_objs` in `src/dud-tcc/init`.
 
 This is the compile stage after `musl_libc_srcs` has been assembled. It turns
 each selected musl-relative source path into an object file under `$musl_obj`
@@ -22,7 +22,7 @@ Step by step:
 
 - `: > "$musl_libc_objs"` creates or truncates the final object-list file.
 - The `while` loop reads musl-relative source paths from `musl_libc_srcs`.
-- `obj=$musl_obj/${rel%.*}.o` maps each source to its build object path. For
+- `obj=$musl_obj/${rel%.*}.o` maps each source to its output object path. For
   example, `src/process/x86_64/vfork.s` becomes
   `$musl_obj/src/process/x86_64/vfork.o`.
 - `mkdir -p "$(dirname "$obj")"` creates the destination directory for that

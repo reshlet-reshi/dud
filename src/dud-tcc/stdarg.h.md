@@ -31,8 +31,8 @@ passes TCC's type metadata, size, and alignment values to `__va_arg`.
 
 ## Bootstrap Scope
 
-This is a bootstrap header for the repo's x86_64 Linux dud-tcc build. It is not
-intended to be a general replacement for musl's upstream `stdarg.h`, and it
+This is a bootstrap header for the repo's x86_64 Linux dud-tcc init path. It is
+not intended to be a general replacement for musl's upstream `stdarg.h`, and it
 depends on compiler/runtime support for:
 
 - `__builtin_frame_address`

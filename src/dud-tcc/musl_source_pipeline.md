@@ -1,7 +1,7 @@
-# src/dud-tcc/build musl source pipeline
+# src/dud-tcc/init musl source pipeline
 
 This note is the evidence trail for the musl libc source/object list pipeline
-in `src/dud-tcc/build`.
+in `src/dud-tcc/init`.
 
 The logic mirrors musl 1.2.6's Makefile model:
 
@@ -13,8 +13,8 @@ ALL_OBJS = $(addprefix obj/, $(filter-out $(REPLACED_OBJS), $(sort $(BASE_OBJS) 
 LIBC_OBJS = $(filter obj/src/%,$(ALL_OBJS)) $(filter obj/compat/%,$(ALL_OBJS))
 ```
 
-This build writes the intermediate lists to files under `.bin/.dud-tcc` instead
-of asking `make` to expand them.
+This init path writes the intermediate lists to files under `.bin/.dud-tcc`
+instead of asking `make` to expand them.
 
 ## Temporary Lists
 
@@ -22,7 +22,7 @@ of asking `make` to expand them.
   `src/malloc/mallocng/*.c`, excluding `src/complex/*`.
 - `musl-arch-srcs`: x86_64-specific musl C/assembly sources under
   `src/*/x86_64/*`, with bootstrap exclusions for fenv, math, and string
-  sources this build does not compile.
+  sources this init path does not compile.
 - `musl-replaced-objs`: object names that x86_64-specific sources replace.
   For example, `src/foo/x86_64/bar.s` maps to `obj/src/foo/bar.o`, so the
   generic source producing the same object is skipped.
@@ -36,4 +36,4 @@ of asking `make` to expand them.
 The source and object lists are long enough that shell variables would be
 awkward, and `tcc0 -ar` eventually needs the object paths as positional
 arguments. Keeping the lists as sorted files makes the pipeline deterministic
-and easy to inspect when the bootstrap build fails.
+and easy to inspect when the bootstrap init fails.

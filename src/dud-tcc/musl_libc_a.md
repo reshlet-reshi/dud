@@ -1,7 +1,7 @@
-# src/dud-tcc/build musl libc.a
+# src/dud-tcc/init musl libc.a
 
 This note is the evidence trail for the `libc.a` archive creation step in
-`src/dud-tcc/build`.
+`src/dud-tcc/init`.
 
 This stage consumes the object list in `musl_libc_objs` and creates the static
 musl libc archive used later when linking the intermediate `tcc1`, which is
