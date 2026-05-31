@@ -13,8 +13,8 @@ ALL_OBJS = $(addprefix obj/, $(filter-out $(REPLACED_OBJS), $(sort $(BASE_OBJS) 
 LIBC_OBJS = $(filter obj/src/%,$(ALL_OBJS)) $(filter obj/compat/%,$(ALL_OBJS))
 ```
 
-This runme path writes the intermediate lists to files under `.dud/musl-tcc-build`
-instead of asking `make` to expand them.
+This runme path writes the intermediate lists under the caller-supplied
+`--work-dir` instead of asking `make` to expand them.
 
 ## Temporary Lists
 

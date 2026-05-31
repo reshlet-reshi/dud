@@ -15,4 +15,3 @@ mkdir -p .dud
 ./00-shellcheck/runme.sh
 ./01-smoke-cc/runme.sh
 ./02-musl-cc/runme.sh
-./03-musl-tcc/runme.sh

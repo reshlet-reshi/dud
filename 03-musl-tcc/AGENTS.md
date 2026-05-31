@@ -6,4 +6,5 @@ When changing tracked musl-tcc inputs under this directory, increment
 Bootstrap smoke tests live under `03-musl-tcc/test`; changing them also requires
 incrementing `03-musl-tcc/.stamp`.
 
-Do not update `.stamp` for generated files under `.dud/musl-tcc-build`.
+Do not update `.stamp` for generated files under the caller-supplied musl-tcc
+work directory.

@@ -3,10 +3,11 @@
 This note is the evidence trail for `03-musl-tcc/patches/tcc-0.9.27-self-lib-path.patch`.
 
 The short version: the final bootstrap `tcc` is installed as a relocatable tree
-under `.dud/musl-tcc`. TCC already has a `{B}` path substitution mechanism, but
-upstream initializes `{B}` from `CONFIG_TCCDIR`. If `CONFIG_TCCDIR` itself is
-the literal string `{B}`, then `{B}/include`, `{B}/lib`, and `{B}/libtcc1.a`
-stay literal instead of becoming paths beside the running `tcc` executable.
+under the caller-supplied `--install-dir`. TCC already has a `{B}` path
+substitution mechanism, but upstream initializes `{B}` from `CONFIG_TCCDIR`. If
+`CONFIG_TCCDIR` itself is the literal string `{B}`, then `{B}/include`,
+`{B}/lib`, and `{B}/libtcc1.a` stay literal instead of becoming paths beside the
+running `tcc` executable.
 
 The patch makes that sentinel useful for the command-line compiler:
 
@@ -51,19 +52,20 @@ So the value of `s->tcc_lib_path` is the source of truth for all configured
 The install layout is:
 
 ```text
-.dud/musl-tcc/tcc
-.dud/musl-tcc/include
-.dud/musl-tcc/lib
-.dud/musl-tcc/libtcc1.a
+<install-dir>/tcc
+<install-dir>/include
+<install-dir>/lib
+<install-dir>/libtcc1.a
 ```
 
 Without this patch, upstream would set `s->tcc_lib_path` to the literal string
 `{B}`. Expanding `{B}/lib` would produce the literal path `{B}/lib`, not
-`.dud/musl-tcc/lib`. The compiler could still be used with an explicit `-B`, but
-the installed bootstrap compiler would not be self-locating.
+`<install-dir>/lib`. The compiler could still be used with an explicit `-B`,
+but the installed bootstrap compiler would not be self-locating.
 
 With the patch, the installed compiler reports paths rooted at its own
-directory. In this repo shape, that should look like:
+directory. With a repo-local `--install-dir ./.dud/musl-tcc`, that should look
+like:
 
 ```text
 install: <repo>/.dud/musl-tcc
@@ -89,13 +91,13 @@ This is a bootstrap patch, not a general upstream-quality install-path design.
 - `/proc/self/exe` is Linux-specific.
 - The path buffer is fixed at 4096 bytes. That is practical here, but not a
   perfect general solution.
-- Moving only `.dud/musl-tcc/tcc` without its sibling `include/`, `lib/`, and
+- Moving only `<install-dir>/tcc` without its sibling `include/`, `lib`, and
   `libtcc1.a` still breaks the install.
 - The patch is in `tcc.c`, so it affects the command-line compiler, not libtcc
   API users.
 
 Those limits are acceptable for this repo because the bootstrap is already a
-Linux x86_64 bootstrap and installs a self-contained tree under `.dud/musl-tcc`.
+Linux x86_64 bootstrap and installs a self-contained tree.
 The patch does not replace TCC's existing path model; it supplies the missing
 runtime value for the existing `{B}` substitution. Because it runs before
 `tcc_parse_args()`, a user-provided `-B` remains the later, explicit override.
