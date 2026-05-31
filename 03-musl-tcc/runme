@@ -6,15 +6,15 @@ LC_ALL=C
 export LC_ALL
 
 usage() {
-    printf '%s\n' 'usage: ./03-musl-tcc/init' >&2
+    printf '%s\n' 'usage: ./03-musl-tcc/runme' >&2
 }
 
-init_dir=.init
-tcc_dir=$init_dir/musl-tcc
-work_dir=$init_dir/musl-tcc-build
+dud_dir=.dud
+tcc_dir=$dud_dir/musl-tcc
+work_dir=$dud_dir/musl-tcc-build
 tcc_stamp=03-musl-tcc/.stamp
 tcc=$tcc_dir/tcc
-smoke_cc=$init_dir/smoke-cc
+smoke_cc=$dud_dir/smoke-cc
 
 if [ "$#" -ne 0 ]; then
     usage
@@ -60,7 +60,7 @@ rm -rf "$work_dir"
 mkdir -p "$work_dir"
 
 expected_canonical_sha256=9bce8e8d61d4df02587f479e053111e9e6b888eb744f9007324a908ad8ab7d32
-bootstrap_musl_cc=$PWD/.init/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc
+bootstrap_musl_cc=$PWD/.dud/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc
 first_build=$PWD/$work_dir/musl-tcc-seed
 second_build=$PWD/$work_dir/musl-tcc-reseed
 
@@ -86,7 +86,7 @@ if [ "$canonical_sha256" != "$expected_canonical_sha256" ]; then
     exit 1
 fi
 
-mkdir -p "$init_dir"
+mkdir -p "$dud_dir"
 install_tmp=$tcc_dir.tmp.$$
 rm -rf "$install_tmp"
 mkdir -p "$install_tmp"
@@ -99,4 +99,4 @@ mv "$install_tmp" "$tcc_dir"
     -o "$work_dir/tcc1-smoke"
 "$work_dir/tcc1-smoke" >/dev/null
 
-"$smoke_cc" "$tcc"
+"$smoke_cc" "$tcc" -static

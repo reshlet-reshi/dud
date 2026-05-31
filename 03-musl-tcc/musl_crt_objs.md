@@ -1,11 +1,11 @@
-# 03-musl-tcc/init musl CRT objects
+# 03-musl-tcc/runme musl CRT objects
 
 This note is the evidence trail for the musl CRT object build in
-`03-musl-tcc/init`.
+`03-musl-tcc/runme`.
 
 These objects are not part of `libc.a`. They are standalone startup/finalizer
 objects installed beside `libc.a` and used by TCC when linking static programs.
-This bootstrap init builds only the static x86_64 startup set:
+This bootstrap runme builds only the static x86_64 startup set:
 
 ```text
 crt1.o
@@ -31,15 +31,15 @@ Step by step:
 
 - `mkdir -p "$musl_obj/crt/x86_64"` creates the object output directory for
   generic CRT objects and x86_64-specific CRT assembly objects.
-- The subshell keeps `cd "$musl_src"` local to this init step.
+- The subshell keeps `cd "$musl_src"` local to this runme step.
 - Compiling from `$musl_src` keeps source paths and include lookup aligned with
   musl's own build layout.
 - `tcc0_musl_cc -DCRT -c crt/crt1.c -o "$musl_obj/crt/crt1.o"` builds the
   static executable entry object.
 - `tcc0_musl_cc -DCRT -c crt/x86_64/crti.s ...` builds the x86_64 prologue for
-  the `.init` and `.fini` sections.
+  the `.dud` and `.fini` sections.
 - `tcc0_musl_cc -DCRT -c crt/x86_64/crtn.s ...` builds the x86_64 epilogue for
-  the `.init` and `.fini` sections.
+  the `.dud` and `.fini` sections.
 
 `-DCRT` mirrors musl 1.2.6's Makefile rule:
 
@@ -66,7 +66,7 @@ and `ret` instructions.
 
 ## Install Shape
 
-After building these objects under `$musl_obj`, `03-musl-tcc/init` copies them
+After building these objects under `$musl_obj`, `03-musl-tcc/runme` copies them
 to `$musl_lib`:
 
 ```sh

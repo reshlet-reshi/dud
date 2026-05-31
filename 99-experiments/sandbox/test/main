@@ -2,7 +2,7 @@
 set -eu
 
 runner=99-experiments/sandbox/scripts/run-sandbox.sh
-target_dir=.init/experiments/sandbox/targets
+target_dir=.dud/experiments/sandbox/targets
 test_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-test-sandbox.XXXXXX")
 stdout_file=$test_tmp/stdout
 stderr_file=$test_tmp/stderr

@@ -24,7 +24,7 @@ if [ "$#" -ne 1 ]; then
 fi
 
 target=$1
-loader=${SANDBOX_LOADER:-.init/experiments/sandbox/loader}
+loader=${SANDBOX_LOADER:-.dud/experiments/sandbox/loader}
 timeout_duration=${SANDBOX_TIMEOUT:-1s}
 kill_after=${SANDBOX_KILL_AFTER:-1s}
 max_target_size=${SANDBOX_MAX_TARGET_SIZE:-1048576}

@@ -7,7 +7,7 @@ repo_dir=$(
     pwd
 )
 
-exec "$repo_dir/.init/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc" \
+exec "$repo_dir/.dud/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc" \
     -Wall \
     -Wextra \
     -Wpedantic \

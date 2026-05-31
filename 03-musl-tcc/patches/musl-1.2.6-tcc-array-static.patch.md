@@ -7,7 +7,7 @@ internal declarations and definitions with ordinary array parameters.
 
 ## What The Patch Does
 
-The old init path applied this transformation after unpacking musl:
+The old runme path applied this transformation after unpacking musl:
 
 ```sh
 sed 's/\[static /[/g'

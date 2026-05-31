@@ -2,10 +2,10 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: ./02-musl-cc/init' >&2
+    printf '%s\n' 'usage: ./02-musl-cc/runme' >&2
 }
 
-musl_dir=.init/x86_64-linux-musl-native
+musl_dir=.dud/x86_64-linux-musl-native
 
 if [ "$#" -ne 0 ]; then
     usage
@@ -16,7 +16,7 @@ tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/dud-musl-cc.XXXXXX")
 cleanup_tmp() { rm -rf "$tmp_dir"; }
 trap cleanup_tmp EXIT HUP INT TERM
 
-mkdir -p .init
+mkdir -p .dud
 
 if [ ! -x "$musl_dir/bin/x86_64-linux-musl-gcc" ]; then
     mkdir "$tmp_dir/musl-exe"
@@ -25,6 +25,6 @@ if [ ! -x "$musl_dir/bin/x86_64-linux-musl-gcc" ]; then
     mv "$tmp_dir/musl-exe/x86_64-linux-musl-native" "$musl_dir"
 fi
 
-cp 02-musl-cc/shim.sh .init/musl-cc
-chmod 755 .init/musl-cc
-./.init/smoke-cc ./.init/musl-cc -static -std=c11 -Wfatal-errors
+cp 02-musl-cc/shim.sh .dud/musl-cc
+chmod 755 .dud/musl-cc
+./.dud/smoke-cc ./.dud/musl-cc -static -std=c11 -Wfatal-errors

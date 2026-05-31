@@ -29,14 +29,14 @@ the target. The only intended result is exit status plus unavoidable timing.
 ## Build and Test
 
 ```sh
-./99-experiments/sandbox/init
+./99-experiments/sandbox/runme
 ```
 
 This builds:
 
 ```text
-.init/experiments/sandbox/loader
-.init/experiments/sandbox/targets/*.bin
+.dud/experiments/sandbox/loader
+.dud/experiments/sandbox/targets/*.bin
 ```
 
 Temporary build scratch is created with `mktemp` under `${TMPDIR:-/tmp}`.
@@ -45,7 +45,7 @@ Temporary build scratch is created with `mktemp` under `${TMPDIR:-/tmp}`.
 
 ```sh
 99-experiments/sandbox/scripts/run-sandbox.sh \
-    .init/experiments/sandbox/targets/exit0.bin
+    .dud/experiments/sandbox/targets/exit0.bin
 ```
 
 The runner uses strict `bwrap` namespace flags. On this host, strict bwrap

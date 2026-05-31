@@ -6,7 +6,7 @@ The patch removes `@PLT` symbol suffixes from musl 1.2.6 assembly sources.
 
 ## What The Patch Does
 
-The old init path applied this transformation after unpacking musl:
+The old runme path applied this transformation after unpacking musl:
 
 ```sh
 sed 's/@PLT//g'
@@ -32,5 +32,5 @@ assembly.
 
 The bootstrap TCC assembler/linker path used here does not accept musl's
 explicit `@PLT` relocation syntax in assembly sources. Removing the suffix keeps
-the call and address expressions direct, which is the form this bootstrap init
+the call and address expressions direct, which is the form this bootstrap runme
 path can assemble.

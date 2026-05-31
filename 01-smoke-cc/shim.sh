@@ -2,7 +2,7 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: ./.init/smoke-cc CC [CC_ARG...]' >&2
+    printf '%s\n' 'usage: ./.dud/smoke-cc CC [CC_ARG...]' >&2
 }
 
 if [ "$#" -lt 1 ]; then

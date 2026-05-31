@@ -2,10 +2,10 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: ./00-shellcheck/init' >&2
+    printf '%s\n' 'usage: ./00-shellcheck/runme' >&2
 }
 
-shellcheck_dir=.init/shellcheck-v0.11.0.linux.x86_64
+shellcheck_dir=.dud/shellcheck-v0.11.0.linux.x86_64
 
 if [ "$#" -ne 0 ]; then
     usage
@@ -16,7 +16,7 @@ tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/dud-shellcheck.XXXXXX")
 cleanup_tmp() { rm -rf "$tmp_dir"; }
 trap cleanup_tmp EXIT HUP INT TERM
 
-mkdir -p .init
+mkdir -p .dud
 
 shellcheck=$shellcheck_dir/shellcheck-v0.11.0/shellcheck
 if [ ! -x "$shellcheck" ]; then
@@ -31,7 +31,7 @@ file_list=$tmp_dir/files
 find . \
     \( \
         -path './.git' -o \
-        -path './.init' \
+        -path './.dud' \
     \) -prune -o \
     -type f \
     -print >"$file_list"

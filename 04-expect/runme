@@ -1,0 +1,46 @@
+#!/bin/sh
+set -eu
+
+usage() {
+    printf '%s\n' 'usage: ./04-expect/runme' >&2
+}
+
+if [ "$#" -ne 0 ]; then
+    usage
+    exit 2
+fi
+
+mkdir -p .dud
+
+if [ ! -x .dud/smoke-cc ]; then
+    ./01-smoke-cc/runme
+fi
+
+if [ ! -x .dud/musl-cc ] ||
+    [ ! -x .dud/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc ]
+then
+    ./02-musl-cc/runme
+fi
+
+if [ ! -x .dud/musl-tcc/tcc ] ||
+    [ 03-musl-tcc/.stamp -nt .dud/musl-tcc ]
+then
+    ./03-musl-tcc/runme
+fi
+
+.dud/musl-tcc/tcc \
+    -static \
+    -std=c11 \
+    -Wall \
+    -Wextra \
+    -Wpedantic \
+    -Werror \
+    -Wmissing-prototypes \
+    -Wstrict-prototypes \
+    -Wold-style-definition \
+    04-expect/main.c \
+    -o .dud/expect
+./04-expect/test/main
+
+.dud/musl-cc -static -std=c11 -Wfatal-errors 04-expect/main.c -o .dud/expect
+./04-expect/test/main

@@ -2,7 +2,7 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: ./99-experiments/dud-sh/init' >&2
+    printf '%s\n' 'usage: ./99-experiments/dud-sh/runme' >&2
 }
 
 if [ "$#" -ne 0 ]; then
@@ -10,17 +10,17 @@ if [ "$#" -ne 0 ]; then
     exit 2
 fi
 
-if [ ! -x .init/musl-cc ]; then
-    ./01-smoke-cc/init
-    ./02-musl-cc/init
+if [ ! -x .dud/musl-cc ]; then
+    ./01-smoke-cc/runme
+    ./02-musl-cc/runme
 fi
 
-if [ ! -x .init/expect ]; then
-    ./04-expect/init
+if [ ! -x .dud/expect ]; then
+    ./04-expect/runme
 fi
 
-mkdir -p .init
-.init/musl-cc \
+mkdir -p .dud
+.dud/musl-cc \
     -static \
     -std=c11 \
     -Wfatal-errors \
@@ -31,5 +31,5 @@ mkdir -p .init
     99-experiments/dud-sh/clib/exit.c \
     99-experiments/dud-sh/fopen_argv.c \
     99-experiments/dud-sh/lex.c \
-    -o .init/dud-sh
+    -o .dud/dud-sh
 ./99-experiments/dud-sh/test/main

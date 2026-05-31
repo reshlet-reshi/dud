@@ -7,7 +7,7 @@ with the x86_64 bootstrap `__va_list_struct` layout used by musl-tcc.
 
 ## What The Patch Does
 
-The old init path generated `bits/alltypes.h` with musl's `mkalltypes.sed`,
+The old runme path generated `bits/alltypes.h` with musl's `mkalltypes.sed`,
 then rewrote these generated lines with `awk`:
 
 ```c

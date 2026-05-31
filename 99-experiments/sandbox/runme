@@ -2,7 +2,7 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: ./99-experiments/sandbox/init' >&2
+    printf '%s\n' 'usage: ./99-experiments/sandbox/runme' >&2
 }
 
 require_command() {
@@ -51,21 +51,21 @@ require_command objcopy
 require_command stat
 require_command timeout
 
-if [ ! -x .init/musl-cc ]; then
-    ./01-smoke-cc/init
-    ./02-musl-cc/init
+if [ ! -x .dud/musl-cc ]; then
+    ./01-smoke-cc/runme
+    ./02-musl-cc/runme
 fi
 
 tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/dud-sandbox.XXXXXX")
 cleanup_tmp() { rm -rf "$tmp_dir"; }
 trap cleanup_tmp EXIT HUP INT TERM
 
-out_dir=.init/experiments/sandbox
+out_dir=.dud/experiments/sandbox
 target_dir=$out_dir/targets
 mkdir -p "$target_dir"
 
 loader_tmp=$tmp_dir/loader
-.init/musl-cc \
+.dud/musl-cc \
     -static \
     -std=c11 \
     -Wfatal-errors \

@@ -34,7 +34,7 @@ expect_parser_success() {
         exit 1
     fi
 
-    .init/expect output "$expected_output" "$actual_output" "$label"
+    .dud/expect output "$expected_output" "$actual_output" "$label"
 }
 
 expect_parser_failure() {
