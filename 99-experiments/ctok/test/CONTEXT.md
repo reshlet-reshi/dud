@@ -1,8 +1,8 @@
-# 05-ctok/test context doc
+# 99-experiments/ctok/test context doc
 
 ## Context policy
 
-- Read this before changing `05-ctok/test/main`, coverage reporting, or this
+- Read this before changing `99-experiments/ctok/test/main`, coverage reporting, or this
   directory layout.
 - Treat this as working memory, not append-only history. Keep it current,
   compact, and useful for the next turn.
@@ -15,19 +15,21 @@
 
 ## Current State
 
-- `05-ctok/test/main` orchestrates ctok behavior cases and coverage checks.
-- The top-level `init` script calls source-local init scripts directly; they
-  compile with `.init/musl-cc`.
-- `05-ctok/init` builds `05-ctok/main.c` into `.init/ctok` and then runs
-  `./05-ctok/test/main`.
+- `99-experiments/ctok/test/main` orchestrates ctok behavior cases and coverage checks.
+- The root `init` script no longer runs ctok; use
+  `./99-experiments/ctok/init` for standalone ctok builds/tests.
+- `99-experiments/ctok/init` builds `99-experiments/ctok/main.c` into `.init/ctok` and then runs
+  `./99-experiments/ctok/test/main`.
+- The ctok init script bootstraps `.init/musl-cc` and `.init/expect` when
+  needed because root `./init` no longer prepares ctok.
 - Shared exact-output assertions use `.init/expect`, built from
   `04-expect/main.c`, instead of sourcing the old expect shell helper.
 - `main` now orchestrates ctok behavior cases, coverage compile/run, the adjusted
   line coverage gate, reporter fixture tests, and the coverage reporter call.
-- `05-ctok/test/coverage-report` owns gcov stdout parsing, `main.c.gcov`
+- `99-experiments/ctok/test/coverage-report` owns gcov stdout parsing, `main.c.gcov`
   parsing, normalized model validation, parser-integrity checks, and report
   formatting.
-- `05-ctok/test/coverage-report-test` owns fixture-driven reporter tests.
+- `99-experiments/ctok/test/coverage-report-test` owns fixture-driven reporter tests.
 - Coverage details are always printed; there is no `CTOK_COVERAGE_DETAIL` gate.
 - Adjusted line coverage remains the only coverage-quality gate.
 - Branch, call, condition, and prime-path coverage are report-only metrics.
@@ -70,8 +72,8 @@
 
 ## Done
 
-- Split coverage reporting out of `05-ctok/test/main` into
-  `05-ctok/test/coverage-report` and `05-ctok/test/coverage-report-test`.
+- Split coverage reporting out of `99-experiments/ctok/test/main` into
+  `99-experiments/ctok/test/coverage-report` and `99-experiments/ctok/test/coverage-report-test`.
 - Introduced a normalized gcov model and separated parsing, validation, and
   formatting.
 - Hardened condition attribution with per-source pending-miss accounting.
@@ -92,7 +94,7 @@
 
 ## Turn Log Rules
 
-- Add a new `### Turn N` whenever work resumes on `05-ctok/test/main`,
+- Add a new `### Turn N` whenever work resumes on `99-experiments/ctok/test/main`,
   coverage reporting, or this context doc.
 - Record user intent, decisions made, files touched, tests run, and remaining
   concerns.
@@ -148,4 +150,13 @@
 ### Turn 20
 
 - User asked to move expect, ctok, and dud-sh into numbered top-level init
-  directories: `04-expect`, `05-ctok`, and `06-dud-sh`.
+  directories: `04-expect`, `99-experiments/ctok`, and `99-experiments/dud-sh`.
+
+### Turn 21
+
+- User asked to move ctok and dud-sh under `99-experiments/` and unhook them
+  from root `./init`.
+- Updated ctok paths in init/test/coverage scripts and kept generated ctok
+  output at `.init/ctok`.
+- Made ctok init bootstrap its musl compiler and expect-test dependencies when
+  run standalone.

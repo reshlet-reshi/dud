@@ -743,12 +743,12 @@ coverage_report() {
     (
         cd "$cov_tmp"
         gcov -b -c -f -g -e -o "$cov_tmp/ctok-main.gcno" \
-            "$repo_dir/05-ctok/main.c"
+            "$repo_dir/99-experiments/ctok/main.c"
     ) >"$gcov_output"
 
     parse_coverage_metrics \
         "$gcov_output" \
-        "$repo_dir/05-ctok/main.c" \
+        "$repo_dir/99-experiments/ctok/main.c" \
         "$metrics_file"
     parse_gcov_model "$gcov_file" "$model_file" "$stats_file"
 

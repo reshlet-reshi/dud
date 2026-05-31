@@ -2,7 +2,7 @@
 set -eu
 
 COVERAGE_REPORT_LIB=1
-. ./05-ctok/test/coverage-report
+. ./99-experiments/ctok/test/coverage-report
 unset COVERAGE_REPORT_LIB
 
 test_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-test-ctok-report.XXXXXX")
@@ -121,7 +121,7 @@ Prime paths covered:100.00% of 1
 Creating 'not-ctok.c.gcov'
 
 EOF
-        printf "File '%s'\n" "$repo_dir/05-ctok/main.c"
+        printf "File '%s'\n" "$repo_dir/99-experiments/ctok/main.c"
         cat <<'EOF'
 Branches executed:66.67% of 3
 Taken at least once:33.33% of 3
@@ -144,7 +144,7 @@ write_coverage_parser_metrics_fixture "$metrics_output"
 
 parse_coverage_metrics \
     "$metrics_output" \
-    "$repo_dir/05-ctok/main.c" \
+    "$repo_dir/99-experiments/ctok/main.c" \
     "$metrics_file"
 parse_gcov_model "$gcov_file" "$model_file" "$stats_file"
 
@@ -260,7 +260,7 @@ expect_key_value 'prime path parser fixture' prime_path_missed 7 "$stats_file"
 
 bad_metrics=$test_tmp/bad-metrics
 {
-    printf "File '%s'\n" "$repo_dir/05-ctok/main.c"
+    printf "File '%s'\n" "$repo_dir/99-experiments/ctok/main.c"
     cat <<'EOF'
 Branches executed:100.00% of 1
 Creating 'main.c.gcov'
@@ -271,7 +271,7 @@ expect_parser_failure \
     'missing metric: branch directions taken' \
     parse_coverage_metrics \
     "$bad_metrics" \
-    "$repo_dir/05-ctok/main.c" \
+    "$repo_dir/99-experiments/ctok/main.c" \
     "$test_tmp/bad-metrics-out"
 
 bad_branch=$test_tmp/bad-branch.gcov
