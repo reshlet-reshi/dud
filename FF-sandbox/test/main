@@ -1,0 +1,102 @@
+#!/bin/sh
+set -eu
+
+runner=FF-sandbox/scripts/run-sandbox.sh
+target_dir=.init/ff-sandbox/targets
+test_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-test-ff-sandbox.XXXXXX")
+stdout_file=$test_tmp/stdout
+stderr_file=$test_tmp/stderr
+
+cleanup_test_tmp() {
+    rm -rf "$test_tmp"
+}
+
+fail() {
+    printf '%s\n' "$1" >&2
+    exit 1
+}
+
+run_target() {
+    run_target_path=$1
+
+    set +e
+    "$runner" "$run_target_path" >"$stdout_file" 2>"$stderr_file"
+    run_status=$?
+    set -e
+
+    unset run_target_path
+}
+
+assert_no_output() {
+    assert_no_output_label=$1
+
+    if [ -s "$stdout_file" ]; then
+        fail "$assert_no_output_label: expected empty stdout"
+    fi
+
+    if [ -s "$stderr_file" ]; then
+        fail "$assert_no_output_label: expected empty stderr"
+    fi
+
+    unset assert_no_output_label
+}
+
+expect_success() {
+    expect_success_name=$1
+    expect_success_target=$target_dir/$expect_success_name.bin
+
+    run_target "$expect_success_target"
+    if [ "$run_status" -ne 0 ]; then
+        fail "$expect_success_name: expected status 0, got $run_status"
+    fi
+    assert_no_output "$expect_success_name"
+
+    unset expect_success_name expect_success_target
+}
+
+expect_failure() {
+    expect_failure_name=$1
+    expect_failure_target=$target_dir/$expect_failure_name.bin
+
+    run_target "$expect_failure_target"
+    if [ "$run_status" -eq 0 ]; then
+        fail "$expect_failure_name: expected nonzero status"
+    fi
+    assert_no_output "$expect_failure_name"
+
+    unset expect_failure_name expect_failure_target
+}
+
+trap cleanup_test_tmp EXIT HUP INT TERM
+
+if [ ! -x "$runner" ]; then
+    fail "missing executable runner: $runner"
+fi
+
+if [ ! -d "$target_dir" ]; then
+    fail "missing target directory: $target_dir"
+fi
+
+expect_success exit0
+
+expect_failure exit7
+expect_failure write_stdout
+expect_failure read_stdin
+expect_failure open_target
+expect_failure open_etc_passwd
+expect_failure getpid
+expect_failure mmap
+expect_failure mprotect
+expect_failure brk
+expect_failure clone
+expect_failure execve
+expect_failure socket
+expect_failure ioctl
+expect_failure ptrace
+expect_failure unshare
+expect_failure mount
+expect_failure loop
+expect_failure segfault
+expect_failure illegal
+expect_failure return
+

@@ -1,0 +1,84 @@
+#!/bin/sh
+set -eu
+
+usage() {
+    printf '%s\n' 'usage: ./FF-sandbox/init' >&2
+}
+
+require_command() {
+    require_command_name=$1
+
+    if ! command -v "$require_command_name" >/dev/null 2>&1; then
+        printf 'missing required command: %s\n' "$require_command_name" >&2
+        exit 1
+    fi
+
+    unset require_command_name
+}
+
+build_target() {
+    build_target_src=$1
+    build_target_name=${build_target_src##*/}
+    build_target_name=${build_target_name%.S}
+    build_target_obj=$tmp_dir/$build_target_name.o
+    build_target_tmp=$tmp_dir/$build_target_name.bin
+    build_target_out=$target_dir/$build_target_name.bin
+
+    as --64 -o "$build_target_obj" "$build_target_src"
+    objcopy -O binary -j .text "$build_target_obj" "$build_target_tmp"
+    cp "$build_target_tmp" "$build_target_out"
+    chmod 644 "$build_target_out"
+
+    unset build_target_src build_target_name build_target_obj
+    unset build_target_tmp build_target_out
+}
+
+if [ "$#" -ne 0 ]; then
+    usage
+    exit 2
+fi
+
+repo_dir=$(
+    CDPATH=
+    cd "$(dirname "$0")/.." &&
+        pwd
+)
+cd "$repo_dir"
+
+require_command as
+require_command bwrap
+require_command objcopy
+require_command stat
+require_command timeout
+
+if [ ! -x .init/musl-cc ]; then
+    ./01-smoke-cc/init
+    ./02-musl-cc/init
+fi
+
+tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/dud-ff-sandbox.XXXXXX")
+cleanup_tmp() { rm -rf "$tmp_dir"; }
+trap cleanup_tmp EXIT HUP INT TERM
+
+out_dir=.init/ff-sandbox
+target_dir=$out_dir/targets
+mkdir -p "$target_dir"
+
+loader_tmp=$tmp_dir/loader
+.init/musl-cc \
+    -static \
+    -std=c11 \
+    -Wfatal-errors \
+    FF-sandbox/loader/loader.c \
+    FF-sandbox/loader/seccomp.c \
+    FF-sandbox/loader/jump_x86_64.S \
+    -o "$loader_tmp"
+cp "$loader_tmp" "$out_dir/loader"
+chmod 755 "$out_dir/loader"
+
+for target_src in FF-sandbox/targets/*.S; do
+    build_target "$target_src"
+done
+
+FF-sandbox/test/main
+
