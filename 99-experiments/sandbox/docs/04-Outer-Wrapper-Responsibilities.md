@@ -11,55 +11,67 @@ apply wall-clock timeout
 normalize/report exit status
 ```
 
-Skeleton:
+Skeleton shape:
 
 ```sh
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/sh
+set -eu
 
-loader=${SANDBOX_LOADER:-./loader}
-target=${1:?usage: run-sandbox ./target-blob}
+loader=$1
+bwrap=$2
+target=$3
 
-exec {loader_fd}<"$loader"
-exec {target_fd}<"$target"
+exec 3<"$loader"
+exec 4<"$target"
 
-loader_size=$(stat -c '%s' -- "$loader")
-target_size=$(stat -c '%s' -- "$target")
+loader_size=$(wc -c <"$loader")
+target_size=$(wc -c <"$target")
 
 # Leave room for tmpfs metadata and page rounding.
 rootfs_size=$((loader_size + target_size + 1024 * 1024))
 
-run_bwrap=(
-  bwrap
-  --unshare-user
-  --unshare-ipc
-  --unshare-pid
-  --unshare-net
-  --unshare-uts
-  --unshare-cgroup
-  --disable-userns
-  --assert-userns-disabled
-  --uid 65534
-  --gid 65534
-  --hostname x
-  --die-with-parent
-  --new-session
-  --as-pid-1
-  --cap-drop ALL
-  --clearenv
-  --size "$rootfs_size" --tmpfs /
-  --perms 0555 --file "$loader_fd" /init
-  --perms 0444 --file "$target_fd" /target
-  --remount-ro /
-  --chdir /
-  --argv0 init
-  --
-  /init /target
-)
+"$bwrap" \
+    --unshare-user \
+    --unshare-ipc \
+    --unshare-pid \
+    --unshare-net \
+    --unshare-uts \
+    --unshare-cgroup \
+    --disable-userns \
+    --assert-userns-disabled \
+    --uid 65534 \
+    --gid 65534 \
+    --hostname x \
+    --die-with-parent \
+    --new-session \
+    --as-pid-1 \
+    --cap-drop ALL \
+    --clearenv \
+    --size "$rootfs_size" --tmpfs / \
+    --perms 0555 --file 3 /init \
+    --perms 0444 --file 4 /target \
+    --remount-ro / \
+    --chdir / \
+    --argv0 init \
+    -- \
+    /init /target \
+    </dev/null >/dev/null 2>/dev/null &
+sandbox_pid=$!
 
-exec timeout --foreground --kill-after=1s 1s \
-  "${run_bwrap[@]}" \
-  </dev/null >/dev/null 2>/dev/null
+(
+    sleep 1
+    kill "$sandbox_pid" 2>/dev/null || exit 0
+    sleep 1
+    kill -s KILL "$sandbox_pid" 2>/dev/null || true
+) &
+watchdog_pid=$!
+
+set +e
+wait "$sandbox_pid" 2>/dev/null
+status=$?
+set -e
+kill "$watchdog_pid" 2>/dev/null || true
+exit "$status"
 ```
 
 Do not use `systemd-run`.
@@ -67,7 +79,10 @@ Do not use `systemd-run`.
 prefer this shape:
 
 ```sh
-timeout --foreground --kill-after=1s 1s /path/to/run-sandbox "$target"
+/path/to/run-sandbox.sh \
+    --loader /path/to/loader \
+    --bwrap /path/to/bwrap \
+    --target "$target"
 ```
 
 Timeout/cgroup policy is necessary.

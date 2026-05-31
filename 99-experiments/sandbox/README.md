@@ -29,23 +29,36 @@ the target. The only intended result is exit status plus unavoidable timing.
 ## Build and Test
 
 ```sh
-./99-experiments/sandbox/runme.sh
+./99-experiments/sandbox/runme.sh \
+    --sandbox-dir ./99-experiments/sandbox \
+    --cc ./.dud/musl-cc \
+    --out-dir ./.dud/experiments/sandbox \
+    --bwrap /usr/bin/bwrap \
+    --nasm /usr/bin/nasm
 ```
 
 This builds:
 
 ```text
-.dud/experiments/sandbox/loader
-.dud/experiments/sandbox/targets/*.bin
+OUT_DIR/loader
+OUT_DIR/targets/*.bin
 ```
 
 Temporary build scratch is created with `mktemp` under `${TMPDIR:-/tmp}`.
+The sandbox runner does not bootstrap the compiler; pass an existing compiler
+with `--cc`.
+
+Target sources are neutral flat x86-64 Intel-ish `.asm` files. `runme.sh`
+can assemble them with `--asm-script SCRIPT`, `--fasm FASM`, `--nasm NASM`,
+or `--as AS --objcopy OBJCOPY`.
 
 ## Run One Blob
 
 ```sh
 99-experiments/sandbox/scripts/run-sandbox.sh \
-    .dud/experiments/sandbox/targets/exit0.bin
+    --loader ./.dud/experiments/sandbox/loader \
+    --bwrap /usr/bin/bwrap \
+    --target ./.dud/experiments/sandbox/targets/exit0.bin
 ```
 
 The runner uses strict `bwrap` namespace flags. On this host, strict bwrap

@@ -1,8 +1,64 @@
 #!/bin/sh
 set -eu
 
-runner=99-experiments/sandbox/scripts/run-sandbox.sh
-target_dir=.dud/experiments/sandbox/targets
+usage() {
+    printf '%s\n' \
+        'usage: 99-experiments/sandbox/test/main.sh --runner RUNNER --loader LOADER --bwrap BWRAP --target-dir DIR' >&2
+}
+
+usage_error() {
+    printf '%s\n' "$1" >&2
+    usage
+    exit 2
+}
+
+fail() {
+    printf '%s\n' "$1" >&2
+    exit 1
+}
+
+runner=
+loader=
+bwrap=
+target_dir=
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --runner)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --runner'
+            runner=$2
+            shift 2
+            ;;
+        --loader)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --loader'
+            loader=$2
+            shift 2
+            ;;
+        --bwrap)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --bwrap'
+            bwrap=$2
+            shift 2
+            ;;
+        --target-dir)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --target-dir'
+            target_dir=$2
+            shift 2
+            ;;
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        *)
+            usage_error "unknown argument: $1"
+            ;;
+    esac
+done
+
+[ -n "$runner" ] || usage_error 'missing required --runner'
+[ -n "$loader" ] || usage_error 'missing required --loader'
+[ -n "$bwrap" ] || usage_error 'missing required --bwrap'
+[ -n "$target_dir" ] || usage_error 'missing required --target-dir'
+
 test_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-test-sandbox.XXXXXX")
 stdout_file=$test_tmp/stdout
 stderr_file=$test_tmp/stderr
@@ -11,16 +67,15 @@ cleanup_test_tmp() {
     rm -rf "$test_tmp"
 }
 
-fail() {
-    printf '%s\n' "$1" >&2
-    exit 1
-}
-
 run_target() {
     run_target_path=$1
 
     set +e
-    "$runner" "$run_target_path" >"$stdout_file" 2>"$stderr_file"
+    "$runner" \
+        --loader "$loader" \
+        --bwrap "$bwrap" \
+        --target "$run_target_path" \
+        >"$stdout_file" 2>"$stderr_file"
     run_status=$?
     set -e
 
@@ -71,6 +126,10 @@ trap cleanup_test_tmp EXIT HUP INT TERM
 
 if [ ! -x "$runner" ]; then
     fail "missing executable runner: $runner"
+fi
+
+if [ ! -x "$loader" ]; then
+    fail "missing executable loader: $loader"
 fi
 
 if [ ! -d "$target_dir" ]; then

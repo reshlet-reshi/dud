@@ -19,12 +19,12 @@ sandbox/
     jump_x86_64.S
 
   targets/
-    exit0.S
-    exit7.S
-    write_stdout.S
-    open_file.S
-    loop.S
-    syscall_matrix.S
+    exit0.asm
+    exit7.asm
+    write_stdout.asm
+    open_file.asm
+    loop.asm
+    syscall_matrix.asm
 
   tests/
     baseline.bats
