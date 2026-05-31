@@ -2,7 +2,7 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: 04-expect/test/main.sh --expect EXPECT' >&2
+    printf '%s\n' 'usage: 99-experiments/expect/test/main.sh --expect EXPECT' >&2
 }
 
 usage_error() {

@@ -3,7 +3,7 @@ set -eu
 
 usage() {
     printf '%s\n' \
-        'usage: 04-expect/runme.sh --expect-dir DIR --cc CC --out-dir DIR' \
+        'usage: 99-experiments/expect/runme.sh --expect-dir DIR --cc CC --out-dir DIR' \
         >&2
 }
 

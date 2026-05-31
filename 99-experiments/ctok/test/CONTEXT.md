@@ -86,7 +86,7 @@
   consistency.
 - Ported the shared `expect_output`, `expect_status`, and `expect_error`
   helpers from the old expect shell helper to the compiled
-  `04-expect/main.c` utility.
+  `99-experiments/expect/main.c` utility.
 - Generated project outputs live in `.dud/`; the generated TCC install lives
   under `.dud/musl-tcc/`.
 - Earlier source-local runme scripts compiled with `.dud/musl-cc` directly;
@@ -108,7 +108,7 @@
 
 - Established this context process, moved tests/sources under `src/foo/test`
   and `src/foo/main.c`, split coverage reporting into `coverage-report` plus
-  fixtures, and ported exact-output helpers to `04-expect/main.c`.
+  fixtures, and ported exact-output helpers to `99-experiments/expect/main.c`.
 - Source-local runme scripts own their built executables and test runs; the
   current state above is the source of truth for paths and gates.
 
@@ -151,8 +151,8 @@
 
 ### Turn 20
 
-- User asked to move expect, ctok, and dud-sh into numbered top-level
-  directories: `04-expect`, `99-experiments/ctok`, and `99-experiments/dud-sh`.
+- User asked to move expect, ctok, and dud-sh into separate top-level
+  directories; expect later moved to `99-experiments/expect`.
 
 ### Turn 21
 
