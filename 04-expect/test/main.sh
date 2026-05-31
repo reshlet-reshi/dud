@@ -1,7 +1,84 @@
 #!/bin/sh
 set -eu
 
-expect=.dud/expect
+usage() {
+    printf '%s\n' 'usage: 04-expect/test/main.sh --expect EXPECT' >&2
+}
+
+usage_error() {
+    printf '%s\n' "$1" >&2
+    usage
+    exit 2
+}
+
+fail() {
+    printf '%s\n' "$1" >&2
+    exit 1
+}
+
+absolute_path() {
+    absolute_path_value=$1
+
+    case "$absolute_path_value" in
+        /*)
+            printf '%s\n' "$absolute_path_value"
+            ;;
+        */*)
+            absolute_path_dir=${absolute_path_value%/*}
+            absolute_path_base=${absolute_path_value##*/}
+            absolute_path_dir=$(
+                CDPATH=
+                cd "$absolute_path_dir" &&
+                    pwd
+            )
+            printf '%s/%s\n' "$absolute_path_dir" "$absolute_path_base"
+            unset absolute_path_dir absolute_path_base
+            ;;
+        *)
+            command -v "$absolute_path_value"
+            ;;
+    esac
+
+    unset absolute_path_value
+}
+
+require_command_path() {
+    require_command_path_label=$1
+    require_command_path_value=$2
+
+    if ! command -v "$require_command_path_value" >/dev/null 2>&1; then
+        printf 'missing executable %s: %s\n' \
+            "$require_command_path_label" \
+            "$require_command_path_value" >&2
+        exit 1
+    fi
+
+    unset require_command_path_label require_command_path_value
+}
+
+expect=
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --expect)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --expect'
+            expect=$2
+            shift 2
+            ;;
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        *)
+            usage_error "unknown argument: $1"
+            ;;
+    esac
+done
+
+[ -n "$expect" ] || usage_error 'missing required --expect'
+require_command_path expect "$expect"
+expect=$(absolute_path "$expect")
+
 test_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-test-expect.XXXXXX")
 stdout_file=$test_tmp/stdout
 stderr_file=$test_tmp/stderr
@@ -10,11 +87,6 @@ stderr_exit=$test_tmp/stderr-exit
 
 cleanup_test_tmp() {
     rm -rf "$test_tmp"
-}
-
-fail() {
-    printf '%s\n' "$1" >&2
-    exit 1
 }
 
 write_helpers() {
@@ -88,10 +160,6 @@ assert_stderr_starts() {
 }
 
 trap cleanup_test_tmp EXIT HUP INT TERM
-
-if [ ! -x "$expect" ]; then
-    fail "missing executable: $expect"
-fi
 
 write_helpers
 
