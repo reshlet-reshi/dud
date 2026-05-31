@@ -2,7 +2,7 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: ./99-experiments/dud-sh/runme' >&2
+    printf '%s\n' 'usage: ./99-experiments/dud-sh/runme.sh' >&2
 }
 
 if [ "$#" -ne 0 ]; then
@@ -11,12 +11,12 @@ if [ "$#" -ne 0 ]; then
 fi
 
 if [ ! -x .dud/musl-cc ]; then
-    ./01-smoke-cc/runme
-    ./02-musl-cc/runme
+    ./01-smoke-cc/runme.sh
+    ./02-musl-cc/runme.sh
 fi
 
 if [ ! -x .dud/expect ]; then
-    ./04-expect/runme
+    ./04-expect/runme.sh
 fi
 
 mkdir -p .dud
@@ -32,4 +32,4 @@ mkdir -p .dud
     99-experiments/dud-sh/fopen_argv.c \
     99-experiments/dud-sh/lex.c \
     -o .dud/dud-sh
-./99-experiments/dud-sh/test/main
+./99-experiments/dud-sh/test/main.sh

@@ -39,7 +39,7 @@ So the value of `s->tcc_lib_path` is the source of truth for all configured
 
 ## Bootstrap Need
 
-`03-musl-tcc/runme` builds the final compiler with:
+`03-musl-tcc/runme.sh` builds the final compiler with:
 
 ```text
 -DCONFIG_TCCDIR="{B}"

@@ -1,7 +1,7 @@
-# 03-musl-tcc/runme musl CRT objects
+# 03-musl-tcc/runme.sh musl CRT objects
 
 This note is the evidence trail for the musl CRT object build in
-`03-musl-tcc/runme`.
+`03-musl-tcc/runme.sh`.
 
 These objects are not part of `libc.a`. They are standalone startup/finalizer
 objects installed beside `libc.a` and used by TCC when linking static programs.
@@ -66,7 +66,7 @@ and `ret` instructions.
 
 ## Install Shape
 
-After building these objects under `$musl_obj`, `03-musl-tcc/runme` copies them
+After building these objects under `$musl_obj`, `03-musl-tcc/runme.sh` copies them
 to `$musl_lib`:
 
 ```sh

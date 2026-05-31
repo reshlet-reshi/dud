@@ -2,7 +2,7 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: ./04-expect/runme' >&2
+    printf '%s\n' 'usage: ./04-expect/runme.sh' >&2
 }
 
 if [ "$#" -ne 0 ]; then
@@ -13,19 +13,19 @@ fi
 mkdir -p .dud
 
 if [ ! -x .dud/smoke-cc ]; then
-    ./01-smoke-cc/runme
+    ./01-smoke-cc/runme.sh
 fi
 
 if [ ! -x .dud/musl-cc ] ||
     [ ! -x .dud/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc ]
 then
-    ./02-musl-cc/runme
+    ./02-musl-cc/runme.sh
 fi
 
 if [ ! -x .dud/musl-tcc/tcc ] ||
     [ 03-musl-tcc/.stamp -nt .dud/musl-tcc ]
 then
-    ./03-musl-tcc/runme
+    ./03-musl-tcc/runme.sh
 fi
 
 .dud/musl-tcc/tcc \
@@ -40,7 +40,7 @@ fi
     -Wold-style-definition \
     04-expect/main.c \
     -o .dud/expect
-./04-expect/test/main
+./04-expect/test/main.sh
 
 .dud/musl-cc -static -std=c11 -Wfatal-errors 04-expect/main.c -o .dud/expect
-./04-expect/test/main
+./04-expect/test/main.sh

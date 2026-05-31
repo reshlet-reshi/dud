@@ -2,7 +2,7 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: ./00-shellcheck/runme' >&2
+    printf '%s\n' 'usage: ./00-shellcheck/runme.sh' >&2
 }
 
 shellcheck_dir=.dud/shellcheck-v0.11.0.linux.x86_64

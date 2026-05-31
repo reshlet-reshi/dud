@@ -29,7 +29,7 @@ the target. The only intended result is exit status plus unavoidable timing.
 ## Build and Test
 
 ```sh
-./99-experiments/sandbox/runme
+./99-experiments/sandbox/runme.sh
 ```
 
 This builds:

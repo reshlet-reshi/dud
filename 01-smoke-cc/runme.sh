@@ -2,7 +2,7 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: ./01-smoke-cc/runme' >&2
+    printf '%s\n' 'usage: ./01-smoke-cc/runme.sh' >&2
 }
 
 if [ "$#" -ne 0 ]; then

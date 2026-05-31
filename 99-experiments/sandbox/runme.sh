@@ -2,7 +2,7 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: ./99-experiments/sandbox/runme' >&2
+    printf '%s\n' 'usage: ./99-experiments/sandbox/runme.sh' >&2
 }
 
 require_command() {
@@ -52,8 +52,8 @@ require_command stat
 require_command timeout
 
 if [ ! -x .dud/musl-cc ]; then
-    ./01-smoke-cc/runme
-    ./02-musl-cc/runme
+    ./01-smoke-cc/runme.sh
+    ./02-musl-cc/runme.sh
 fi
 
 tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/dud-sandbox.XXXXXX")
@@ -80,4 +80,4 @@ for target_src in 99-experiments/sandbox/targets/*.S; do
     build_target "$target_src"
 done
 
-99-experiments/sandbox/test/main
+99-experiments/sandbox/test/main.sh

@@ -2,7 +2,7 @@
 
 ## Context policy
 
-- Read this before changing `99-experiments/ctok/test/main`, coverage reporting, or this
+- Read this before changing `99-experiments/ctok/test/main.sh`, coverage reporting, or this
   directory layout.
 - Treat this as working memory, not append-only history. Keep it current,
   compact, and useful for the next turn.
@@ -15,21 +15,21 @@
 
 ## Current State
 
-- `99-experiments/ctok/test/main` orchestrates ctok behavior cases and coverage checks.
+- `99-experiments/ctok/test/main.sh` orchestrates ctok behavior cases and coverage checks.
 - The root `runme` script no longer runs ctok; use
-  `./99-experiments/ctok/runme` for standalone ctok builds/tests.
-- `99-experiments/ctok/runme` builds `99-experiments/ctok/main.c` into `.dud/ctok` and then runs
-  `./99-experiments/ctok/test/main`.
+  `./99-experiments/ctok/runme.sh` for standalone ctok builds/tests.
+- `99-experiments/ctok/runme.sh` builds `99-experiments/ctok/main.c` into `.dud/ctok` and then runs
+  `./99-experiments/ctok/test/main.sh`.
 - The ctok runme script bootstraps `.dud/musl-cc` and `.dud/expect` when
-  needed because root `./runme` no longer prepares ctok.
+  needed because root `./runme.sh` no longer prepares ctok.
 - Shared exact-output assertions use `.dud/expect`, built from
   `04-expect/main.c`, instead of sourcing the old expect shell helper.
 - `main` now orchestrates ctok behavior cases, coverage compile/run, the adjusted
   line coverage gate, reporter fixture tests, and the coverage reporter call.
-- `99-experiments/ctok/test/coverage-report` owns gcov stdout parsing, `main.c.gcov`
+- `99-experiments/ctok/test/coverage-report.sh` owns gcov stdout parsing, `main.c.gcov`
   parsing, normalized model validation, parser-integrity checks, and report
   formatting.
-- `99-experiments/ctok/test/coverage-report-test` owns fixture-driven reporter tests.
+- `99-experiments/ctok/test/coverage-report-test.sh` owns fixture-driven reporter tests.
 - Coverage details are always printed; there is no `CTOK_COVERAGE_DETAIL` gate.
 - Adjusted line coverage remains the only coverage-quality gate.
 - Branch, call, condition, and prime-path coverage are report-only metrics.
@@ -72,8 +72,8 @@
 
 ## Done
 
-- Split coverage reporting out of `99-experiments/ctok/test/main` into
-  `99-experiments/ctok/test/coverage-report` and `99-experiments/ctok/test/coverage-report-test`.
+- Split coverage reporting out of `99-experiments/ctok/test/main.sh` into
+  `99-experiments/ctok/test/coverage-report.sh` and `99-experiments/ctok/test/coverage-report-test.sh`.
 - Introduced a normalized gcov model and separated parsing, validation, and
   formatting.
 - Hardened condition attribution with per-source pending-miss accounting.
@@ -94,7 +94,7 @@
 
 ## Turn Log Rules
 
-- Add a new `### Turn N` whenever work resumes on `99-experiments/ctok/test/main`,
+- Add a new `### Turn N` whenever work resumes on `99-experiments/ctok/test/main.sh`,
   coverage reporting, or this context doc.
 - Record user intent, decisions made, files touched, tests run, and remaining
   concerns.
@@ -121,9 +121,9 @@
 
 - User asked to rename the generated root to `.dud/`.
 - Scripts, tests, wrappers, ignore rules, and docs now use `.dud/`; top-level
-  `./clean` removes the generated root.
-- Tests run: planned `sh -n` sweep, `./clean`, absence checks for both
-  generated roots, fresh `./runme`, generated-output checks, and stale-reference
+  `./clean.sh` removes the generated root.
+- Tests run: planned `sh -n` sweep, `./clean.sh`, absence checks for both
+  generated roots, fresh `./runme.sh`, generated-output checks, and stale-reference
   scan.
 
 ### Turn 16
@@ -155,7 +155,7 @@
 ### Turn 21
 
 - User asked to move ctok and dud-sh under `99-experiments/` and unhook them
-  from root `./runme`.
+  from root `./runme.sh`.
 - Updated ctok paths in runme/test/coverage scripts and kept generated ctok
   output at `.dud/ctok`.
 - Made ctok runme bootstrap its musl compiler and expect-test dependencies when

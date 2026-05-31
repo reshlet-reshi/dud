@@ -1,6 +1,6 @@
-# 03-musl-tcc/runme musl_base_srcs
+# 03-musl-tcc/runme.sh musl_base_srcs
 
-This note is the evidence trail for `musl_base_srcs` in `03-musl-tcc/runme`.
+This note is the evidence trail for `musl_base_srcs` in `03-musl-tcc/runme.sh`.
 
 The source-list shape is adapted from musl 1.2.6's Makefile:
 

@@ -6,7 +6,7 @@ LC_ALL=C
 export LC_ALL
 
 usage() {
-    printf '%s\n' 'usage: ./03-musl-tcc/runme' >&2
+    printf '%s\n' 'usage: ./03-musl-tcc/runme.sh' >&2
 }
 
 dud_dir=.dud
@@ -64,10 +64,10 @@ bootstrap_musl_cc=$PWD/.dud/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc
 first_build=$PWD/$work_dir/musl-tcc-seed
 second_build=$PWD/$work_dir/musl-tcc-reseed
 
-03-musl-tcc/build-from-seed "$bootstrap_musl_cc" \
+03-musl-tcc/build-from-seed.sh "$bootstrap_musl_cc" \
     "$first_build" \
     "$work_dir/seed"
-03-musl-tcc/build-from-seed "$first_build/tcc" \
+03-musl-tcc/build-from-seed.sh "$first_build/tcc" \
     "$second_build" \
     "$work_dir/reseed"
 

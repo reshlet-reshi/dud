@@ -7,7 +7,7 @@ export LC_ALL
 
 usage() {
     printf '%s\n' \
-        'usage: ./03-musl-tcc/build-from-seed SEED_CC OUT_DIR WORK_DIR' >&2
+        'usage: ./03-musl-tcc/build-from-seed.sh SEED_CC OUT_DIR WORK_DIR' >&2
 }
 
 if [ "$#" -ne 3 ]; then

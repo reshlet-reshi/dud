@@ -2,7 +2,7 @@
 set -eu
 
 COVERAGE_REPORT_LIB=1
-. ./99-experiments/ctok/test/coverage-report
+. ./99-experiments/ctok/test/coverage-report.sh
 unset COVERAGE_REPORT_LIB
 
 test_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-test-ctok-report.XXXXXX")

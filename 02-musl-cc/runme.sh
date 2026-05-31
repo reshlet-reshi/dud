@@ -2,7 +2,7 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: ./02-musl-cc/runme' >&2
+    printf '%s\n' 'usage: ./02-musl-cc/runme.sh' >&2
 }
 
 musl_dir=.dud/x86_64-linux-musl-native
