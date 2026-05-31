@@ -11,5 +11,5 @@ if [ "$#" -ne 0 ]; then
 fi
 
 mkdir -p .dud
-cp 01-smoke-cc/shim.sh .dud/smoke-cc
+cp 01-smoke-cc/script.sh .dud/smoke-cc
 chmod 755 .dud/smoke-cc
