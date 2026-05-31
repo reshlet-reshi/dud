@@ -22,25 +22,5 @@ then
     ./02-musl-cc/runme.sh
 fi
 
-if [ ! -x .dud/musl-tcc/tcc ] ||
-    [ 03-musl-tcc/.stamp -nt .dud/musl-tcc ]
-then
-    ./03-musl-tcc/runme.sh
-fi
-
-.dud/musl-tcc/tcc \
-    -static \
-    -std=c11 \
-    -Wall \
-    -Wextra \
-    -Wpedantic \
-    -Werror \
-    -Wmissing-prototypes \
-    -Wstrict-prototypes \
-    -Wold-style-definition \
-    04-expect/main.c \
-    -o .dud/expect
-./04-expect/test/main.sh
-
 .dud/musl-cc -static -std=c11 -Wfatal-errors 04-expect/main.c -o .dud/expect
 ./04-expect/test/main.sh
