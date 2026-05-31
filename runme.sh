@@ -13,5 +13,6 @@ fi
 mkdir -p .dud
 
 ./00-shellcheck/runme.sh
-./01-smoke-cc/runme.sh
+cp 01-smoke-cc/script.sh .dud/smoke-cc
+chmod 755 .dud/smoke-cc
 ./02-musl-cc/runme.sh
