@@ -1,9 +1,9 @@
-# 03-musl-tcc/tcc-syscall-x86_64.s
+# 99-experiments/musl-tcc/tcc-syscall-x86_64.s
 
-This note is the evidence trail for `03-musl-tcc/tcc-syscall-x86_64.s`.
+This note is the evidence trail for `99-experiments/musl-tcc/tcc-syscall-x86_64.s`.
 
 This assembly file provides the out-of-line syscall helper functions declared
-by `03-musl-tcc/syscall_arch.h`.
+by `99-experiments/musl-tcc/syscall_arch.h`.
 
 ## Why It Exists
 

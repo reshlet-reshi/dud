@@ -1,7 +1,7 @@
-# 03-musl-tcc/runme.sh musl_replaced_objs
+# 99-experiments/musl-tcc/runme.sh musl_replaced_objs
 
 This note is the evidence trail for `musl_replaced_objs` in
-`03-musl-tcc/runme.sh`.
+`99-experiments/musl-tcc/runme.sh`.
 
 The transform mirrors musl 1.2.6's Makefile model:
 

@@ -1,6 +1,6 @@
-# 03-musl-tcc/runme.sh musl_libc_objs
+# 99-experiments/musl-tcc/runme.sh musl_libc_objs
 
-This note is the evidence trail for `musl_libc_objs` in `03-musl-tcc/runme.sh`.
+This note is the evidence trail for `musl_libc_objs` in `99-experiments/musl-tcc/runme.sh`.
 
 This is the compile stage after `musl_libc_srcs` has been assembled. It turns
 each selected musl-relative source path into an object file under `$musl_obj`

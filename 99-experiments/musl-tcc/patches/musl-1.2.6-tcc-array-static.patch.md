@@ -1,6 +1,6 @@
-# 03-musl-tcc/patches/musl-1.2.6-tcc-array-static.patch
+# 99-experiments/musl-tcc/patches/musl-1.2.6-tcc-array-static.patch
 
-This note is the evidence trail for `03-musl-tcc/patches/musl-1.2.6-tcc-array-static.patch`.
+This note is the evidence trail for `99-experiments/musl-tcc/patches/musl-1.2.6-tcc-array-static.patch`.
 
 The patch replaces C99 `static` array parameter qualifiers in a few musl 1.2.6
 internal declarations and definitions with ordinary array parameters.

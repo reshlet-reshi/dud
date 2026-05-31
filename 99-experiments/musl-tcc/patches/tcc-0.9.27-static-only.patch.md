@@ -1,6 +1,6 @@
-# 03-musl-tcc/patches/tcc-0.9.27-static-only.patch
+# 99-experiments/musl-tcc/patches/tcc-0.9.27-static-only.patch
 
-This note is the evidence trail for `03-musl-tcc/patches/tcc-0.9.27-static-only.patch`.
+This note is the evidence trail for `99-experiments/musl-tcc/patches/tcc-0.9.27-static-only.patch`.
 
 The short version: this bootstrap TCC is intentionally a static-output
 compiler. It should not emit dynamic executables, shared objects, `.interp`, or

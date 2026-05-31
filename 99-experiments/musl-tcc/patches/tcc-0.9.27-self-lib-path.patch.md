@@ -1,6 +1,6 @@
-# 03-musl-tcc/patches/tcc-0.9.27-self-lib-path.patch
+# 99-experiments/musl-tcc/patches/tcc-0.9.27-self-lib-path.patch
 
-This note is the evidence trail for `03-musl-tcc/patches/tcc-0.9.27-self-lib-path.patch`.
+This note is the evidence trail for `99-experiments/musl-tcc/patches/tcc-0.9.27-self-lib-path.patch`.
 
 The short version: the final bootstrap `tcc` is installed as a relocatable tree
 under the caller-supplied `--install-dir`. TCC already has a `{B}` path
@@ -40,7 +40,7 @@ So the value of `s->tcc_lib_path` is the source of truth for all configured
 
 ## Bootstrap Need
 
-`03-musl-tcc/runme.sh` builds the final compiler with:
+`99-experiments/musl-tcc/runme.sh` builds the final compiler with:
 
 ```text
 -DCONFIG_TCCDIR="{B}"

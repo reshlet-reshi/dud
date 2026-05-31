@@ -147,7 +147,7 @@
 
 ### Turn 19
 
-- User asked to move the musl-tcc bootstrap step into `03-musl-tcc`.
+- User asked to move the musl-tcc bootstrap step into its own directory.
 
 ### Turn 20
 

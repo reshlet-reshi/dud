@@ -1,7 +1,7 @@
-# 03-musl-tcc/runme.sh musl libc.a no-index normalization
+# 99-experiments/musl-tcc/runme.sh musl libc.a no-index normalization
 
 This note is the evidence trail for the `libc.a` archive-index stripping step
-in `03-musl-tcc/runme.sh`.
+in `99-experiments/musl-tcc/runme.sh`.
 
 The short version: `tcc0 -ar` writes a leading archive symbol index, but TCC
 0.9.27's archive indexer does not include weak definitions. Musl uses weak
@@ -15,7 +15,7 @@ lets the musl bootstrap link resolve the weak definitions.
 
 ## Failure Without This
 
-A local probe temporarily removed this block from `03-musl-tcc/runme.sh` and then
+A local probe temporarily removed this block from `99-experiments/musl-tcc/runme.sh` and then
 reran runme. The final link failed with unresolved symbols:
 
 ```text

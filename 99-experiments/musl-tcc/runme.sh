@@ -7,7 +7,7 @@ export LC_ALL
 
 usage() {
     printf '%s\n' \
-        'usage: 03-musl-tcc/runme.sh --musl-tcc-dir DIR --bootstrap-cc CC --smoke-cc SMOKE_CC --install-dir DIR --work-dir DIR --tar TAR --patch PATCH --sed SED --find FIND --sort SORT --grep GREP --cmp CMP --sha256sum SHA256SUM --chmod CHMOD --cp CP --rm RM --mv MV --mkdir MKDIR --dd DD --tr TR --dirname DIRNAME' \
+        'usage: 99-experiments/musl-tcc/runme.sh --musl-tcc-dir DIR --bootstrap-cc CC --smoke-cc SMOKE_CC --install-dir DIR --work-dir DIR --tar TAR --patch PATCH --sed SED --find FIND --sort SORT --grep GREP --cmp CMP --sha256sum SHA256SUM --chmod CHMOD --cp CP --rm RM --mv MV --mkdir MKDIR --dd DD --tr TR --dirname DIRNAME' \
         >&2
 }
 

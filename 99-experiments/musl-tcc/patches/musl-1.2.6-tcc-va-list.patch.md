@@ -1,6 +1,6 @@
-# 03-musl-tcc/patches/musl-1.2.6-tcc-va-list.patch
+# 99-experiments/musl-tcc/patches/musl-1.2.6-tcc-va-list.patch
 
-This note is the evidence trail for `03-musl-tcc/patches/musl-1.2.6-tcc-va-list.patch`.
+This note is the evidence trail for `99-experiments/musl-tcc/patches/musl-1.2.6-tcc-va-list.patch`.
 
 The patch replaces musl 1.2.6's `__builtin_va_list` typedef template entries
 with the x86_64 bootstrap `__va_list_struct` layout used by musl-tcc.

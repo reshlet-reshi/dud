@@ -1,7 +1,7 @@
-# 03-musl-tcc/runme.sh musl source pipeline
+# 99-experiments/musl-tcc/runme.sh musl source pipeline
 
 This note is the evidence trail for the musl libc source/object list pipeline
-in `03-musl-tcc/runme.sh`.
+in `99-experiments/musl-tcc/runme.sh`.
 
 The logic mirrors musl 1.2.6's Makefile model:
 

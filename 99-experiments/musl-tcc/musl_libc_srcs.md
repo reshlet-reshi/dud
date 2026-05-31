@@ -1,6 +1,6 @@
-# 03-musl-tcc/runme.sh musl_libc_srcs
+# 99-experiments/musl-tcc/runme.sh musl_libc_srcs
 
-This note is the evidence trail for `musl_libc_srcs` in `03-musl-tcc/runme.sh`.
+This note is the evidence trail for `musl_libc_srcs` in `99-experiments/musl-tcc/runme.sh`.
 
 The final source list mirrors the libc portion of musl 1.2.6's Makefile object
 selection:

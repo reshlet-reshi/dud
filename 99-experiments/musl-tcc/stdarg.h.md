@@ -1,6 +1,6 @@
-# 03-musl-tcc/stdarg.h
+# 99-experiments/musl-tcc/stdarg.h
 
-This note is the evidence trail for `03-musl-tcc/stdarg.h`.
+This note is the evidence trail for `99-experiments/musl-tcc/stdarg.h`.
 
 The file replaces musl 1.2.6's `include/stdarg.h` during the musl-tcc bootstrap.
 

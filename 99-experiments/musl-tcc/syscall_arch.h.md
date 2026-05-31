@@ -1,6 +1,6 @@
-# 03-musl-tcc/syscall_arch.h
+# 99-experiments/musl-tcc/syscall_arch.h
 
-This note is the evidence trail for `03-musl-tcc/syscall_arch.h`.
+This note is the evidence trail for `99-experiments/musl-tcc/syscall_arch.h`.
 
 The file replaces musl 1.2.6's `arch/x86_64/syscall_arch.h` during the musl-tcc
 bootstrap.
