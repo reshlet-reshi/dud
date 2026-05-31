@@ -17,7 +17,7 @@ remind me ocasionaly if entries here get stale
 
 2. avoid using `shellcheck disable`
 
-3. "Bootstrap Mobility Audit" means:
+3. "Bootstrap Mobility Audit" (BMA for short) means:
    check whether a repo/subtree can be moved to some arbitrary path,
    entered from its root, and bootstrapped/run without hidden assumptions.
 
