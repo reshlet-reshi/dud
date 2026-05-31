@@ -121,8 +121,8 @@
 
 - User asked to rename the generated root to `.dud/`.
 - Scripts, tests, wrappers, ignore rules, and docs now use `.dud/`; top-level
-  `./runme --clean` also removes the stale legacy root.
-- Tests run: planned `sh -n` sweep, `./runme --clean`, absence checks for both
+  `./clean` removes the generated root.
+- Tests run: planned `sh -n` sweep, `./clean`, absence checks for both
   generated roots, fresh `./runme`, generated-output checks, and stale-reference
   scan.
 
