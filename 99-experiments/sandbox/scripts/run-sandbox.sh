@@ -2,7 +2,7 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: FF-sandbox/scripts/run-sandbox.sh TARGET_BLOB' >&2
+    printf '%s\n' 'usage: 99-experiments/sandbox/scripts/run-sandbox.sh TARGET_BLOB' >&2
 }
 
 parse_nonnegative_size() {
@@ -24,7 +24,7 @@ if [ "$#" -ne 1 ]; then
 fi
 
 target=$1
-loader=${SANDBOX_LOADER:-.init/ff-sandbox/loader}
+loader=${SANDBOX_LOADER:-.init/experiments/sandbox/loader}
 timeout_duration=${SANDBOX_TIMEOUT:-1s}
 kill_after=${SANDBOX_KILL_AFTER:-1s}
 max_target_size=${SANDBOX_MAX_TARGET_SIZE:-1048576}
@@ -84,4 +84,3 @@ exec timeout --foreground --kill-after="$kill_after" "$timeout_duration" \
     -- \
     /init /target \
     </dev/null >/dev/null 2>/dev/null
-

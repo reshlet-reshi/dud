@@ -1,7 +1,7 @@
 # Project Structure
 
 ```text
-sandbox-runner/
+sandbox/
   README.md
 
   scripts/

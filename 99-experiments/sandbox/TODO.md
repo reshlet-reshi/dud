@@ -1,4 +1,4 @@
-# FF-sandbox TODO
+# sandbox TODO
 
 Milestone 1 establishes the strict trusted-loader baseline. Keep that profile
 as the regression target while adding larger capabilities.

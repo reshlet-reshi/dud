@@ -1,4 +1,4 @@
-# FF-sandbox
+# sandbox
 
 Standalone proof baseline for a hostile raw x86-64 target.
 
@@ -29,14 +29,14 @@ the target. The only intended result is exit status plus unavoidable timing.
 ## Build and Test
 
 ```sh
-./FF-sandbox/init
+./99-experiments/sandbox/init
 ```
 
 This builds:
 
 ```text
-.init/ff-sandbox/loader
-.init/ff-sandbox/targets/*.bin
+.init/experiments/sandbox/loader
+.init/experiments/sandbox/targets/*.bin
 ```
 
 Temporary build scratch is created with `mktemp` under `${TMPDIR:-/tmp}`.
@@ -44,10 +44,10 @@ Temporary build scratch is created with `mktemp` under `${TMPDIR:-/tmp}`.
 ## Run One Blob
 
 ```sh
-FF-sandbox/scripts/run-sandbox.sh .init/ff-sandbox/targets/exit0.bin
+99-experiments/sandbox/scripts/run-sandbox.sh \
+    .init/experiments/sandbox/targets/exit0.bin
 ```
 
 The runner uses strict `bwrap` namespace flags. On this host, strict bwrap
 works outside the Codex sandbox, but user namespace creation is blocked inside
 the Codex command sandbox.
-

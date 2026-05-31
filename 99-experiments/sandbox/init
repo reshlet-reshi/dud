@@ -2,7 +2,7 @@
 set -eu
 
 usage() {
-    printf '%s\n' 'usage: ./FF-sandbox/init' >&2
+    printf '%s\n' 'usage: ./99-experiments/sandbox/init' >&2
 }
 
 require_command() {
@@ -40,7 +40,7 @@ fi
 
 repo_dir=$(
     CDPATH=
-    cd "$(dirname "$0")/.." &&
+    cd "$(dirname "$0")/../.." &&
         pwd
 )
 cd "$repo_dir"
@@ -56,11 +56,11 @@ if [ ! -x .init/musl-cc ]; then
     ./02-musl-cc/init
 fi
 
-tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/dud-ff-sandbox.XXXXXX")
+tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/dud-sandbox.XXXXXX")
 cleanup_tmp() { rm -rf "$tmp_dir"; }
 trap cleanup_tmp EXIT HUP INT TERM
 
-out_dir=.init/ff-sandbox
+out_dir=.init/experiments/sandbox
 target_dir=$out_dir/targets
 mkdir -p "$target_dir"
 
@@ -69,16 +69,15 @@ loader_tmp=$tmp_dir/loader
     -static \
     -std=c11 \
     -Wfatal-errors \
-    FF-sandbox/loader/loader.c \
-    FF-sandbox/loader/seccomp.c \
-    FF-sandbox/loader/jump_x86_64.S \
+    99-experiments/sandbox/loader/loader.c \
+    99-experiments/sandbox/loader/seccomp.c \
+    99-experiments/sandbox/loader/jump_x86_64.S \
     -o "$loader_tmp"
 cp "$loader_tmp" "$out_dir/loader"
 chmod 755 "$out_dir/loader"
 
-for target_src in FF-sandbox/targets/*.S; do
+for target_src in 99-experiments/sandbox/targets/*.S; do
     build_target "$target_src"
 done
 
-FF-sandbox/test/main
-
+99-experiments/sandbox/test/main

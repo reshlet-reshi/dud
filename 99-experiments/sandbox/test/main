@@ -1,9 +1,9 @@
 #!/bin/sh
 set -eu
 
-runner=FF-sandbox/scripts/run-sandbox.sh
-target_dir=.init/ff-sandbox/targets
-test_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-test-ff-sandbox.XXXXXX")
+runner=99-experiments/sandbox/scripts/run-sandbox.sh
+target_dir=.init/experiments/sandbox/targets
+test_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-test-sandbox.XXXXXX")
 stdout_file=$test_tmp/stdout
 stderr_file=$test_tmp/stderr
 
@@ -99,4 +99,3 @@ expect_failure loop
 expect_failure segfault
 expect_failure illegal
 expect_failure return
-
