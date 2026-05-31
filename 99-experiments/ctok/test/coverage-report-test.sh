@@ -1,12 +1,155 @@
 #!/bin/sh
 set -eu
 
-COVERAGE_REPORT_LIB=1
-. ./99-experiments/ctok/test/coverage-report.sh
+usage() {
+    printf '%s\n' \
+        'usage: 99-experiments/ctok/test/coverage-report-test.sh --ctok-dir DIR --expect EXPECT --test-dir DIR --awk AWK --sed SED' \
+        >&2
+}
+
+usage_error() {
+    printf '%s\n' "$1" >&2
+    usage
+    exit 2
+}
+
+fail() {
+    printf '%s\n' "$1" >&2
+    exit 1
+}
+
+absolute_path() {
+    absolute_path_value=$1
+
+    case "$absolute_path_value" in
+        /*)
+            printf '%s\n' "$absolute_path_value"
+            ;;
+        */*)
+            absolute_path_dir=${absolute_path_value%/*}
+            absolute_path_base=${absolute_path_value##*/}
+            absolute_path_dir=$(
+                CDPATH=
+                cd "$absolute_path_dir" &&
+                    pwd
+            )
+            printf '%s/%s\n' "$absolute_path_dir" "$absolute_path_base"
+            unset absolute_path_dir absolute_path_base
+            ;;
+        *)
+            command -v "$absolute_path_value"
+            ;;
+    esac
+
+    unset absolute_path_value
+}
+
+absolute_dir() {
+    absolute_dir_value=$1
+    absolute_dir_result=$(
+        CDPATH=
+        cd "$absolute_dir_value" &&
+            pwd
+    )
+    printf '%s\n' "$absolute_dir_result"
+    unset absolute_dir_value absolute_dir_result
+}
+
+require_command_path() {
+    require_command_path_label=$1
+    require_command_path_value=$2
+
+    if ! command -v "$require_command_path_value" >/dev/null 2>&1; then
+        printf 'missing executable %s: %s\n' \
+            "$require_command_path_label" \
+            "$require_command_path_value" >&2
+        exit 1
+    fi
+
+    unset require_command_path_label require_command_path_value
+}
+
+ctok_dir=
+expect=
+test_dir=
+awk=
+sed=
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --ctok-dir)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --ctok-dir'
+            ctok_dir=$2
+            shift 2
+            ;;
+        --expect)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --expect'
+            expect=$2
+            shift 2
+            ;;
+        --test-dir)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --test-dir'
+            test_dir=$2
+            shift 2
+            ;;
+        --awk)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --awk'
+            awk=$2
+            shift 2
+            ;;
+        --sed)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --sed'
+            sed=$2
+            shift 2
+            ;;
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        *)
+            usage_error "unknown argument: $1"
+            ;;
+    esac
+done
+
+[ -n "$ctok_dir" ] || usage_error 'missing required --ctok-dir'
+[ -n "$expect" ] || usage_error 'missing required --expect'
+[ -n "$test_dir" ] || usage_error 'missing required --test-dir'
+[ -n "$awk" ] || usage_error 'missing required --awk'
+[ -n "$sed" ] || usage_error 'missing required --sed'
+
+if [ ! -d "$ctok_dir" ]; then
+    fail "missing ctok directory: $ctok_dir"
+fi
+if [ ! -d "$test_dir" ]; then
+    fail "missing ctok test directory: $test_dir"
+fi
+if [ ! -f "$test_dir/coverage-report.sh" ]; then
+    fail "missing coverage report helper: $test_dir/coverage-report.sh"
+fi
+
+require_command_path expect "$expect"
+require_command_path awk "$awk"
+require_command_path sed "$sed"
+
+ctok_dir=$(absolute_dir "$ctok_dir")
+test_dir=$(absolute_dir "$test_dir")
+expect=$(absolute_path "$expect")
+awk=$(absolute_path "$awk")
+sed=$(absolute_path "$sed")
+
+coverage_report_awk() {
+    "$awk" "$@"
+}
+
+coverage_report_sed() {
+    "$sed" "$@"
+}
+
+eval "COVERAGE_REPORT_LIB=1 . \"\${test_dir}/coverage-report.sh\""
 unset COVERAGE_REPORT_LIB
 
 test_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-test-ctok-report.XXXXXX")
-repo_dir=$PWD
 
 cleanup_test_tmp() {
     rm -rf "$test_tmp"
@@ -34,7 +177,7 @@ expect_parser_success() {
         exit 1
     fi
 
-    .dud/expect output "$expected_output" "$actual_output" "$label"
+    "$expect" output "$expected_output" "$actual_output" "$label"
 }
 
 expect_parser_failure() {
@@ -121,7 +264,7 @@ Prime paths covered:100.00% of 1
 Creating 'not-ctok.c.gcov'
 
 EOF
-        printf "File '%s'\n" "$repo_dir/99-experiments/ctok/main.c"
+        printf "File '%s'\n" "$ctok_dir/main.c"
         cat <<'EOF'
 Branches executed:66.67% of 3
 Taken at least once:33.33% of 3
@@ -144,7 +287,7 @@ write_coverage_parser_metrics_fixture "$metrics_output"
 
 parse_coverage_metrics \
     "$metrics_output" \
-    "$repo_dir/99-experiments/ctok/main.c" \
+    "$ctok_dir/main.c" \
     "$metrics_file"
 parse_gcov_model "$gcov_file" "$model_file" "$stats_file"
 
@@ -260,7 +403,7 @@ expect_key_value 'prime path parser fixture' prime_path_missed 7 "$stats_file"
 
 bad_metrics=$test_tmp/bad-metrics
 {
-    printf "File '%s'\n" "$repo_dir/99-experiments/ctok/main.c"
+    printf "File '%s'\n" "$ctok_dir/main.c"
     cat <<'EOF'
 Branches executed:100.00% of 1
 Creating 'main.c.gcov'
@@ -271,7 +414,7 @@ expect_parser_failure \
     'missing metric: branch directions taken' \
     parse_coverage_metrics \
     "$bad_metrics" \
-    "$repo_dir/99-experiments/ctok/main.c" \
+    "$ctok_dir/main.c" \
     "$test_tmp/bad-metrics-out"
 
 bad_branch=$test_tmp/bad-branch.gcov

@@ -15,22 +15,24 @@
 
 ## Current State
 
-- `99-experiments/ctok/test/main.sh` orchestrates ctok behavior cases and coverage checks.
-- The root `runme` script no longer runs ctok; use
-  `./99-experiments/ctok/runme.sh` for standalone ctok builds/tests.
-- `99-experiments/ctok/runme.sh` builds `99-experiments/ctok/main.c` into `.dud/ctok` and then runs
-  `./99-experiments/ctok/test/main.sh`.
-- The ctok runme script bootstraps `.dud/musl-cc` and `.dud/expect` when
-  needed because root `./runme.sh` no longer prepares ctok.
-- Shared exact-output assertions use `.dud/expect`, built from
-  `04-expect/main.c`, instead of sourcing the old expect shell helper.
-- `main` now orchestrates ctok behavior cases, coverage compile/run, the adjusted
-  line coverage gate, reporter fixture tests, and the coverage reporter call.
+- `99-experiments/ctok/runme.sh` is explicitly mobile: callers pass
+  `--ctok-dir DIR --cc CC --expect EXPECT --out-dir DIR --coverage yes|no`.
+- The ctok runme script no longer bootstraps `.dud/musl-cc` or `.dud/expect`;
+  compiler and expect paths are caller-owned.
+- No-coverage repo-local example:
+  `./99-experiments/ctok/runme.sh --ctok-dir ./99-experiments/ctok --cc ./.dud/musl-cc --expect ./.dud/expect --out-dir ./.dud/experiments/ctok --coverage no`.
+- Coverage repo-local example also requires explicit tool paths:
+  `--coverage yes --coverage-cc /usr/bin/gcc --gcov /usr/bin/gcov --awk /usr/bin/awk --sed /usr/bin/sed --grep /usr/bin/grep --cut /usr/bin/cut --tr /usr/bin/tr --wc /usr/bin/wc`.
+- `99-experiments/ctok/test/main.sh` always runs behavior cases against the
+  supplied `--ctok`; coverage compile/run, adjusted line coverage, reporter
+  fixture tests, and coverage report output run only with `--coverage yes`.
 - `99-experiments/ctok/test/coverage-report.sh` owns gcov stdout parsing, `main.c.gcov`
   parsing, normalized model validation, parser-integrity checks, and report
-  formatting.
-- `99-experiments/ctok/test/coverage-report-test.sh` owns fixture-driven reporter tests.
-- Coverage details are always printed; there is no `CTOK_COVERAGE_DETAIL` gate.
+  formatting, using explicit `--gcov`, `--awk`, and `--sed` paths.
+- `99-experiments/ctok/test/coverage-report-test.sh` owns fixture-driven reporter tests
+  and requires explicit ctok/test/expect/awk/sed paths.
+- Coverage details are printed only when coverage is enabled; there is no
+  `CTOK_COVERAGE_DETAIL` gate.
 - Adjusted line coverage remains the only coverage-quality gate.
 - Branch, call, condition, and prime-path coverage are report-only metrics.
 - Parser-integrity failures are hard failures when the reporter cannot prove it
@@ -87,8 +89,8 @@
   `04-expect/main.c` utility.
 - Generated project outputs live in `.dud/`; the generated TCC install lives
   under `.dud/musl-tcc/`.
-- Source-local runme scripts no longer accept a compiler argument; they compile
-  with `.dud/musl-cc` directly.
+- Earlier source-local runme scripts compiled with `.dud/musl-cc` directly;
+  ctok now takes explicit compiler/test dependency paths again for mobility.
 - The old `src/runme` wrapper has been removed; use the source-local runme scripts
   directly.
 
@@ -129,8 +131,8 @@
 ### Turn 16
 
 - User asked to remove the compiler argument from source runme paths.
-- Top-level and source-local runme scripts now hardcode `.dud/musl-cc` for
-  source builds.
+- Top-level and source-local runme scripts briefly hardcoded `.dud/musl-cc` for
+  source builds; later mobility work made experiment runmes explicit again.
 
 ### Turn 17
 
@@ -160,3 +162,12 @@
   output at `.dud/ctok`.
 - Made ctok runme bootstrap its musl compiler and expect-test dependencies when
   run standalone.
+
+### Turn 22
+
+- User asked to make ctok explicitly mobile.
+- `runme.sh`, `test/main.sh`, `coverage-report.sh`, and
+  `coverage-report-test.sh` now take explicit source, output, expect, compiler,
+  and coverage tool paths.
+- Coverage is opt-in with `--coverage yes`; `--coverage no` runs only the normal
+  behavior suite.

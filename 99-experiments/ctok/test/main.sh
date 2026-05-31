@@ -1,8 +1,256 @@
 #!/bin/sh
 set -eu
 
+usage() {
+    printf '%s\n' \
+        'usage: 99-experiments/ctok/test/main.sh --ctok CTOK --ctok-dir DIR --expect EXPECT --test-dir DIR --coverage yes|no [coverage tool paths]' \
+        '' \
+        'coverage tool paths, required with --coverage yes:' \
+        '  --coverage-cc CC --gcov GCOV --awk AWK --sed SED --grep GREP --cut CUT --tr TR --wc WC' \
+        >&2
+}
+
+usage_error() {
+    printf '%s\n' "$1" >&2
+    usage
+    exit 2
+}
+
+fail() {
+    printf '%s\n' "$1" >&2
+    exit 1
+}
+
+absolute_path() {
+    absolute_path_value=$1
+
+    case "$absolute_path_value" in
+        /*)
+            printf '%s\n' "$absolute_path_value"
+            ;;
+        */*)
+            absolute_path_dir=${absolute_path_value%/*}
+            absolute_path_base=${absolute_path_value##*/}
+            absolute_path_dir=$(
+                CDPATH=
+                cd "$absolute_path_dir" &&
+                    pwd
+            )
+            printf '%s/%s\n' "$absolute_path_dir" "$absolute_path_base"
+            unset absolute_path_dir absolute_path_base
+            ;;
+        *)
+            command -v "$absolute_path_value"
+            ;;
+    esac
+
+    unset absolute_path_value
+}
+
+absolute_dir() {
+    absolute_dir_value=$1
+    absolute_dir_result=$(
+        CDPATH=
+        cd "$absolute_dir_value" &&
+            pwd
+    )
+    printf '%s\n' "$absolute_dir_result"
+    unset absolute_dir_value absolute_dir_result
+}
+
+require_command_path() {
+    require_command_path_label=$1
+    require_command_path_value=$2
+
+    if ! command -v "$require_command_path_value" >/dev/null 2>&1; then
+        printf 'missing executable %s: %s\n' \
+            "$require_command_path_label" \
+            "$require_command_path_value" >&2
+        exit 1
+    fi
+
+    unset require_command_path_label require_command_path_value
+}
+
+coverage_awk() {
+    "$awk" "$@"
+}
+
+coverage_sed() {
+    "$sed" "$@"
+}
+
+coverage_grep() {
+    "$grep" "$@"
+}
+
+coverage_cut() {
+    "$cut" "$@"
+}
+
+coverage_tr() {
+    "$tr" "$@"
+}
+
+coverage_wc() {
+    "$wc" "$@"
+}
+
+ctok=
+ctok_dir=
+expect=
+test_dir=
+coverage=
+coverage_cc=
+gcov=
+awk=
+sed=
+grep=
+cut=
+tr=
+wc=
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --ctok)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --ctok'
+            ctok=$2
+            shift 2
+            ;;
+        --ctok-dir)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --ctok-dir'
+            ctok_dir=$2
+            shift 2
+            ;;
+        --expect)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --expect'
+            expect=$2
+            shift 2
+            ;;
+        --test-dir)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --test-dir'
+            test_dir=$2
+            shift 2
+            ;;
+        --coverage)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --coverage'
+            coverage=$2
+            shift 2
+            ;;
+        --coverage-cc)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --coverage-cc'
+            coverage_cc=$2
+            shift 2
+            ;;
+        --gcov)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --gcov'
+            gcov=$2
+            shift 2
+            ;;
+        --awk)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --awk'
+            awk=$2
+            shift 2
+            ;;
+        --sed)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --sed'
+            sed=$2
+            shift 2
+            ;;
+        --grep)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --grep'
+            grep=$2
+            shift 2
+            ;;
+        --cut)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --cut'
+            cut=$2
+            shift 2
+            ;;
+        --tr)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --tr'
+            tr=$2
+            shift 2
+            ;;
+        --wc)
+            [ "$#" -ge 2 ] || usage_error 'missing value for --wc'
+            wc=$2
+            shift 2
+            ;;
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        *)
+            usage_error "unknown argument: $1"
+            ;;
+    esac
+done
+
+[ -n "$ctok" ] || usage_error 'missing required --ctok'
+[ -n "$ctok_dir" ] || usage_error 'missing required --ctok-dir'
+[ -n "$expect" ] || usage_error 'missing required --expect'
+[ -n "$test_dir" ] || usage_error 'missing required --test-dir'
+[ -n "$coverage" ] || usage_error 'missing required --coverage'
+
+case $coverage in
+    yes | no)
+        ;;
+    *)
+        usage_error 'expected --coverage yes or --coverage no'
+        ;;
+esac
+
+if [ "$coverage" = yes ]; then
+    [ -n "$coverage_cc" ] || usage_error 'missing required --coverage-cc'
+    [ -n "$gcov" ] || usage_error 'missing required --gcov'
+    [ -n "$awk" ] || usage_error 'missing required --awk'
+    [ -n "$sed" ] || usage_error 'missing required --sed'
+    [ -n "$grep" ] || usage_error 'missing required --grep'
+    [ -n "$cut" ] || usage_error 'missing required --cut'
+    [ -n "$tr" ] || usage_error 'missing required --tr'
+    [ -n "$wc" ] || usage_error 'missing required --wc'
+fi
+
+if [ ! -d "$ctok_dir" ]; then
+    fail "missing ctok directory: $ctok_dir"
+fi
+if [ ! -d "$test_dir" ]; then
+    fail "missing ctok test directory: $test_dir"
+fi
+
+require_command_path ctok "$ctok"
+require_command_path expect "$expect"
+ctok=$(absolute_path "$ctok")
+expect=$(absolute_path "$expect")
+ctok_dir=$(absolute_dir "$ctok_dir")
+test_dir=$(absolute_dir "$test_dir")
+
+if [ "$coverage" = yes ]; then
+    require_command_path 'coverage C compiler' "$coverage_cc"
+    require_command_path gcov "$gcov"
+    require_command_path awk "$awk"
+    require_command_path sed "$sed"
+    require_command_path grep "$grep"
+    require_command_path cut "$cut"
+    require_command_path tr "$tr"
+    require_command_path wc "$wc"
+
+    coverage_cc=$(absolute_path "$coverage_cc")
+    gcov=$(absolute_path "$gcov")
+    awk=$(absolute_path "$awk")
+    sed=$(absolute_path "$sed")
+    grep=$(absolute_path "$grep")
+    cut=$(absolute_path "$cut")
+    tr=$(absolute_path "$tr")
+    wc=$(absolute_path "$wc")
+fi
+
+if [ ! -f "$ctok_dir/main.c" ]; then
+    fail "missing ctok source: $ctok_dir/main.c"
+fi
+
 test_tmp=$(mktemp -d "${TMPDIR:-/tmp}/dud-test-ctok.XXXXXX")
-repo_dir=$PWD
 
 cleanup_test_tmp() {
     rm -rf "$test_tmp"
@@ -32,7 +280,7 @@ expect_status_output() {
         exit 1
     fi
 
-    .dud/expect output "$expected_output" "$actual_output" "$label"
+    "$expect" output "$expected_output" "$actual_output" "$label"
 }
 
 case_i=0
@@ -464,8 +712,8 @@ EOF
 }
 
 trim_source_line() {
-    sed -n "${1}p" "$repo_dir/99-experiments/ctok/main.c" |
-        sed 's/^[	 ]*//; s/[	 ]*$//'
+    coverage_sed -n "${1}p" "$ctok_dir/main.c" |
+        coverage_sed 's/^[	 ]*//; s/[	 ]*$//'
 }
 
 write_coverage_allowlist() {
@@ -497,17 +745,17 @@ validate_coverage() {
 
     (
         cd "$cov_tmp"
-        gcov -o "$cov_tmp/ctok-main.gcno" \
-            "$repo_dir/99-experiments/ctok/main.c" \
+        "$gcov" -o "$cov_tmp/ctok-main.gcno" \
+            "$ctok_dir/main.c" \
             >/dev/null
     )
 
-    awk -F: '$1 ~ /#####/ { gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2 }' \
+    coverage_awk -F: '$1 ~ /#####/ { gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2 }' \
         "$gcov_file" \
         >"$uncovered"
 
     write_coverage_allowlist "$allowlist"
-    cut -d '|' -f 1 "$allowlist" >"$allow_lines"
+    coverage_cut -d '|' -f 1 "$allowlist" >"$allow_lines"
 
     while IFS='|' read -r line snippet reason
     do
@@ -522,7 +770,7 @@ validate_coverage() {
             exit 1
         fi
 
-        if ! grep -qx "$line" "$uncovered"
+        if ! coverage_grep -qx "$line" "$uncovered"
         then
             printf 'ctok coverage allowlist stale: line %s is now covered\n' \
                 "$line" \
@@ -535,7 +783,7 @@ validate_coverage() {
 
     while IFS= read -r line
     do
-        if ! grep -qx "$line" "$allow_lines"
+        if ! coverage_grep -qx "$line" "$allow_lines"
         then
             source_line=$(trim_source_line "$line")
             printf 'ctok coverage missed unallowlisted line %s: %s\n' \
@@ -546,11 +794,11 @@ validate_coverage() {
         fi
     done <"$uncovered"
 
-    raw_uncovered_count=$(wc -l <"$uncovered" | tr -d ' ')
+    raw_uncovered_count=$(coverage_wc -l <"$uncovered" | coverage_tr -d ' ')
     printf 'ctok coverage: adjusted line coverage 100%% '
     printf '(%s raw uncovered lines allowlisted)\n' "$raw_uncovered_count"
     printf 'ctok coverage allowlist:\n'
-    awk -F '|' '
+    coverage_awk -F '|' '
         {
             lines[NR] = $1
             snippets[NR] = $2
@@ -576,11 +824,22 @@ validate_coverage() {
 }
 
 run_coverage_report_self_tests() {
-    ./99-experiments/ctok/test/coverage-report-test.sh
+    "$test_dir/coverage-report-test.sh" \
+        --ctok-dir "$ctok_dir" \
+        --expect "$expect" \
+        --test-dir "$test_dir" \
+        --awk "$awk" \
+        --sed "$sed"
 }
 
 print_coverage_details() {
-    ./99-experiments/ctok/test/coverage-report.sh report "$1" "$repo_dir" "$test_tmp"
+    "$test_dir/coverage-report.sh" report \
+        --cov-tmp "$1" \
+        --ctok-dir "$ctok_dir" \
+        --test-tmp "$test_tmp" \
+        --gcov "$gcov" \
+        --awk "$awk" \
+        --sed "$sed"
 }
 
 build_coverage_ctok() {
@@ -589,7 +848,7 @@ build_coverage_ctok() {
 
     (
         cd "$cov_tmp"
-        gcc \
+        "$coverage_cc" \
             -std=c11 \
             -Wall \
             -Wextra \
@@ -601,17 +860,19 @@ build_coverage_ctok() {
             -ftest-coverage \
             -fcondition-coverage \
             -fpath-coverage \
-            "$repo_dir/99-experiments/ctok/main.c" \
+            "$ctok_dir/main.c" \
             -o "$cov_tmp/ctok"
     )
 
     printf '%s\n' "$cov_tmp/ctok"
 }
 
-run_coverage_report_self_tests
-run_ctok_suite "$repo_dir/.dud/ctok" 'ctok'
+run_ctok_suite "$ctok" 'ctok'
 
-coverage_ctok=$(build_coverage_ctok)
-run_ctok_suite "$coverage_ctok" 'coverage ctok'
-validate_coverage "$test_tmp/coverage"
-print_coverage_details "$test_tmp/coverage"
+if [ "$coverage" = yes ]; then
+    run_coverage_report_self_tests
+    coverage_ctok=$(build_coverage_ctok)
+    run_ctok_suite "$coverage_ctok" 'coverage ctok'
+    validate_coverage "$test_tmp/coverage"
+    print_coverage_details "$test_tmp/coverage"
+fi

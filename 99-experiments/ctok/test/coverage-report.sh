@@ -1,11 +1,89 @@
 #!/bin/sh
 set -eu
 
+coverage_report_fail() {
+    printf '%s\n' "$1" >&2
+    exit 1
+}
+
+coverage_report_absolute_path() {
+    coverage_report_absolute_path_value=$1
+
+    case "$coverage_report_absolute_path_value" in
+        /*)
+            printf '%s\n' "$coverage_report_absolute_path_value"
+            ;;
+        */*)
+            coverage_report_absolute_path_dir=${coverage_report_absolute_path_value%/*}
+            coverage_report_absolute_path_base=${coverage_report_absolute_path_value##*/}
+            coverage_report_absolute_path_dir=$(
+                CDPATH=
+                cd "$coverage_report_absolute_path_dir" &&
+                    pwd
+            )
+            printf '%s/%s\n' \
+                "$coverage_report_absolute_path_dir" \
+                "$coverage_report_absolute_path_base"
+            unset coverage_report_absolute_path_dir
+            unset coverage_report_absolute_path_base
+            ;;
+        *)
+            command -v "$coverage_report_absolute_path_value"
+            ;;
+    esac
+
+    unset coverage_report_absolute_path_value
+}
+
+coverage_report_absolute_dir() {
+    coverage_report_absolute_dir_value=$1
+    coverage_report_absolute_dir_result=$(
+        CDPATH=
+        cd "$coverage_report_absolute_dir_value" &&
+            pwd
+    )
+    printf '%s\n' "$coverage_report_absolute_dir_result"
+    unset coverage_report_absolute_dir_value coverage_report_absolute_dir_result
+}
+
+coverage_report_require_command_path() {
+    coverage_report_require_command_path_label=$1
+    coverage_report_require_command_path_value=$2
+
+    if ! command -v "$coverage_report_require_command_path_value" >/dev/null 2>&1; then
+        printf 'missing executable %s: %s\n' \
+            "$coverage_report_require_command_path_label" \
+            "$coverage_report_require_command_path_value" >&2
+        exit 1
+    fi
+
+    unset coverage_report_require_command_path_label
+    unset coverage_report_require_command_path_value
+}
+
+if ! command -v coverage_report_sed >/dev/null 2>&1; then
+    coverage_report_sed() {
+        "$coverage_report_sed_path" "$@"
+    }
+fi
+
+if ! command -v coverage_report_awk >/dev/null 2>&1; then
+    coverage_report_awk() {
+        "$coverage_report_awk_path" "$@"
+    }
+fi
+
+if ! command -v coverage_report_gcov >/dev/null 2>&1; then
+    coverage_report_gcov() {
+        "$coverage_report_gcov_path" "$@"
+    }
+fi
+
 read_key_value() {
     key=$1
     path=$2
 
-    sed -n "s/^$key=//p" "$path"
+    coverage_report_sed -n "s/^$key=//p" "$path"
 }
 
 require_unsigned_value() {
@@ -102,7 +180,7 @@ verify_metric_stats() {
     fi
 
     metric_check=$(
-        awk -v metric_value="$metric_value" \
+        coverage_report_awk -v metric_value="$metric_value" \
             -v covered="$covered" \
             -v total="$total" '
             BEGIN {
@@ -161,7 +239,7 @@ parse_coverage_metrics() {
     metrics_file=$3
 
     : >"$metrics_file"
-    awk -v expected_file="$expected_file" -v metrics_file="$metrics_file" '
+    coverage_report_awk -v expected_file="$expected_file" -v metrics_file="$metrics_file" '
         function fail(message) {
             printf "ctok coverage parser error: %s\n", message > "/dev/stderr"
             bad = 1
@@ -285,7 +363,7 @@ format_coverage_metrics() {
     metrics_file=$1
 
     printf 'ctok coverage metrics:\n'
-    awk -F= '
+    coverage_report_awk -F= '
         BEGIN {
             num_required = 5
             required_keys[1] = "branches_executed"
@@ -325,7 +403,7 @@ parse_gcov_model() {
 
     : >"$model_file"
     : >"$stats_file"
-    awk -F: -v model_file="$model_file" -v stats_file="$stats_file" '
+    coverage_report_awk -F: -v model_file="$model_file" -v stats_file="$stats_file" '
         function fail(message) {
             printf "ctok coverage parser error: %s\n", message > "/dev/stderr"
             bad = 1
@@ -553,7 +631,7 @@ format_detail_misses() {
     model_file=$3
 
     printf '%s\n' "$heading"
-    awk -v kind="$kind" '
+    coverage_report_awk -v kind="$kind" '
         BEGIN {
             sep = sprintf("%c", 28)
             FS = sep
@@ -591,7 +669,7 @@ format_prime_path_misses() {
     model_file=$1
 
     printf 'ctok coverage prime paths:\n'
-    awk '
+    coverage_report_awk '
         BEGIN {
             sep = sprintf("%c", 28)
             FS = sep
@@ -646,7 +724,7 @@ format_prime_path_misses() {
 format_model_records_for_test() {
     model_file=$1
 
-    awk '
+    coverage_report_awk '
         BEGIN {
             sep = sprintf("%c", 28)
             FS = sep
@@ -731,7 +809,7 @@ verify_coverage_report() {
 
 coverage_report() {
     cov_tmp=$1
-    repo_dir=$2
+    ctok_dir=$2
     test_tmp=$3
 
     gcov_file=$cov_tmp/main.c.gcov
@@ -742,13 +820,13 @@ coverage_report() {
 
     (
         cd "$cov_tmp"
-        gcov -b -c -f -g -e -o "$cov_tmp/ctok-main.gcno" \
-            "$repo_dir/99-experiments/ctok/main.c"
+        coverage_report_gcov -b -c -f -g -e -o "$cov_tmp/ctok-main.gcno" \
+            "$ctok_dir/main.c"
     ) >"$gcov_output"
 
     parse_coverage_metrics \
         "$gcov_output" \
-        "$repo_dir/99-experiments/ctok/main.c" \
+        "$ctok_dir/main.c" \
         "$metrics_file"
     parse_gcov_model "$gcov_file" "$model_file" "$stats_file"
 
@@ -771,17 +849,95 @@ coverage_report() {
 }
 
 coverage_report_usage() {
-    printf '%s\n' 'usage: coverage-report report COV_TMP REPO_DIR TEST_TMP' >&2
+    printf '%s\n' \
+        'usage: coverage-report.sh report --cov-tmp COV_TMP --ctok-dir DIR --test-tmp TEST_TMP --gcov GCOV --awk AWK --sed SED' \
+        >&2
     exit 2
 }
 
 coverage_report_main() {
-    if [ "$#" -ne 4 ] || [ "$1" != report ]
-    then
+    if [ "$#" -lt 1 ] || [ "$1" != report ]; then
         coverage_report_usage
     fi
+    shift
 
-    coverage_report "$2" "$3" "$4"
+    cov_tmp=
+    ctok_dir=
+    test_tmp=
+    coverage_report_gcov_path=
+    coverage_report_awk_path=
+    coverage_report_sed_path=
+
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --cov-tmp)
+                [ "$#" -ge 2 ] || coverage_report_usage
+                cov_tmp=$2
+                shift 2
+                ;;
+            --ctok-dir)
+                [ "$#" -ge 2 ] || coverage_report_usage
+                ctok_dir=$2
+                shift 2
+                ;;
+            --test-tmp)
+                [ "$#" -ge 2 ] || coverage_report_usage
+                test_tmp=$2
+                shift 2
+                ;;
+            --gcov)
+                [ "$#" -ge 2 ] || coverage_report_usage
+                coverage_report_gcov_path=$2
+                shift 2
+                ;;
+            --awk)
+                [ "$#" -ge 2 ] || coverage_report_usage
+                coverage_report_awk_path=$2
+                shift 2
+                ;;
+            --sed)
+                [ "$#" -ge 2 ] || coverage_report_usage
+                coverage_report_sed_path=$2
+                shift 2
+                ;;
+            *)
+                coverage_report_usage
+                ;;
+        esac
+    done
+
+    [ -n "$cov_tmp" ] || coverage_report_usage
+    [ -n "$ctok_dir" ] || coverage_report_usage
+    [ -n "$test_tmp" ] || coverage_report_usage
+    [ -n "$coverage_report_gcov_path" ] || coverage_report_usage
+    [ -n "$coverage_report_awk_path" ] || coverage_report_usage
+    [ -n "$coverage_report_sed_path" ] || coverage_report_usage
+
+    if [ ! -d "$cov_tmp" ]; then
+        coverage_report_fail "missing coverage temp directory: $cov_tmp"
+    fi
+    if [ ! -d "$ctok_dir" ]; then
+        coverage_report_fail "missing ctok directory: $ctok_dir"
+    fi
+    if [ ! -d "$test_tmp" ]; then
+        coverage_report_fail "missing test temp directory: $test_tmp"
+    fi
+    if [ ! -f "$ctok_dir/main.c" ]; then
+        coverage_report_fail "missing ctok source: $ctok_dir/main.c"
+    fi
+
+    coverage_report_require_command_path gcov "$coverage_report_gcov_path"
+    coverage_report_require_command_path awk "$coverage_report_awk_path"
+    coverage_report_require_command_path sed "$coverage_report_sed_path"
+
+    cov_tmp=$(coverage_report_absolute_dir "$cov_tmp")
+    ctok_dir=$(coverage_report_absolute_dir "$ctok_dir")
+    test_tmp=$(coverage_report_absolute_dir "$test_tmp")
+    coverage_report_gcov_path=$(coverage_report_absolute_path "$coverage_report_gcov_path")
+    coverage_report_awk_path=$(coverage_report_absolute_path "$coverage_report_awk_path")
+    coverage_report_sed_path=$(coverage_report_absolute_path "$coverage_report_sed_path")
+
+    coverage_report "$cov_tmp" "$ctok_dir" "$test_tmp"
 }
 
 if [ "${COVERAGE_REPORT_LIB:-0}" != 1 ]
