@@ -10,4 +10,10 @@ if [ "$#" -ne 0 ]; then
     exit 2
 fi
 
-rm -rf .dud
+script_dir=$(
+    CDPATH=
+    cd "$(dirname "$0")" &&
+        pwd
+)
+
+rm -rf "$script_dir/.dud"
