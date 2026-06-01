@@ -12,6 +12,13 @@ if [ "$#" -ne 0 ]; then
     exit 2
 fi
 
+script_dir=$(
+    CDPATH=
+    cd "$(dirname "$0")" &&
+        pwd
+)
+cd "$script_dir"
+
 # scoped tmp dir
 
 tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/dud-runme.XXXXXX")
