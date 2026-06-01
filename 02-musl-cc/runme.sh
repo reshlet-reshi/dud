@@ -6,6 +6,7 @@ usage() {
 }
 
 musl_dir=.dud/x86_64-linux-musl-native
+musl_cc=$musl_dir/bin/x86_64-linux-musl-gcc
 
 if [ "$#" -ne 0 ]; then
     usage
@@ -18,13 +19,22 @@ trap cleanup_tmp EXIT HUP INT TERM
 
 mkdir -p .dud
 
-if [ ! -x "$musl_dir/bin/x86_64-linux-musl-gcc" ]; then
+if [ ! -x "$musl_cc" ]; then
     mkdir "$tmp_dir/musl-exe"
     tar -xzf 02-musl-cc/x86_64-linux-musl-native.tgz -C "$tmp_dir/musl-exe"
     rm -rf "$musl_dir"
     mv "$tmp_dir/musl-exe/x86_64-linux-musl-native" "$musl_dir"
 fi
 
-cp 02-musl-cc/shim.sh .dud/musl-cc
-chmod 755 .dud/musl-cc
-./.dud/smoke-cc ./.dud/musl-cc -static -std=c11 -Wfatal-errors
+rm -f .dud/musl-cc
+./.dud/smoke-cc "$musl_cc" \
+    -static \
+    -std=c11 \
+    -Wfatal-errors \
+    -Wall \
+    -Wextra \
+    -Wpedantic \
+    -Werror \
+    -Wmissing-prototypes \
+    -Wstrict-prototypes \
+    -Wold-style-definition

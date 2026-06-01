@@ -96,6 +96,13 @@ dud_sh=$out_dir/dud-sh
     -static \
     -std=c11 \
     -Wfatal-errors \
+    -Wall \
+    -Wextra \
+    -Wpedantic \
+    -Werror \
+    -Wmissing-prototypes \
+    -Wstrict-prototypes \
+    -Wold-style-definition \
     "$dud_sh_dir/main.c" \
     "$dud_sh_dir/action.c" \
     "$dud_sh_dir/clib/io.c" \

@@ -201,6 +201,13 @@ ctok=$out_dir/ctok
     -static \
     -std=c11 \
     -Wfatal-errors \
+    -Wall \
+    -Wextra \
+    -Wpedantic \
+    -Werror \
+    -Wmissing-prototypes \
+    -Wstrict-prototypes \
+    -Wold-style-definition \
     "$ctok_dir/main.c" \
     -o "$ctok_tmp"
 cp "$ctok_tmp" "$ctok"

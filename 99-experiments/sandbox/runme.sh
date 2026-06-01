@@ -241,6 +241,13 @@ loader_tmp=$tmp_dir/loader
     -static \
     -std=c11 \
     -Wfatal-errors \
+    -Wall \
+    -Wextra \
+    -Wpedantic \
+    -Werror \
+    -Wmissing-prototypes \
+    -Wstrict-prototypes \
+    -Wold-style-definition \
     "$sandbox_dir/loader/loader.c" \
     "$sandbox_dir/loader/seccomp.c" \
     "$sandbox_dir/loader/jump_x86_64.S" \

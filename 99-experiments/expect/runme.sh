@@ -105,6 +105,13 @@ expect=$out_dir/expect
     -static \
     -std=c11 \
     -Wfatal-errors \
+    -Wall \
+    -Wextra \
+    -Wpedantic \
+    -Werror \
+    -Wmissing-prototypes \
+    -Wstrict-prototypes \
+    -Wold-style-definition \
     "$expect_dir/main.c" \
     -o "$expect_tmp"
 cp "$expect_tmp" "$expect"

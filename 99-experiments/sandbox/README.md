@@ -31,7 +31,7 @@ the target. The only intended result is exit status plus unavoidable timing.
 ```sh
 ./99-experiments/sandbox/runme.sh \
     --sandbox-dir ./99-experiments/sandbox \
-    --cc ./.dud/musl-cc \
+    --cc ./.dud/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc \
     --out-dir ./.dud/experiments/sandbox \
     --bwrap /usr/bin/bwrap \
     --nasm /usr/bin/nasm

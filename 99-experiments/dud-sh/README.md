@@ -7,7 +7,7 @@ Small shell experiment currently focused on lexer-symbol output.
 ```sh
 ./99-experiments/dud-sh/runme.sh \
     --dud-sh-dir ./99-experiments/dud-sh \
-    --cc ./.dud/musl-cc \
+    --cc ./.dud/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc \
     --expect ./.dud/expect \
     --out-dir ./.dud/experiments/dud-sh
 ```

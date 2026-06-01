@@ -17,10 +17,10 @@
 
 - `99-experiments/ctok/runme.sh` is explicitly mobile: callers pass
   `--ctok-dir DIR --cc CC --expect EXPECT --out-dir DIR --coverage yes|no`.
-- The ctok runme script no longer bootstraps `.dud/musl-cc` or `.dud/expect`;
+- The ctok runme script no longer bootstraps the compiler or `.dud/expect`;
   compiler and expect paths are caller-owned.
 - No-coverage repo-local example:
-  `./99-experiments/ctok/runme.sh --ctok-dir ./99-experiments/ctok --cc ./.dud/musl-cc --expect ./.dud/expect --out-dir ./.dud/experiments/ctok --coverage no`.
+  `./99-experiments/ctok/runme.sh --ctok-dir ./99-experiments/ctok --cc ./.dud/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc --expect ./.dud/expect --out-dir ./.dud/experiments/ctok --coverage no`.
 - Coverage repo-local example also requires explicit tool paths:
   `--coverage yes --coverage-cc /usr/bin/gcc --gcov /usr/bin/gcov --awk /usr/bin/awk --sed /usr/bin/sed --grep /usr/bin/grep --cut /usr/bin/cut --tr /usr/bin/tr --wc /usr/bin/wc`.
 - `99-experiments/ctok/test/main.sh` always runs behavior cases against the
@@ -89,8 +89,9 @@
   `99-experiments/expect/main.c` utility.
 - Generated project outputs live in `.dud/`; the generated TCC install lives
   under `.dud/musl-tcc/`.
-- Earlier source-local runme scripts compiled with `.dud/musl-cc` directly;
-  ctok now takes explicit compiler/test dependency paths again for mobility.
+- Earlier source-local runme scripts compiled with a generated compiler alias
+  directly; ctok now takes explicit compiler/test dependency paths again for
+  mobility.
 - The old `src/runme` wrapper has been removed; use the source-local runme scripts
   directly.
 
@@ -131,8 +132,9 @@
 ### Turn 16
 
 - User asked to remove the compiler argument from source runme paths.
-- Top-level and source-local runme scripts briefly hardcoded `.dud/musl-cc` for
-  source builds; later mobility work made experiment runmes explicit again.
+- Top-level and source-local runme scripts briefly hardcoded a generated
+  compiler alias for source builds; later mobility work made experiment runmes
+  explicit again.
 
 ### Turn 17
 
