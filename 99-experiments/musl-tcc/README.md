@@ -2,14 +2,13 @@
 
 `musl-tcc` is not built by the root `./runme.sh` bootstrap.
 
-After root bootstrap has prepared `./.dud/smoke-cc` and the vendored musl
-compiler, build and test `musl-tcc` with:
+After root bootstrap has prepared the vendored musl compiler, build and test
+`musl-tcc` with:
 
 ```sh
 ./99-experiments/musl-tcc/runme.sh \
     --musl-tcc-dir ./99-experiments/musl-tcc \
     --bootstrap-cc ./.dud/x86_64-linux-musl-native/bin/x86_64-linux-musl-gcc \
-    --smoke-cc ./.dud/smoke-cc \
     --install-dir ./.dud/musl-tcc \
     --work-dir ./.dud/musl-tcc-build \
     --tar /usr/bin/tar \

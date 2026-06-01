@@ -7,7 +7,7 @@ export LC_ALL
 
 usage() {
     printf '%s\n' \
-        'usage: 99-experiments/musl-tcc/runme.sh --musl-tcc-dir DIR --bootstrap-cc CC --smoke-cc SMOKE_CC --install-dir DIR --work-dir DIR --tar TAR --patch PATCH --sed SED --find FIND --sort SORT --grep GREP --cmp CMP --sha256sum SHA256SUM --chmod CHMOD --cp CP --rm RM --mv MV --mkdir MKDIR --dd DD --tr TR --dirname DIRNAME' \
+        'usage: 99-experiments/musl-tcc/runme.sh --musl-tcc-dir DIR --bootstrap-cc CC --install-dir DIR --work-dir DIR --tar TAR --patch PATCH --sed SED --find FIND --sort SORT --grep GREP --cmp CMP --sha256sum SHA256SUM --chmod CHMOD --cp CP --rm RM --mv MV --mkdir MKDIR --dd DD --tr TR --dirname DIRNAME' \
         >&2
 }
 
@@ -139,7 +139,6 @@ normalize_install_tree() {
 
 musl_tcc_dir=
 bootstrap_cc=
-smoke_cc=
 install_dir=
 work_dir=
 tar=
@@ -169,11 +168,6 @@ while [ "$#" -gt 0 ]; do
         --bootstrap-cc)
             [ "$#" -ge 2 ] || usage_error 'missing value for --bootstrap-cc'
             bootstrap_cc=$2
-            shift 2
-            ;;
-        --smoke-cc)
-            [ "$#" -ge 2 ] || usage_error 'missing value for --smoke-cc'
-            smoke_cc=$2
             shift 2
             ;;
         --install-dir)
@@ -278,7 +272,6 @@ done
 
 [ -n "$musl_tcc_dir" ] || usage_error 'missing required --musl-tcc-dir'
 [ -n "$bootstrap_cc" ] || usage_error 'missing required --bootstrap-cc'
-[ -n "$smoke_cc" ] || usage_error 'missing required --smoke-cc'
 [ -n "$install_dir" ] || usage_error 'missing required --install-dir'
 [ -n "$work_dir" ] || usage_error 'missing required --work-dir'
 [ -n "$tar" ] || usage_error 'missing required --tar'
@@ -314,7 +307,6 @@ if [ ! -f "$musl_tcc_dir/test/tcc1-smoke.c" ]; then
 fi
 
 require_command_path 'bootstrap C compiler' "$bootstrap_cc"
-require_command_path 'smoke C compiler helper' "$smoke_cc"
 require_command_path tar "$tar"
 require_command_path patch "$patch"
 require_command_path sed "$sed"
@@ -333,7 +325,6 @@ require_command_path tr "$tr"
 require_command_path dirname "$dirname"
 
 bootstrap_cc=$(absolute_path "$bootstrap_cc")
-smoke_cc=$(absolute_path "$smoke_cc")
 tar=$(absolute_path "$tar")
 patch=$(absolute_path "$patch")
 sed=$(absolute_path "$sed")
@@ -450,5 +441,3 @@ normalize_install_tree "$install_tmp"
 "$tcc" -static "$musl_tcc_dir/test/tcc1-smoke.c" \
     -o "$work_dir/tcc1-smoke"
 "$work_dir/tcc1-smoke" >/dev/null
-
-"$smoke_cc" "$tcc" -static

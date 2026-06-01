@@ -3,8 +3,8 @@
 ## Archive
 
 - Filename: `shellcheck-v0.11.0.linux.x86_64.tar.xz`
-- Repo path: `00-shellcheck/shellcheck-v0.11.0.linux.x86_64.tar.xz`
-- Purpose in this repo: vendored ShellCheck binary used by `00-shellcheck/runme.sh`.
+- Repo path: `shellcheck-v0.11.0.linux.x86_64.tar.xz`
+- Purpose in this repo: vendored ShellCheck binary used by `./runme.sh`.
 - Version/build identity: ShellCheck `v0.11.0`, Linux `x86_64` precompiled binary.
 - Date checked: 2026-06-01
 

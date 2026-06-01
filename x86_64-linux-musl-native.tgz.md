@@ -3,8 +3,8 @@
 ## Archive
 
 - Filename: `x86_64-linux-musl-native.tgz`
-- Repo path: `02-musl-cc/x86_64-linux-musl-native.tgz`
-- Purpose in this repo: vendored native musl GCC toolchain used by `02-musl-cc/runme.sh`.
+- Repo path: `x86_64-linux-musl-native.tgz`
+- Purpose in this repo: vendored native musl GCC toolchain used by `./runme.sh`.
 - Version/build identity: musl.cc `x86_64-linux-musl-native` toolchain, published 2021-11-23, GCC `11.2.1`.
 - Date checked: 2026-06-01
 
